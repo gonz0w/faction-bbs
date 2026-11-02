@@ -210,6 +210,26 @@ def own_home_console_commands():
     ]
 
 
+# This separately pinned step uses octal0077 (=077). Historical counted
+# steps stay byte-identical; this exact contract rejects relaxed0022 modes.
+SMALL_GET_STEP_NAME = 'Characterize one ignored small own-home Get'
+SMALL_GET_STEP = r"""      - name: Characterize one ignored small own-home Get
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+          FACTION326_ROOT: ${{ runner.temp }}/faction326-small-get-OWNED
+        run: |
+          umask 0077
+          mkdir -m 700 "$FACTION326_ROOT"
+          printf '%s\n' 'Owned one-shot small Get characterization' > "$FACTION326_ROOT/OWNED"
+          mkdir -m 700 "$FACTION326_ROOT/capture321" "$FACTION326_ROOT/capture318" "$FACTION326_ROOT/core" "$FACTION326_ROOT/tmp"
+          FACTION326_STATUS=0
+          timeout --signal=TERM --kill-after=5s 90s env FACTION321_CAPTURE_DIR="$FACTION326_ROOT/capture321" FACTION318_CAPTURE_DIR="$FACTION326_ROOT/capture318" FACTION322_CORE_FIXTURE_RETENTION="$FACTION326_ROOT/core" TMPDIR="$FACTION326_ROOT/tmp" cargo test --manifest-path crates/faction-provider/Cargo.toml --features operator,delegation-verifier --lib --release --locked --offline authority::services::publication::tests::composed_loop_tests::characterize_one_small_get_through_both_maintained_loops -- --exact --ignored --nocapture --test-threads=1 > "$FACTION326_ROOT/stdout.log" 2> "$FACTION326_ROOT/stderr.log" || FACTION326_STATUS=$?
+          python3 tools/check_small_get_observation.py --status "$FACTION326_STATUS" --stdout "$FACTION326_ROOT/stdout.log" --stderr "$FACTION326_ROOT/stderr.log"
+"""
+
+
 def validate_ci(text):
     # Recognize this reviewed workflow's literal jobs/steps only. This does not
     # interpret general YAML/shell semantics or establish global workflow trust.
@@ -355,6 +375,8 @@ def validate_ci(text):
         expected_names = ['Fetch the public repository revision', warm_name, validation_name]
         if job_name == 'own_home_client':
             expected_names.append(own_name)
+        else:
+            expected_names.append(SMALL_GET_STEP_NAME)
         require(re.findall(r'^      - name: (.*)$', successor, re.M) == expected_names,
                 'successor CI must freshly fetch, warm, qualify and validate only its selected commands')
         successor_fetch = _step(successor, 'Fetch the public repository revision')
@@ -376,6 +398,10 @@ def validate_ci(text):
                     expected.append(command)
                     require(text.splitlines().count('          ' + command) == 1,
                             'composed CI validation must run exactly once')
+            # Only this exact, reviewed status-capturing step permits shell OR.
+            # Existing generic _lines and all profile validation stay unchanged.
+            require(_step(successor, SMALL_GET_STEP_NAME) == SMALL_GET_STEP.split('\n', 1)[1],
+                    'small Get observation must preserve exact command/status/validator/resources')
         else:
             expected = own_commands
         require(_lines(validation, {'cargo', 'python3', 'umask', 'mkdir', 'printf', 'cp', 'sha256sum', 'env'}) == expected,

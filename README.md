@@ -20,7 +20,7 @@ and fonts vary. Explore the [artwork](docs/artwork-nightwire.md) and
 
 ## Status
 
-**Working hobby preview · updated 2026-10-31 · no supported release yet.**
+**Working hobby preview · updated 2026-11-02 · no supported release yet.**
 
 The local BBS core and restricted SSH service work. Optional features are enabled
 by the sysop; experiments and future protocols are separate from normal operation.
@@ -44,7 +44,14 @@ by the sysop; experiments and future protocols are separate from normal operatio
   hardware and capacity remain unqualified. See the
   [operator guide](docs/provider-operator.md) and
   [carrier contract](dev-docs/delegation-verifier.md) and
-  [software evidence](dev-docs/evidence/own-home-attachments/README.md).
+  [software evidence](dev-docs/evidence/own-home-attachments/README.md). The bounded
+  waiting-collection extension has separate
+  [host qualification](dev-docs/evidence/bounded-resource-collection/README.md),
+  including maximum-file console checks. Separate
+  [NetBSD 1 GiB software checks](https://github.com/gonz0w/faction-bbs/issues/326#issuecomment-6581115822)
+  at `5ca3e7b` passed both classic and Unicode maximum-file journeys. The maintained
+  maximum-file route still
+  fails its original deadline on Linux; see [#326](https://github.com/gonz0w/faction-bbs/issues/326).
 
 ## What you can do
 

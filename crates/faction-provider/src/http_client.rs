@@ -66,8 +66,22 @@ impl HttpEndpoint {
             return Err(Stage::Frame);
         }
         let handshake = deadline.min(Instant::now() + HANDSHAKE_LIMIT);
+        #[cfg(test)]
+        let setup_trace = crate::setup_trace::Connection::begin(crate::setup_trace::Kind::Http);
+        #[cfg(test)]
+        let setup_builder = setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Builder, 0));
         let mut b =
             SslConnector::builder(SslMethod::tls_client()).map_err(|_| Stage::Configuration)?;
+        #[cfg(test)]
+        if let Some(interval) = setup_builder {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let setup_immutable = setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Immutable, 0));
         b.set_min_proto_version(Some(SslVersion::TLS1_3))
             .map_err(|_| Stage::Configuration)?;
         b.set_max_proto_version(Some(SslVersion::TLS1_3))
@@ -87,11 +101,23 @@ impl HttpEndpoint {
         b.set_private_key(&self.credentials.key)
             .map_err(|_| Stage::Configuration)?;
         b.check_private_key().map_err(|_| Stage::Configuration)?;
+        #[cfg(test)]
+        if let Some(interval) = setup_immutable {
+            interval.finish();
+        }
         check(handshake, &cancel)?;
         if !probe() {
             return Err(Stage::Denied);
         }
+        #[cfg(test)]
+        let setup_tcp = setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Tcp, 0));
         let socket = super::tcp_connect::connect(&self.address, handshake, &cancel, || probe())?;
+        #[cfg(test)]
+        if let Some(interval) = setup_tcp {
+            interval.finish();
+        }
         socket.set_nodelay(true).map_err(|_| Stage::Configuration)?;
         #[cfg(test)]
         if let Some(observed) = &self.socket_nodelay_observation {
@@ -105,11 +131,38 @@ impl HttpEndpoint {
         {
             io.read_retries = self.read_retries.clone();
         }
+        #[cfg(test)]
+        let setup_build = setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Immutable, 1));
+        #[cfg(test)]
+        let connector = b.build();
+        #[cfg(test)]
+        if let Some(interval) = setup_build {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let setup_ssl = setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Ssl, 0));
+        #[cfg(test)]
+        let mut configuration = connector.configure().map_err(|_| Stage::Configuration)?;
+        #[cfg(test)]
+        drop(connector);
+        #[cfg(not(test))]
         let mut configuration = b.build().configure().map_err(|_| Stage::Configuration)?;
         configuration.set_verify_hostname(true);
         let mut stream = configuration
             .connect(&self.server_name, io)
             .map_err(|_| classify(handshake, &cancel, Stage::Handshake))?;
+        #[cfg(test)]
+        if let Some(interval) = setup_ssl {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let setup_postcheck = setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Postcheck, 0));
         check(handshake, &cancel)?;
         if !probe()
             || stream.ssl().verify_result() != X509VerifyResult::OK
@@ -126,6 +179,10 @@ impl HttpEndpoint {
             probe() && leaf_current(&client, wall_now()) && leaf_current(&leaf, wall_now())
         }));
         stream.get_mut().deadline = deadline;
+        #[cfg(test)]
+        if let Some(interval) = setup_postcheck {
+            interval.finish();
+        }
         #[cfg(all(test, feature = "delegation-verifier"))]
         {
             stream.get_mut().response_phase = true;

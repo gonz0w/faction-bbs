@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "files": {
+    "dev-docs/evidence/bounded-resource-collection/README.md": "c71e47605e39074a73591ae604b3dbbf0773e937838a2007bcb2a70431bab9ee",
+    "dev-docs/evidence/bounded-resource-collection/privacy.json": "6541cf5c1554e0d5ff59161a5f55e38efa80c90f8441aca432c01929a3aa6beb",
+    "dev-docs/evidence/bounded-resource-collection/results.json": "bfdda638cf0eadecf05f77ac56193dc2fd071e3c9a8d2d7bf97a8ad3e32eb5da",
+    "dev-docs/evidence/bounded-resource-collection/sources/baseline-delivery.rs": "bff1d2bf92c423aa9f7bf861daba45305c8171ace71f54c4d85aaf958642a1fa",
+    "dev-docs/evidence/bounded-resource-collection/sources/binding-green-tests.rs": "7e21ffa859ce49b89a646a85d55248ee2a1b71b4129fb68454253f3e02e17c1f",
+    "dev-docs/evidence/bounded-resource-collection/sources/binding-red-tests.rs": "2c301b414bd54bc3c9ac04453b141aeacf00343f819de454b83e8899789561b6",
+    "dev-docs/evidence/bounded-resource-collection/sources/close-notify-tests.rs": "11eb3187ad67a1728838d737bab2c6eedf34a243459e458e078c3906551e89f1",
+    "dev-docs/evidence/bounded-resource-collection/sources/close-notify-tls.rs": "542209d19979d4cbf393c64109e1720fcf45bf6462bfd20b0c0296860626c7b9",
+    "dev-docs/evidence/bounded-resource-collection/sources/corrected-router-tests.rs": "ec459573398b5a9b559db6d5290ee712570ff696b3ffc4ad93e1c019e743f516",
+    "dev-docs/evidence/bounded-resource-collection/sources/fifteen-controls-tests.rs": "3c6b1809372a31054c4eccec8fcf77628f3f260c96bd9fd58e4f9a71170fd55b",
+    "dev-docs/evidence/bounded-resource-collection/sources/final-frame-tests.rs": "6a94d5f521111a21ba406e6a9606783a65fe0a5400853618d583bd23a2657fc6",
+    "dev-docs/evidence/bounded-resource-collection/sources/framing-observer-tests.rs": "e623f5492d0d1c03f10423017a6cbbfe13223eefc50d8e7bd42c6f4d697a9c93",
+    "dev-docs/evidence/bounded-resource-collection/sources/framing-observer-tls.rs": "6cc2c6a324fd027bc5daea7756d1c1801d433b2cfcf1be3374542a6465230316",
+    "dev-docs/evidence/bounded-resource-collection/sources/frozen-delay-loop.rs": "f805049217eddc33108584d2a40d46c9b26ec6bad8aa921828ccc00603457a1e",
+    "dev-docs/evidence/bounded-resource-collection/sources/frozen-maximum-workload.rs": "33687471ac95ee6ae12a565841d2ceb4f84c92a08502fc3d562a9d4cd0dc0d93",
+    "dev-docs/evidence/bounded-resource-collection/sources/performance-delivery.rs": "45a84a1c5366020aca6d14a03f01ff00a77bd49a5133432601b01a8627fa70df",
+    "dev-docs/evidence/bounded-resource-collection/sources/performance-tests.rs": "ef21ae1f18f7ba5a44d19125f0979934e9cbbb2119a12eb2e246bcee51a84ae1",
+    "dev-docs/evidence/bounded-resource-collection/sources/published-result-red-delivery.rs": "f3d071fcbd5986a05f28cc3bb2a0f9e48cc5c54e8043b52bbdff1fca78a6899a",
+    "dev-docs/evidence/bounded-resource-collection/sources/published-result-red-tests.rs": "e2c7cbd9e17727912a22b71a5710a3ad551fa08a4e55e1c712fa8c6e2a525188",
+    "dev-docs/evidence/bounded-resource-collection/sources/router-observation-tests.rs": "a73670c5c8551fbe5743ba2fe878fe0f4ce36121a93bb47ae5935898132aef23",
+    "dev-docs/evidence/bounded-resource-collection/sources/router-observer-delivery.rs": "2c439be5294237ddcc8699f26c2c87421e66be0ae198be453ce2902ab578d4d7",
+    "dev-docs/evidence/bounded-resource-collection/sources/verifier-helpers-delivery.rs": "2f08f8026719377d693a2674c2338640ac19b12baf64a6d3af8c1bae964c058d",
+    "dev-docs/evidence/bounded-resource-collection/sources/wire-red-tests.rs": "178770eed8f3df7a333771b210c53735639e76e0a4a65a1cc2224da136848e5d"
+  }
+}

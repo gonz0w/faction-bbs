@@ -514,6 +514,20 @@ jobs:
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-verifier -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features operator,delegation-verifier -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features operator,delegation-verifier -- --test-threads=1
+      - name: Characterize one ignored small own-home Get
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+          FACTION326_ROOT: ${{ runner.temp }}/faction326-small-get-OWNED
+        run: |
+          umask 0077
+          mkdir -m 700 "$FACTION326_ROOT"
+          printf '%s\n' 'Owned one-shot small Get characterization' > "$FACTION326_ROOT/OWNED"
+          mkdir -m 700 "$FACTION326_ROOT/capture321" "$FACTION326_ROOT/capture318" "$FACTION326_ROOT/core" "$FACTION326_ROOT/tmp"
+          FACTION326_STATUS=0
+          timeout --signal=TERM --kill-after=5s 90s env FACTION321_CAPTURE_DIR="$FACTION326_ROOT/capture321" FACTION318_CAPTURE_DIR="$FACTION326_ROOT/capture318" FACTION322_CORE_FIXTURE_RETENTION="$FACTION326_ROOT/core" TMPDIR="$FACTION326_ROOT/tmp" cargo test --manifest-path crates/faction-provider/Cargo.toml --features operator,delegation-verifier --lib --release --locked --offline authority::services::publication::tests::composed_loop_tests::characterize_one_small_get_through_both_maintained_loops -- --exact --ignored --nocapture --test-threads=1 > "$FACTION326_ROOT/stdout.log" 2> "$FACTION326_ROOT/stderr.log" || FACTION326_STATUS=$?
+          python3 tools/check_small_get_observation.py --status "$FACTION326_STATUS" --stdout "$FACTION326_ROOT/stdout.log" --stderr "$FACTION326_ROOT/stderr.log"
   own_home_client:
     name: Optional own-home attachment client
     needs: [provider_client]

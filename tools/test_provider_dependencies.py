@@ -886,6 +886,7 @@ def ci_fixture():
     source = source.replace('          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}\n', '          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}\n          PROVIDER_COMPOSED_RESULT: ${{ needs.provider_composed.result }}\n          OWN_HOME_CLIENT_RESULT: ${{ needs.own_home_client.result }}\n')
     source = source.replace('          test "$PROVIDER_CLIENT_RESULT" = success\n', '          test "$PROVIDER_CLIENT_RESULT" = success\n          test "$PROVIDER_COMPOSED_RESULT" = success\n          test "$OWN_HOME_CLIENT_RESULT" = success\n')
     from test_bbs_regressions_ci import bbs_fixture
+    source=source.replace('  own_home_client:\n',small_get_ci_step_fixture()+'  own_home_client:\n',1)
     return bbs_fixture(source)
 
 
@@ -1594,3 +1595,75 @@ class QualifiedIssuerWireFeature(unittest.TestCase):
             metadata={'packages':[{'id':'injected','name':name,'version':'999'}], 'resolve':{'nodes':[{'id':'injected','features':[]}]}}
             for enabled in [False,True]:
                 with self.subTest(name=name,enabled=enabled),self.assertRaises(ValueError):policy.validate_graph(metadata,enabled)
+
+
+class SmallGetCIContract(unittest.TestCase):
+    def test_small_get_step_required_before_qualification_can_pass(self):
+        source=(policy.ROOT/'.github/workflows/documentation.yml').read_text()
+        name='Characterize one ignored small own-home Get'
+        if '      - name: '+name+'\n' in source:
+            source=source.replace('      - name: '+name+'\n'+policy._step(policy._job(source,'provider_composed'),name),'',1)
+        with self.assertRaises(ValueError):policy.validate_ci(source)
+
+
+class SmallGetCIIntegrationMutations(unittest.TestCase):
+    def test_exact_small_get_step_and_all_existing_profiles_remain(self):
+        source=(policy.ROOT/'.github/workflows/documentation.yml').read_text()
+        policy.validate_ci(source)
+        job=policy._job(source,'provider_composed')
+        step=policy._step(job,'Characterize one ignored small own-home Get')
+        self.assertGreater(job.index('Characterize one ignored small own-home Get'),job.index('Validate the composed attachment provider'))
+        self.assertEqual(step.count('cargo test '),1)
+        for required in ['timeout --signal=TERM --kill-after=5s 90s env ','-- --exact --ignored --nocapture --test-threads=1',' || FACTION326_STATUS=$?','python3 tools/check_small_get_observation.py --status "$FACTION326_STATUS"']:
+            self.assertIn(required,step)
+        self.assertNotIn('set +e',step);self.assertNotIn('tee ',step);self.assertNotIn('cat ',step)
+
+    def test_small_get_status_validator_limits_and_resources_cannot_drift(self):
+        source=(policy.ROOT/'.github/workflows/documentation.yml').read_text();name='Characterize one ignored small own-home Get'
+        block='      - name: '+name+'\n'+policy._step(policy._job(source,'provider_composed'),name)
+        changes=[('FACTION326_STATUS=0','FACTION326_STATUS=1'),(' || FACTION326_STATUS=$?',' || true'),('90s env','120s env'),('--kill-after=5s','--kill-after=6s'),('--exact --ignored','--exact'),('--test-threads=1','--test-threads=2'),('CARGO_BUILD_JOBS: 2','CARGO_BUILD_JOBS: 3'),('RUSTUP_TOOLCHAIN: 1.96.0','RUSTUP_TOOLCHAIN: stable'),('umask 0077','umask 0022'),('mkdir -m 700','mkdir -m 755'),(' --status "$FACTION326_STATUS"',' --status 0')]
+        for old,new in changes:
+            with self.subTest(change=old),self.assertRaises(ValueError):policy.validate_ci(source.replace(block,block.replace(old,new,1),1))
+        validator=next(line for line in block.splitlines() if 'python3 tools/check_small_get_observation.py' in line)+'\n'
+        for changed in [source.replace(validator,'',1),source.replace(block,block+block,1),source.replace(block,block+'          true\n',1),source.replace(block,block.replace('        env:\n','        continue-on-error: true\n        env:\n',1),1)]:
+            with self.assertRaises(ValueError):policy.validate_ci(changed)
+
+    def test_every_old_profile_command_is_still_required_exactly_once(self):
+        source=(policy.ROOT/'.github/workflows/documentation.yml').read_text()
+        jobs=['provider','provider_operator','provider_client','provider_composed','own_home_client']
+        commands=[]
+        for job in jobs:
+            for line in policy._job(source,job).splitlines():
+                if line.strip().startswith(('cargo clippy ','cargo test ')) or (line.strip().startswith('env ') and ' cargo test ' in line):
+                    commands.append(line+'\n')
+        self.assertTrue(commands)
+        for command in commands:
+            self.assertEqual(source.count(command),1)
+            with self.subTest(command=command.strip()),self.assertRaises(ValueError):policy.validate_ci(source.replace(command,'',1))
+            with self.subTest(changed=command.strip()),self.assertRaises(ValueError):policy.validate_ci(source.replace(command,command.replace('--locked','--locked --offline',1),1))
+
+    def test_generic_command_guard_stays_strict(self):
+        source=(policy.ROOT/'.github/workflows/documentation.yml').read_text()
+        step=policy._step(policy._job(source,'provider_composed'),'Validate the composed attachment provider')
+        with self.assertRaises(ValueError):policy._lines(step+'          true || true\n',{'cargo','python3','true'})
+
+
+SMALL_GET_STEP_FIXTURE = r"""      - name: Characterize one ignored small own-home Get
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+          FACTION326_ROOT: ${{ runner.temp }}/faction326-small-get-OWNED
+        run: |
+          umask 0077
+          mkdir -m 700 "$FACTION326_ROOT"
+          printf '%s\n' 'Owned one-shot small Get characterization' > "$FACTION326_ROOT/OWNED"
+          mkdir -m 700 "$FACTION326_ROOT/capture321" "$FACTION326_ROOT/capture318" "$FACTION326_ROOT/core" "$FACTION326_ROOT/tmp"
+          FACTION326_STATUS=0
+          timeout --signal=TERM --kill-after=5s 90s env FACTION321_CAPTURE_DIR="$FACTION326_ROOT/capture321" FACTION318_CAPTURE_DIR="$FACTION326_ROOT/capture318" FACTION322_CORE_FIXTURE_RETENTION="$FACTION326_ROOT/core" TMPDIR="$FACTION326_ROOT/tmp" cargo test --manifest-path crates/faction-provider/Cargo.toml --features operator,delegation-verifier --lib --release --locked --offline authority::services::publication::tests::composed_loop_tests::characterize_one_small_get_through_both_maintained_loops -- --exact --ignored --nocapture --test-threads=1 > "$FACTION326_ROOT/stdout.log" 2> "$FACTION326_ROOT/stderr.log" || FACTION326_STATUS=$?
+          python3 tools/check_small_get_observation.py --status "$FACTION326_STATUS" --stdout "$FACTION326_ROOT/stdout.log" --stderr "$FACTION326_ROOT/stderr.log"
+"""
+
+
+def small_get_ci_step_fixture():
+    return SMALL_GET_STEP_FIXTURE

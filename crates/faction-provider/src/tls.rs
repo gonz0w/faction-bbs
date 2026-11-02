@@ -279,32 +279,206 @@ impl Drop for DeadlineIo {
     }
 }
 
+// One scoped test-thread observation, never transport state or remote authority.
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum FramePhase {
+    InitialRead,
+    DecodeDispatch,
+    ResponseWrite,
+    NextRead,
+}
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum FramePart {
+    PrefixFirst,
+    PrefixRest,
+    LengthValidation,
+    Body,
+    WriteAll,
+    Flush,
+}
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum FrameOutcome {
+    Entered,
+    Complete,
+    CleanEof,
+    InvalidLength,
+    IoError,
+}
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct FrameSnapshot {
+    pub(crate) phase: FramePhase,
+    pub(crate) part: Option<FramePart>,
+    pub(crate) outcome: FrameOutcome,
+    pub(crate) error_kind: Option<io::ErrorKind>,
+}
+#[cfg(test)]
+std::thread_local! {
+    static FRAME_OBSERVATION: std::cell::Cell<Option<FrameSnapshot>> = const { std::cell::Cell::new(None) };
+}
+#[cfg(test)]
+pub(crate) struct FrameObservation {
+    // A zero-sized !Send/!Sync marker keeps Drop on the activating thread.
+    _thread_bound: std::marker::PhantomData<std::rc::Rc<()>>,
+}
+#[cfg(test)]
+impl FrameObservation {
+    pub(crate) fn start() -> Option<Self> {
+        FRAME_OBSERVATION.with(|slot| {
+            if slot.get().is_some() {
+                return None;
+            }
+            slot.set(Some(FrameSnapshot {
+                phase: FramePhase::InitialRead,
+                part: None,
+                outcome: FrameOutcome::Entered,
+                error_kind: None,
+            }));
+            Some(Self {
+                _thread_bound: std::marker::PhantomData,
+            })
+        })
+    }
+    pub(crate) fn current() -> Option<FrameSnapshot> {
+        FRAME_OBSERVATION.with(std::cell::Cell::get)
+    }
+    pub(crate) fn snapshot(&self) -> FrameSnapshot {
+        Self::current().expect("active frame observation")
+    }
+    pub(crate) fn phase(phase: FramePhase) {
+        FRAME_OBSERVATION.with(|slot| {
+            if slot.get().is_some() {
+                slot.set(Some(FrameSnapshot {
+                    phase,
+                    part: None,
+                    outcome: FrameOutcome::Entered,
+                    error_kind: None,
+                }));
+            }
+        });
+    }
+    fn event(part: FramePart, outcome: FrameOutcome, error_kind: Option<io::ErrorKind>) {
+        FRAME_OBSERVATION.with(|slot| {
+            if let Some(mut snapshot) = slot.get() {
+                snapshot.part = Some(part);
+                snapshot.outcome = outcome;
+                snapshot.error_kind = error_kind;
+                slot.set(Some(snapshot));
+            }
+        });
+    }
+}
+#[cfg(test)]
+impl Drop for FrameObservation {
+    fn drop(&mut self) {
+        FRAME_OBSERVATION.with(|slot| slot.set(None));
+    }
+}
+
 fn read_frame(stream: &mut SslStream<DeadlineIo>) -> Result<Option<Vec<u8>>, Stage> {
     let mut length = [0; 4];
-    let n = stream.read(&mut length[..1]).map_err(|_| Stage::Frame)?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::PrefixFirst, FrameOutcome::Entered, None);
+    let n = stream.read(&mut length[..1]).map_err(|_error| {
+        #[cfg(test)]
+        FrameObservation::event(
+            FramePart::PrefixFirst,
+            FrameOutcome::IoError,
+            Some(_error.kind()),
+        );
+        Stage::Frame
+    })?;
     if n == 0 {
+        #[cfg(test)]
+        FrameObservation::event(FramePart::PrefixFirst, FrameOutcome::CleanEof, None);
         return Ok(None);
     }
-    stream
-        .read_exact(&mut length[1..])
-        .map_err(|_| Stage::Frame)?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::PrefixFirst, FrameOutcome::Complete, None);
+    #[cfg(test)]
+    FrameObservation::event(FramePart::PrefixRest, FrameOutcome::Entered, None);
+    stream.read_exact(&mut length[1..]).map_err(|_error| {
+        #[cfg(test)]
+        FrameObservation::event(
+            FramePart::PrefixRest,
+            FrameOutcome::IoError,
+            Some(_error.kind()),
+        );
+        Stage::Frame
+    })?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::PrefixRest, FrameOutcome::Complete, None);
+    #[cfg(test)]
+    FrameObservation::event(FramePart::LengthValidation, FrameOutcome::Entered, None);
     let length = u32::from_be_bytes(length) as usize;
     if length == 0 || length > MAX_WIRE {
+        #[cfg(test)]
+        FrameObservation::event(
+            FramePart::LengthValidation,
+            FrameOutcome::InvalidLength,
+            None,
+        );
         return Err(Stage::Frame);
     }
+    #[cfg(test)]
+    FrameObservation::event(FramePart::LengthValidation, FrameOutcome::Complete, None);
     let mut bytes = vec![0; length];
-    stream.read_exact(&mut bytes).map_err(|_| Stage::Frame)?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::Body, FrameOutcome::Entered, None);
+    stream.read_exact(&mut bytes).map_err(|_error| {
+        #[cfg(test)]
+        FrameObservation::event(FramePart::Body, FrameOutcome::IoError, Some(_error.kind()));
+        Stage::Frame
+    })?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::Body, FrameOutcome::Complete, None);
     Ok(Some(bytes))
 }
 fn write_frame<W: Write>(stream: &mut W, bytes: &[u8]) -> Result<(), Stage> {
+    #[cfg(test)]
+    FrameObservation::event(FramePart::LengthValidation, FrameOutcome::Entered, None);
     if bytes.is_empty() || bytes.len() > MAX_WIRE {
+        #[cfg(test)]
+        FrameObservation::event(
+            FramePart::LengthValidation,
+            FrameOutcome::InvalidLength,
+            None,
+        );
         return Err(Stage::Frame);
     }
+    #[cfg(test)]
+    FrameObservation::event(FramePart::LengthValidation, FrameOutcome::Complete, None);
     let mut frame = Vec::with_capacity(4 + bytes.len());
     frame.extend_from_slice(&(bytes.len() as u32).to_be_bytes());
     frame.extend_from_slice(bytes);
-    stream.write_all(&frame).map_err(|_| Stage::Frame)?;
-    stream.flush().map_err(|_| Stage::Frame)
+    #[cfg(test)]
+    FrameObservation::event(FramePart::WriteAll, FrameOutcome::Entered, None);
+    stream.write_all(&frame).map_err(|_error| {
+        #[cfg(test)]
+        FrameObservation::event(
+            FramePart::WriteAll,
+            FrameOutcome::IoError,
+            Some(_error.kind()),
+        );
+        Stage::Frame
+    })?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::WriteAll, FrameOutcome::Complete, None);
+    #[cfg(test)]
+    FrameObservation::event(FramePart::Flush, FrameOutcome::Entered, None);
+    let result = stream.flush().map_err(|_error| {
+        #[cfg(test)]
+        FrameObservation::event(FramePart::Flush, FrameOutcome::IoError, Some(_error.kind()));
+        Stage::Frame
+    });
+    #[cfg(test)]
+    if result.is_ok() {
+        FrameObservation::event(FramePart::Flush, FrameOutcome::Complete, None);
+    }
+    result
 }
 
 /// Trusted preloaded TLS configuration. Accepts only caller-owned loopback listeners.
@@ -1138,6 +1312,19 @@ impl Client {
     }
 }
 
+#[cfg(test)]
+impl Client {
+    /// Send the first close-notify step once. Do not wait for peer acknowledgement,
+    /// retry, charge another request, or renew the original client window.
+    pub fn test_close_notify(&mut self) -> Result<(), Stage> {
+        check(self.deadline, &self.cancel)?;
+        self.stream
+            .shutdown()
+            .map_err(|_| classify(self.deadline, &self.cancel, Stage::Frame))?;
+        check(self.deadline, &self.cancel)
+    }
+}
+
 /// Independently preloaded transport credentials. They contain no mail/vault keys.
 /// Each PEM input is bounded to 64 KiB. No file loader or enrollment is provided.
 #[derive(Clone)]
@@ -1186,6 +1373,8 @@ impl ClientCredentials {
 /// ```
 pub struct ClientAdmission {
     start: Instant,
+    #[cfg(test)]
+    pub(crate) setup_trace: Option<crate::setup_trace::Connection>,
     #[cfg(feature = "delegation-verifier")]
     current_probe: Option<Arc<dyn Fn() -> bool + Send + Sync>>,
     #[cfg(feature = "delegation-verifier")]
@@ -1216,6 +1405,8 @@ impl ClientAdmission {
         }
         Ok(Self {
             start,
+            #[cfg(test)]
+            setup_trace: None,
             #[cfg(feature = "delegation-verifier")]
             current_probe: None,
             #[cfg(feature = "delegation-verifier")]
@@ -1250,8 +1441,22 @@ impl ClientAdmission {
         socket
             .set_nonblocking(false)
             .map_err(|_| Stage::Admission)?;
+        #[cfg(test)]
+        let setup_builder = self
+            .setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Builder, 0));
         let mut b =
             SslConnector::builder(SslMethod::tls_client()).map_err(|_| Stage::Configuration)?;
+        #[cfg(test)]
+        if let Some(interval) = setup_builder {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let setup_immutable = self
+            .setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Immutable, 0));
         b.set_min_proto_version(Some(SslVersion::TLS1_3))
             .map_err(|_| Stage::Configuration)?;
         b.set_max_proto_version(Some(SslVersion::TLS1_3))
@@ -1272,6 +1477,15 @@ impl ClientAdmission {
             .map_err(|_| Stage::Configuration)?;
         b.check_private_key().map_err(|_| Stage::Configuration)?;
         let connector = b.build();
+        #[cfg(test)]
+        if let Some(interval) = setup_immutable {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let setup_ssl = self
+            .setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Ssl, 0));
         let mut configuration = connector.configure().map_err(|_| Stage::Configuration)?;
         configuration.set_verify_hostname(true);
         check(handshake, &self.cancel)?;
@@ -1285,6 +1499,15 @@ impl ClientAdmission {
         let mut stream = configuration
             .connect(&self.expected_name, io)
             .map_err(|_| classify(handshake, &self.cancel, Stage::Handshake))?;
+        #[cfg(test)]
+        if let Some(interval) = setup_ssl {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let setup_postcheck = self
+            .setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Postcheck, 0));
         check(handshake, &self.cancel)?;
         if stream.ssl().verify_result() != X509VerifyResult::OK || stream.ssl().session_reused() {
             return Err(Stage::Handshake);
@@ -1305,6 +1528,10 @@ impl ClientAdmission {
         }
         stream.get_mut().deadline = deadline;
         check(deadline, &self.cancel)?;
+        #[cfg(test)]
+        if let Some(interval) = setup_postcheck {
+            interval.finish();
+        }
         Ok(Client {
             stream,
             deadline,
@@ -1530,7 +1757,7 @@ mod http_client;
 #[cfg(feature = "delegation-wire")]
 pub use http_client::HttpEndpoint;
 
-#[cfg(all(test, feature = "delegation-verifier"))]
+#[cfg(all(test, feature = "delegation-issuer"))]
 pub(crate) use issuer_lifecycle_tests::cert as test_certificate;
 
 #[cfg(feature = "delegation-verifier")]

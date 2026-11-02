@@ -548,3 +548,5 @@ provider outage. Current source, retained failures, private capture, whole-snaps
 teardown and remaining deployment/interoperability limits stay separate.
 
 - [Attachment transfer diagnostics](attachment-transfer-diagnostics/README.md) — bounded host and NetBSD software observations for failure attribution; no historical cause or performance fix established.
+
+[Bounded resource-collection observations](bounded-resource-collection/README.md) preserve the frozen maximum-fetch RED/GREEN and test-fixture limits for #326. The selected recorded-file manifest SHA-256 is `381ded1bdd801be207acdd945a386c6c858b937af26f2d66022628518b95ad0c`; it identifies saved bytes, not fresh execution.
