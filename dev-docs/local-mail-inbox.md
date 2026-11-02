@@ -130,3 +130,31 @@ acknowledgement still target the original record. Online reply retains its
 existing authority checks; offline has no Reply. Control interruption,
 inactivity and I/O failure retain the existing lock/drop behavior. No persistent
 query, plaintext index, schema, dependency, crypto or wire change is introduced.
+
+## Local conversation preview
+
+Issue [#339](https://github.com/gonz0w/faction-bbs/issues/339) adds a deliberate
+T action within an unlocked correspondent inbox in the offline and manual
+home-mail consoles. The eligible records are the intersection of the exact
+account/device group, current All/Unread filter and literal search. Original
+canonical indices identify selections; local append order presents oldest first,
+independent of sender UTC values. Empty results cannot escape the group.
+
+Each page contains at most two previews with direction, status, UTC, subject and
+at most three body rows per message. Each preview indicates continuation when
+needed and offers the existing full-record route. Output fits 39 terminal cells per row
+and a classic 24-row page, using inert classic/Unicode scalar rendering and
+bounded zeroized text scratch. Navigation metadata contains no copied body or
+key. Arrows/J/K select and N/P page with clamped boundaries. Enter/O opens the
+selected original index in the existing reader; B returns to the scoped inbox.
+After record return, refresh the same group, filter and query, preserving the
+original selection where eligible and clamping otherwise.
+
+Preview and navigation do not acknowledge, queue, send or perform network work,
+or change archive/read state, ciphertext or trust. They add no schema, persisted
+index, credential lease or background polling. Existing post-output typed read
+decisions and current online peer/reply checks remain authoritative; offline has
+no Reply. Existing lock/drop and parked-SSH return behavior remains in force,
+and private text stays out of board streams, logs and diagnostics. Existing N
+notice consent is unchanged. This retained-device presentation is not live chat,
+protocol threading, current presence, a complete home inbox or key continuity.

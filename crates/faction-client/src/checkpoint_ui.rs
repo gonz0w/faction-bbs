@@ -21,6 +21,12 @@ const IDLE: Duration = Duration::from_secs(300);
 #[path = "checkpoint_ui_inbox.rs"]
 mod inbox;
 
+#[path = "checkpoint_ui_conversation.rs"]
+mod conversation;
+#[cfg(test)]
+#[path = "checkpoint_ui_conversation_tests.rs"]
+mod conversation_tests;
+
 #[cfg(feature = "network-mail")]
 #[path = "checkpoint_ui_reply.rs"]
 mod reply;
@@ -520,6 +526,8 @@ impl Screen<'_> {
             )?;
             if group.is_none() {
                 self.print("[C] Correspondents\r\n")?;
+            } else {
+                self.print("[T] Conversation\r\n")?;
             }
             self.print("[S] Search  [B] Back\r\n")?;
             loop {
@@ -560,6 +568,10 @@ impl Screen<'_> {
                         );
                         decoder = Decoder::new();
                     }
+                    Key::Hotkey(b'T') if group.is_some() => {
+                        self.conversation(v, online, group.unwrap(), &mut list, &search)?;
+                        decoder = Decoder::new();
+                    }
                     Key::Enter | Key::Hotkey(b'O') => {
                         if let Some(entry) = list.selected() {
                             self.inbox_record_mode(v, entry, online)?;
@@ -567,6 +579,97 @@ impl Screen<'_> {
                                 Self::inbox_group_entries(v, group)?,
                                 Self::inbox_matches(v, &search)?,
                             );
+                            decoder = Decoder::new();
+                        }
+                    }
+                    _ => continue,
+                }
+                break;
+            }
+        }
+    }
+    fn conversation(
+        &mut self,
+        v: &mut CheckpointVault,
+        online: bool,
+        group: usize,
+        list: &mut inbox::Inbox,
+        search: &inbox::Search,
+    ) -> io::Result<()> {
+        let mut model = conversation::Conversation::new(list);
+        let mut decoder = Decoder::new();
+        loop {
+            self.print(
+                "\r\n---------------------------------------\r\n[LOCAL CONVERSATION]\r\nPeer: ",
+            )?;
+            let peer = &v.history()?[group];
+            self.print(&inbox::compact(&peer.address, self.unicode, 33))?;
+            self.print(&format!(
+                "\r\nD{} / {}{}\r\n",
+                peer.device,
+                if list.mode() == inbox::Filter::Unread {
+                    "Unread"
+                } else {
+                    "All"
+                },
+                if search.active() { " / Search" } else { "" }
+            ))?;
+            let (page, pages) = model.page();
+            self.print(&format!(
+                "Page {page}/{pages}; selection {}/{}\r\n",
+                if model.len() == 0 {
+                    0
+                } else {
+                    model.position() + 1
+                },
+                model.len()
+            ))?;
+            self.print("Retained append order; no read change.\r\n")?;
+            if model.visible().is_empty() {
+                self.print("No eligible retained records.\r\n")?;
+            }
+            for &entry in model.visible() {
+                let record = &v.history()?[entry.index];
+                self.print(&conversation::render(
+                    conversation::Preview {
+                        entry,
+                        received: record.direction == Direction::Received,
+                        sent_at: record.sent_at,
+                        subject: &record.subject,
+                        body: &record.body,
+                        attachment: record.attachment().is_some(),
+                        selected: model.selected() == Some(entry),
+                    },
+                    self.unicode,
+                ))?;
+            }
+            self.print(
+                "[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open full record\r\n[B] Back\r\n",
+            )?;
+            loop {
+                let Some(key) = decoder.feed(self.byte()?, Instant::now()) else {
+                    continue;
+                };
+                match key {
+                    Key::Up | Key::Hotkey(b'K') => model.up(),
+                    Key::Down | Key::Hotkey(b'J') => model.down(),
+                    Key::Hotkey(b'N') => model.next(),
+                    Key::Hotkey(b'P') => model.previous(),
+                    Key::Hotkey(b'B') => {
+                        if let Some(entry) = model.selected() {
+                            list.select_index(entry.index);
+                        }
+                        return Ok(());
+                    }
+                    Key::Enter | Key::Hotkey(b'O') => {
+                        if let Some(entry) = model.selected() {
+                            list.select_index(entry.index);
+                            self.inbox_record_mode(v, entry, online)?;
+                            list.refresh_matching(
+                                Self::inbox_group_entries(v, Some(group))?,
+                                Self::inbox_matches(v, search)?,
+                            );
+                            model.refresh(list);
                             decoder = Decoder::new();
                         }
                     }
