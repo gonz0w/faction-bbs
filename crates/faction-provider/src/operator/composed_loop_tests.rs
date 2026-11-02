@@ -698,9 +698,57 @@ fn characterize_one_small_get_through_both_maintained_loops() {
             "small-get-owned-cleanup.txt",
             format!("owned_runtime_root_removed={removed}\n").as_bytes(),
         );
+        // Publish only explicit numeric fields after measurement, joins and
+        // owned-root cleanup. Never forward the private Debug/raw capture files.
+        if let Some(snapshot) = &snapshot {
+            for point in &snapshot.points {
+                eprintln!("{}", small_get_point_line(point));
+            }
+        }
+        for (index, call) in calls.iter().flatten().enumerate() {
+            eprintln!(
+                "{}",
+                small_get_call_line(
+                    index,
+                    call.start_us,
+                    call.end_us,
+                    call.outcome as u8,
+                    call.diagnostic
+                )
+            );
+        }
+        let (response_bytes, response_offset, response_total) = match &fetched {
+            Some(Ok(Some(Response::Chunk {
+                bytes,
+                offset,
+                total,
+            }))) => (bytes.len(), *offset, *total),
+            _ => (0, 0, 0),
+        };
+        let transport_ok = matches!(&fetched, Some(Ok(Some(_))));
         eprintln!(
-            "small_get setup_ok={setup_ok} exact={exact} trace_conclusive={trace_conclusive} timestamp_overlap={overlap} busy_count={busy_count} busy_before_finish={busy_before} busy_after_finish={busy_after} loops_ok={loops_ok} physical_zero={physical_zero} inactive={inactive} drain_us={} root_removed={removed} token_retained=false",
-            drain.as_micros()
+            "small_get_summary schema=1 points={} calls={} setup_ok={} transport_ok={} exact={} response_bytes={response_bytes} response_offset={response_offset} response_total={response_total} trace_conclusive={} timestamp_overlap={} busy_count={busy_count} busy_before_finish={busy_before} busy_after_finish={busy_after} loops_ok={} physical_zero={} inactive={} drain_us={} root_removed={} token_retained=0 clock_state_retained=0 attempts={attempts} connections={} outer_collects={} inner_collects={} outer_finish_before={} outer_finish_after={} inner_finish_before={} inner_finish_after={} expected_kinds={} calls_ok={}",
+            snapshot.as_ref().map_or(0, |s| s.points.len()),
+            calls.iter().flatten().count(),
+            u8::from(setup_ok),
+            u8::from(transport_ok),
+            u8::from(exact),
+            u8::from(trace_conclusive),
+            u8::from(overlap),
+            u8::from(loops_ok),
+            u8::from(physical_zero),
+            u8::from(inactive),
+            drain.as_micros(),
+            u8::from(removed),
+            diagnostic.map_or(0, |d| d.connections),
+            role_counts[0].0,
+            role_counts[1].0,
+            role_counts[0].1,
+            role_counts[0].2,
+            role_counts[1].1,
+            role_counts[1].2,
+            u8::from(expected_kinds),
+            u8::from(calls_ok)
         );
         if !loops_ok || !physical_zero || !inactive || drain >= Duration::from_secs(5) || !removed {
             return Err("loop/worker/physical/owned-fixture cleanup failed".into());
@@ -731,4 +779,92 @@ fn characterize_one_small_get_through_both_maintained_loops() {
         observed.is_ok(),
         "small Get characterization stopped: {observed:?}"
     );
+}
+
+#[test]
+fn small_get_numeric_formatter_contract() {
+    use crate::delivery::collection_trace::{Event, Outcome, Point, Role, WireKind};
+    let point = Point {
+        sequence: 7,
+        micros: 19,
+        role: Role::Inner,
+        kind: WireKind::Wait,
+        attempt: 0,
+        event: Event::Outcome,
+        outcome: Outcome::Result,
+        first_us: 0,
+        last_us: 0,
+    };
+    let line = small_get_point_line(&point);
+    assert_eq!(
+        line,
+        "small_get_point schema=1 sequence=7 micros=19 role=1 kind=6 attempt=0 event=4 outcome=2 first_us=0 last_us=0"
+    );
+    let snapshot = crate::delivery::OperationSnapshot {
+        phase: crate::delivery::DiagnosticPhase::Idle,
+        attempted: 1,
+        connections: 1,
+        ..Default::default()
+    };
+    let call = small_get_call_line(0, 1, 2, 0, Some(snapshot));
+    assert_eq!(
+        call,
+        "small_get_call schema=1 index=0 start_us=1 end_us=2 outcome=0 diagnostic=1 phase=6 attempted=1 connections=1 busy=0 planned_wait_us=0 actual_wait_us=0"
+    );
+    for secret in [
+        "PRIVATE_PKI_SENTINEL",
+        "PRIVATE_TOKEN_SENTINEL",
+        "PRIVATE_REQUEST_SENTINEL",
+    ] {
+        assert!(!line.contains(secret));
+        assert!(!call.contains(secret));
+    }
+    assert!(line.split_whitespace().skip(1).all(|field| {
+        field
+            .split_once('=')
+            .unwrap()
+            .1
+            .bytes()
+            .all(|b| b.is_ascii_digit())
+    }));
+}
+
+fn small_get_point_line(point: &crate::delivery::collection_trace::Point) -> String {
+    use crate::delivery::collection_trace::WireKind;
+    let kind = match point.kind {
+        WireKind::None => 0,
+        WireKind::Collect => 1,
+        WireKind::Wait => 6,
+    };
+    format!(
+        "small_get_point schema=1 sequence={} micros={} role={} kind={kind} attempt={} event={} outcome={} first_us={} last_us={}",
+        point.sequence,
+        point.micros,
+        point.role as u8,
+        point.attempt,
+        point.event as u8,
+        point.outcome as u8,
+        point.first_us,
+        point.last_us
+    )
+}
+fn small_get_call_line(
+    index: usize,
+    start_us: u128,
+    end_us: u128,
+    outcome: u8,
+    diagnostic: Option<crate::delivery::OperationSnapshot>,
+) -> String {
+    let present = diagnostic.is_some();
+    let d = diagnostic.unwrap_or_default();
+    format!(
+        "small_get_call schema=1 index={index} start_us={start_us} end_us={end_us} outcome={outcome} diagnostic={} phase={} attempted={} connections={} busy={} planned_wait_us={} actual_wait_us={}",
+        u8::from(present),
+        d.phase as u8,
+        d.attempted,
+        d.connections,
+        d.busy,
+        d.timings.planned_wait_us,
+        d.timings.actual_wait_us
+    )
 }
