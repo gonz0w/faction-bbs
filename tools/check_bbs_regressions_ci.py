@@ -13,7 +13,7 @@ TOOLCHAIN = 'rustup toolchain install 1.96.0 --profile minimal --component rustf
 # and the INN heredoc/archive bound; no provider straight-line parser relaxation.
 STEP_SHA256 = {'Validate optional Lua game evaluator and examples': '1315d89247197b709a006eb5bd03124bfeafa64ac04f3e4dc1cc4bfcaf9fac0d', 'Validate the local Rust core and real terminal flow': '5b75f4dfbb312f6ddb9a4b2d540492698886bd1396f26a420058a0f06cf0efdd', 'Validate articles with original offline INN': '19d5f9e9bf0e8741e34edc6dd7153c3e72502badd62b2c78fc493a47740460aa'}
 REPEATED_COMMAND_COUNTS = {
-    TOOLCHAIN: 10,  # Nine retained occurrences plus this fresh lane's warmup.
+    TOOLCHAIN: 11,  # Retained lanes plus the fresh sequential durable verifier.
     'cargo fmt --all -- --check': 2,
     'umask 077': 5,
 }
@@ -31,9 +31,9 @@ def validate_ci(source):
             '    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n',
             'BBS CI must replace the successful own-home lane without overrides')
     require(set(re.findall(r'^  ([a-z_]+):$', source.split('jobs:\n', 1)[1], re.M)) ==
-            {'native_mail', 'provider', 'provider_client', 'provider_operator',
+            {'native_mail', 'provider', 'provider_client', 'provider_operator', 'provider_verifier_durable',
              'provider_composed', 'own_home_client', 'bbs_regressions', 'documentation'},
-            'BBS partition must retain exactly the accepted eight workflow jobs')
+            'BBS partition must retain exactly the accepted nine workflow jobs')
     names = ['Fetch the public repository revision', 'Warm the selected BBS regression source graphs', *STEP_SHA256]
     require(re.findall(r'^      - name: (.*)$', job, re.M) == names,
             'BBS CI checkout, warming and complete moved-step order changed')
@@ -69,12 +69,12 @@ def validate_ci(source):
             require(source.splitlines().count('          ' + command) == REPEATED_COMMAND_COUNTS.get(command, 1),
                     'moved BBS command omitted or duplicated: ' + command)
     documentation = _job(source, 'documentation')
-    require(documentation.splitlines().count('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]') == 1
+    require(documentation.splitlines().count('    needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]') == 1
             and '    if: ${{ always() }}' in documentation.splitlines(),
-            'documentation must require all seven prerequisite results')
+            'documentation must require all eight prerequisite results')
     gate = _step(documentation, 'Require optional native tests')
     results = [('NATIVE_MAIL_RESULT','native_mail'), ('PROVIDER_RESULT','provider'),
-               ('PROVIDER_OPERATOR_RESULT','provider_operator'), ('PROVIDER_CLIENT_RESULT','provider_client'),
+               ('PROVIDER_OPERATOR_RESULT','provider_operator'), ('PROVIDER_VERIFIER_DURABLE_RESULT','provider_verifier_durable'), ('PROVIDER_CLIENT_RESULT','provider_client'),
                ('PROVIDER_COMPOSED_RESULT','provider_composed'), ('OWN_HOME_CLIENT_RESULT','own_home_client'),
                ('BBS_REGRESSIONS_RESULT','bbs_regressions')]
     for variable, name in results:

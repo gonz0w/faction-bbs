@@ -256,6 +256,11 @@ def bbs_fixture(source):
                           '          test "$BBS_REGRESSIONS_RESULT" = success\n')
 
 class BbsRegressionCI(unittest.TestCase):
+    def test_bbs_guard_accepts_the_new_sequential_durable_verifier_job(self):
+        from test_provider_dependencies import ci_fixture
+        import check_bbs_regressions_ci as guard
+        guard.validate_ci(ci_fixture())
+
     def source(self):
         return (ROOT / '.github/workflows/documentation.yml').read_text()
 
@@ -278,11 +283,12 @@ class BbsRegressionCI(unittest.TestCase):
         self.assertLess(job.index(warm), job.index('      - name: ' + NAMES[0]))
         self.assertIn('          python3 tools/check_bbs_regressions_ci.py', warm.splitlines())
         dependencies = {'native_mail': set(), 'provider': set(), 'provider_operator': set(), 'provider_client': set(),
+                        'provider_verifier_durable': {'provider_operator'},
                         'provider_composed': {'provider'}, 'own_home_client': {'provider_client'},
                         'bbs_regressions': {'own_home_client'}}
         from itertools import combinations
         peak = 0
-        for size in range(8):
+        for size in range(len(dependencies) + 1):
             for completed in combinations(dependencies, size):
                 done = set(completed)
                 if all(dependencies[name] <= done for name in done):
@@ -303,12 +309,12 @@ class BbsRegressionCI(unittest.TestCase):
             body = provider._step(job, name)
             self.assertIn('          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target', body.splitlines())
             self.assertNotIn('CARGO_BUILD_JOBS', body)
-        self.assertEqual(source.count('timeout-minutes: 15'), 8)
+        self.assertEqual(source.count('timeout-minutes: 15'), 9)
 
     def test_aggregate_requires_bbs_success_after_any_failure_skip_or_cancellation(self):
         source = self.source()
         doc = provider._job(source, 'documentation')
-        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', doc.splitlines())
+        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]', doc.splitlines())
         self.assertIn('    if: ${{ always() }}', doc.splitlines())
         gate = provider._step(doc, 'Require optional native tests')
         self.assertIn('          BBS_REGRESSIONS_RESULT: ${{ needs.bbs_regressions.result }}', gate.splitlines())

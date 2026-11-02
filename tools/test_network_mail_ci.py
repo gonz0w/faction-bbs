@@ -29,8 +29,8 @@ class NetworkCI(unittest.TestCase):
     def test_saved_native_evidence_and_existing_failure_gate_are_required(self):
         source=(ROOT/'.github/workflows/documentation.yml').read_text()
         self.assertIn('python3 tools/check_home_mail_evidence.py',source)
-        self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]',source)
-        for variable in ['NATIVE_MAIL_RESULT','PROVIDER_RESULT','PROVIDER_OPERATOR_RESULT','PROVIDER_CLIENT_RESULT','PROVIDER_COMPOSED_RESULT','OWN_HOME_CLIENT_RESULT','BBS_REGRESSIONS_RESULT']:
+        self.assertIn('needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]',source)
+        for variable in ['NATIVE_MAIL_RESULT','PROVIDER_RESULT','PROVIDER_OPERATOR_RESULT','PROVIDER_VERIFIER_DURABLE_RESULT','PROVIDER_CLIENT_RESULT','PROVIDER_COMPOSED_RESULT','OWN_HOME_CLIENT_RESULT','BBS_REGRESSIONS_RESULT']:
             self.assertIn('test "$'+variable+'" = success',source)
         self.assertIn('if: ${{ always() }}',source)
         self.assertIn('test "$NATIVE_MAIL_RESULT" = success',source)
