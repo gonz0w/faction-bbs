@@ -1717,7 +1717,7 @@ mod http_client;
 #[cfg(feature = "delegation-wire")]
 pub use http_client::HttpEndpoint;
 
-#[cfg(all(test, feature = "delegation-verifier"))]
+#[cfg(all(test, feature = "delegation-issuer"))]
 pub(crate) use issuer_lifecycle_tests::cert as test_certificate;
 
 #[cfg(feature = "delegation-verifier")]

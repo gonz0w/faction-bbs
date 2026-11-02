@@ -116,6 +116,10 @@ carrier; neither feature is enabled by default. A bounded submit, close and coll
 exchange lets the original connection close before federation callbacks. A receipt
 is routing data, not a Store commit or authority. Collection uses fresh TLS and
 checks the exact submitting identity, purpose, request and current authority.
+An empty read before the first frame byte ends that framing boundary; it is not
+proof that the peer sent a TLS close notification. The OpenSSL read adapter can
+report zero for more than one TLS outcome. A read error, partial frame header or
+incomplete body still fails framing, without dispatching a partial request.
 Legacy `COLLECT` requests return Busy immediately for unfinished work. Updated
 homes can explicitly request `WAIT_COLLECT` (kind 6 under `FDEL01`) for a
 service retrieval (purpose 2). It checks the same authenticated peer, Runtime,

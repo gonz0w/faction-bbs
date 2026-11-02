@@ -367,10 +367,26 @@ fn observed_tls_frame_read(
     close_notify: bool,
     close_refusal: Option<Stage>,
 ) -> ObservedTlsFrameRead {
+    observed_tls_frame_read_control(wire, close_notify, close_refusal, false)
+}
+
+#[cfg(feature = "delegation-issuer")]
+fn observed_tls_frame_read_control(
+    wire: &[u8],
+    close_notify: bool,
+    close_refusal: Option<Stage>,
+    hold_and_cancel_reader: bool,
+) -> ObservedTlsFrameRead {
     use super::{
         Arc, AtomicBool, CYCLE_LIMIT, Client, DeadlineIo, FrameObservation, FramePhase,
         HANDSHAKE_LIMIT, Instant, Server, TcpListener, sha256, test_certificate, wall_now,
     };
+    if hold_and_cancel_reader {
+        assert!(wire.is_empty());
+        assert!(!close_notify);
+    }
+    let (read_ready_tx, read_ready_rx) = std::sync::mpsc::sync_channel(1);
+    let (read_release_tx, read_release_rx) = std::sync::mpsc::sync_channel(1);
     let t = wall_now() as i64;
     let ca = test_certificate(None, "frame-observer-ca", 401, t - 60, t + 3600);
     let server_identity =
@@ -402,7 +418,7 @@ fn observed_tls_frame_read(
     let handshake = start + HANDSHAKE_LIMIT;
     let deadline = start + CYCLE_LIMIT;
     let (result, snapshot, sender) = std::thread::scope(|scope| {
-        let peer = scope.spawn(|| {
+        let peer = scope.spawn(move || {
             let mut client = Client::connect(
                 address,
                 "provider.test",
@@ -417,6 +433,14 @@ fn observed_tls_frame_read(
                 .write_all(wire)
                 .and_then(|()| client.stream.flush())
                 .map_err(|error| error.kind());
+            if hold_and_cancel_reader {
+                read_ready_tx.send(()).expect("admitted peer held open");
+                let released = read_release_rx
+                    .recv_timeout(client.deadline.saturating_duration_since(Instant::now()))
+                    .is_ok();
+                frame_observer_save("held-reader-peer.txt", format!("tls_admitted=true app_bytes_sent=0 released={released}\n").as_bytes());
+                assert!(released);
+            }
             let closed = close_notify.then(|| {
                 match close_refusal {
                     Some(Stage::Cancelled) => client.cancel.store(true, std::sync::atomic::Ordering::SeqCst),
@@ -426,13 +450,21 @@ fn observed_tls_frame_read(
                 }
                 let original_deadline = client.deadline;
                 let original_attempts = client.attempted;
+                let sent_before = client.stream.get_shutdown().contains(openssl::ssl::ShutdownState::SENT);
                 let result: Result<(), Stage> = client.test_close_notify();
+                let sent_after = client.stream.get_shutdown().contains(openssl::ssl::ShutdownState::SENT);
                 let deadline_unchanged = client.deadline == original_deadline;
                 let attempts_unchanged = client.attempted == original_attempts;
-                frame_observer_save("close-notify-control.txt", format!("expected_refusal={close_refusal:?} result={result:?} deadline_unchanged={deadline_unchanged} attempts_unchanged={attempts_unchanged}\n").as_bytes());
+                frame_observer_save("close-notify-control.txt", format!("expected_refusal={close_refusal:?} result={result:?} deadline_unchanged={deadline_unchanged} attempts_unchanged={attempts_unchanged} sent_before={sent_before} sent_after={sent_after}\n").as_bytes());
                 assert!(deadline_unchanged);
                 assert!(attempts_unchanged);
-                if let Some(expected) = close_refusal { assert_eq!(result, Err(expected)); }
+                assert!(!sent_before);
+                if let Some(expected) = close_refusal {
+                    assert_eq!(result, Err(expected));
+                    assert!(!sent_after);
+                } else {
+                    assert!(sent_after);
+                }
                 result.is_ok()
             });
             (written, closed)
@@ -454,11 +486,33 @@ fn observed_tls_frame_read(
             .accept(io)
             .unwrap_or_else(|_| panic!("fixed TLS frame fixture handshake failed"));
         stream.get_mut().deadline = deadline;
+        if hold_and_cancel_reader {
+            read_ready_rx
+                .recv_timeout(deadline.saturating_duration_since(Instant::now()))
+                .expect("actual TLS admission before read refusal");
+            let pending = stream.ssl().pending();
+            stream
+                .get_mut()
+                .cancel
+                .store(true, std::sync::atomic::Ordering::SeqCst);
+            let cancelled = stream
+                .get_ref()
+                .cancel
+                .load(std::sync::atomic::Ordering::SeqCst);
+            frame_observer_save("held-reader-server.txt", format!("tls_admitted=true peer_held_open=true app_bytes_pending={pending} cancelled={cancelled}\n").as_bytes());
+            assert_eq!(pending, 0);
+            assert!(cancelled);
+        }
         let observed = FrameObservation::start().unwrap();
         FrameObservation::phase(FramePhase::InitialRead);
         let result = super::read_frame(&mut stream);
         let snapshot = observed.snapshot();
         drop(observed);
+        if hold_and_cancel_reader {
+            read_release_tx
+                .send(())
+                .expect("release admitted peer after read");
+        }
         drop(stream);
         let sender = peer.join().unwrap();
         (result, snapshot, sender)
@@ -511,33 +565,14 @@ fn frame_observation_real_tls_read_controls_keep_valid_invalid_and_truncated_res
 
 #[cfg(feature = "delegation-issuer")]
 #[test]
-fn frame_observation_empty_tls_boundary_distinguishes_clean_eof_and_closure_error() {
+fn frame_observation_notified_empty_tls_boundary_is_clean_eof() {
     use super::{FrameOutcome as Outcome, FramePart as Part};
-    for close_notify in [true, false] {
-        let (result, snapshot, sender) = observed_tls_frame_read(&[], close_notify, None);
-        assert!(sender.0.is_ok());
-        assert_eq!(snapshot.part, Some(Part::PrefixFirst));
-        if close_notify {
-            assert_eq!(result, Ok(None));
-            assert_eq!(sender.1, Some(true));
-        } else {
-            assert_eq!(result, Err(Stage::Frame));
-        }
-        match result {
-            Ok(None) => {
-                assert_eq!(snapshot.outcome, Outcome::CleanEof);
-                assert_eq!(snapshot.error_kind, None);
-            }
-            Err(Stage::Frame) => {
-                assert_eq!(snapshot.outcome, Outcome::IoError);
-                assert!(snapshot.error_kind.is_some());
-            }
-            other => panic!(
-                "unexpected empty-boundary result shape: {:?}",
-                other.map(|bytes| bytes.map(|data| data.len()))
-            ),
-        }
-    }
+    let (result, snapshot, sender) = observed_tls_frame_read(&[], true, None);
+    assert_eq!(sender, (Ok(()), Some(true)));
+    assert_eq!(result, Ok(None));
+    assert_eq!(snapshot.part, Some(Part::PrefixFirst));
+    assert_eq!(snapshot.outcome, Outcome::CleanEof);
+    assert_eq!(snapshot.error_kind, None);
 }
 
 #[cfg(feature = "delegation-issuer")]
@@ -552,12 +587,25 @@ fn frame_observation_close_notify_succeeds_once_and_refuses_original_cancel_or_e
     assert_eq!(snapshot.part, Some(Part::PrefixFirst));
     assert_eq!(snapshot.outcome, Outcome::CleanEof);
     for guard in [Stage::Cancelled, Stage::Deadline] {
-        let (result, snapshot, sender) = observed_tls_frame_read(&[], true, Some(guard));
+        let (result, snapshot, sender) = observed_tls_frame_read(&[0, 0], true, Some(guard));
         assert!(sender.0.is_ok());
         assert_eq!(sender.1, Some(false));
         assert_eq!(result, Err(Stage::Frame));
-        assert_eq!(snapshot.part, Some(Part::PrefixFirst));
+        assert_eq!(snapshot.part, Some(Part::PrefixRest));
         assert_eq!(snapshot.outcome, Outcome::IoError);
         assert!(snapshot.error_kind.is_some());
     }
+}
+
+#[cfg(feature = "delegation-issuer")]
+#[test]
+fn frame_observation_first_tls_byte_read_error_remains_frame_after_admission() {
+    use super::{FrameOutcome as Outcome, FramePart as Part, FramePhase as Phase};
+    let (result, snapshot, sender) = observed_tls_frame_read_control(&[], false, None, true);
+    assert_eq!(sender, (Ok(()), None));
+    assert_eq!(result, Err(Stage::Frame));
+    assert_eq!(snapshot.phase, Phase::InitialRead);
+    assert_eq!(snapshot.part, Some(Part::PrefixFirst));
+    assert_eq!(snapshot.outcome, Outcome::IoError);
+    assert_eq!(snapshot.error_kind, Some(io::ErrorKind::Other));
 }
