@@ -517,6 +517,11 @@ fn characterize_one_small_get_through_both_maintained_loops() {
                     holder
                         .set(trace)
                         .map_err(|_| "trace origin initialized twice")?;
+                    let _setup_scope = holder
+                        .get()
+                        .unwrap()
+                        .setup
+                        .scope(crate::setup_trace::Role::Outer);
                     let mut operation = endpoint
                         .operation_until(t0 + Duration::from_secs(60), cancel.clone())
                         .map_err(|stage| format!("measured operation construction: {stage:?}"))?;
@@ -591,6 +596,8 @@ fn characterize_one_small_get_through_both_maintained_loops() {
             (attempted, loops, stopped.elapsed())
         });
         let snapshot = holder.get().map(|trace| trace.snapshot()); // ONLY after joins.
+        let setup_snapshot = holder.get().map(|trace| trace.setup.snapshot());
+        let setup_scope_clean = crate::setup_trace::scope_is_clear();
         let loops_ok = loops
             .into_iter()
             .all(|result| matches!(result, Ok(Ok(Ok(())))));
@@ -705,6 +712,17 @@ fn characterize_one_small_get_through_both_maintained_loops() {
                 eprintln!("{}", small_get_point_line(point));
             }
         }
+        if let Some(snapshot) = &setup_snapshot {
+            for point in &snapshot.points {
+                eprintln!("{}", point.line());
+            }
+            eprintln!(
+                "small_get_setup_summary schema=1 points={} conclusive={} scope_clean={}",
+                snapshot.points.len(),
+                u8::from(!snapshot.inconclusive),
+                u8::from(setup_scope_clean)
+            );
+        }
         for (index, call) in calls.iter().flatten().enumerate() {
             eprintln!(
                 "{}",
@@ -771,6 +789,12 @@ fn characterize_one_small_get_through_both_maintained_loops() {
         }
         if !trace_conclusive {
             return Err("missing role/event/request kind or conservative timestamp overlap; characterization inconclusive".into());
+        }
+        if !setup_scope_clean
+            || !setup_snapshot
+                .is_some_and(|snapshot| !snapshot.inconclusive && !snapshot.points.is_empty())
+        {
+            return Err("setup phase or role incomplete; characterization inconclusive".into());
         }
         Ok(())
     }

@@ -12,6 +12,26 @@ NAME = 'authority::services::publication::tests::composed_loop_tests::characteri
 HOST_SHAPE = '\nrunning 1 test\ntest ' + NAME + ' ... ready 0\nready 0\nok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 211 filtered out; finished in 0.24s\n\n'
 
 
+def setup_lines():
+    # Synthetic setup-phase contract inputs, not historical host measurements.
+    rows = []
+    def connection(role, kind, ordinal, start):
+        phases = [(2,0),(0,0),(1,0),(3,0),(4,0)] if kind == 0 else [(0,0),(1,0),(2,0),(1,1),(3,0),(4,0)]
+        for index, (phase, part) in enumerate(phases):
+            rows.append((role,kind,ordinal,phase,part,start+index*2,start+index*2+1))
+    connection(0,0,0,2)
+    connection(0,0,1,27000)
+    connection(0,0,2,70000)
+    connection(1,1,0,6000)
+    connection(1,0,0,14000)
+    connection(1,0,1,25000)
+    connection(2,1,0,20000)
+    rows.extend([(0,2,0,5,0,5033,26000),(0,2,1,5,0,32794,69000)])
+    lines = [f'small_get_setup schema=1 sequence={sequence} role={role} kind={kind} ordinal={ordinal} phase={phase} part={part} start_us={start} end_us={end} complete=1' for sequence,(role,kind,ordinal,phase,part,start,end) in enumerate(rows,1)]
+    lines.append(f'small_get_setup_summary schema=1 points={len(rows)} conclusive=1 scope_clean=1')
+    return lines
+
+
 def valid_logs():
     # The optional private reference is the preserved actual host stdout, not a
     # fresh execution. The fallback preserves its ready/libtest interleaving.
@@ -32,9 +52,129 @@ def valid_logs():
     for index,start,end,outcome,attempt,busy,planned,actual in [(0,1,5030,0,1,0,0,0),(1,5033,32794,1,2,1,15078,22628),(2,32794,71939,2,3,1,45238,54506)]:
         rows.append(f'small_get_call schema=1 index={index} start_us={start} end_us={end} outcome={outcome} diagnostic=1 phase=6 attempted={attempt} connections={attempt} busy={busy} planned_wait_us={planned} actual_wait_us={actual}')
     rows.append('small_get_summary schema=1 points=13 calls=3 setup_ok=1 transport_ok=1 exact=1 response_bytes=17 response_offset=0 response_total=17 trace_conclusive=1 timestamp_overlap=0 busy_count=1 busy_before_finish=1 busy_after_finish=0 loops_ok=1 physical_zero=1 inactive=1 drain_us=5537 root_removed=1 token_retained=0 clock_state_retained=0 attempts=3 connections=3 outer_collects=2 inner_collects=1 outer_finish_before=1 outer_finish_after=1 inner_finish_before=1 inner_finish_after=1 expected_kinds=1 calls_ok=1')
+    rows.extend(setup_lines())
     reference_stderr=os.environ.get('FACTION326_REFERENCE_STDERR')
     prefix=Path(reference_stderr).read_text() if reference_stderr else 'small_get setup_ok=true exact=true\n'
     return stdout,prefix+'\n'+'\n'.join(rows)+'\n'
+
+
+def shift_setup_group(stderr, role, kind, ordinal, start):
+    lines = stderr.splitlines()
+    group = []
+    for index, line in enumerate(lines):
+        if not line.startswith('small_get_setup '):
+            continue
+        values = dict(part.split('=',1) for part in line.split()[1:])
+        if tuple(int(values[key]) for key in ['role','kind','ordinal']) == (role,kind,ordinal):
+            group.append((index,values))
+    assert len(group) == (5 if kind == 0 else 6)
+    delta = start - min(int(values['start_us']) for _,values in group)
+    for index, values in group:
+        for key in ['start_us','end_us']:
+            values[key] = str(int(values[key]) + delta)
+            assert int(values[key]) >= 0
+        lines[index] = 'small_get_setup ' + ' '.join(key+'='+value for key,value in values.items())
+    return '\n'.join(lines)+'\n'
+
+
+def zero_busy_logs():
+    # A separate synthetic shortest-path contract fixture. Keep valid_logs'
+    # historical trace rows intact; these derived rows claim no observed timing.
+    stdout, stderr = valid_logs()
+    lines = []
+    point_count = setup_count = 0
+    for line in stderr.splitlines():
+        if not line.startswith('small_get_'):
+            lines.append(line)
+            continue
+        name = line.split()[0]
+        values = {key:int(value) for key,value in (part.split('=',1) for part in line.split()[1:])}
+        if name == 'small_get_point':
+            if values['role'] == 0 and values['kind'] == 1:
+                if values['attempt'] == 0:
+                    continue
+                values['attempt'] = 0
+            point_count += 1
+            values['sequence'] = point_count
+        elif name == 'small_get_call':
+            if values['index'] == 1:
+                continue
+            if values['index'] == 2:
+                values.update(index=1,start_us=5033,attempted=2,connections=2,busy=0)
+        elif name == 'small_get_summary':
+            values.update(points=11,calls=2,attempts=2,connections=2,outer_collects=1,busy_count=0,busy_before_finish=0,busy_after_finish=0)
+        elif name == 'small_get_setup':
+            if values['role'] == 0 and values['kind'] == 0:
+                if values['ordinal'] == 1:
+                    continue
+                if values['ordinal'] == 2:
+                    values['ordinal'] = 1
+            elif values['role'] == 0 and values['kind'] == 2:
+                if values['ordinal'] == 1:
+                    continue
+                values['end_us'] = 69000
+            setup_count += 1
+            values['sequence'] = setup_count
+        elif name == 'small_get_setup_summary':
+            values['points'] = setup_count
+        lines.append(name + ' ' + ' '.join(key+'='+str(value) for key,value in values.items()))
+    assert point_count == 11 and setup_count == 33
+    return stdout,'\n'.join(lines)+'\n'
+
+
+class SmallGetSetupOutput(unittest.TestCase):
+    def test_complete_setup_roles_phases_and_waits_pass(self):
+        stdout,stderr=valid_logs()
+        self.assertTrue(check.validate(stdout,stderr,0).ok)
+
+    def test_setup_causal_predecessors_reject_impossible_earlier_groups(self):
+        stdout,stderr=valid_logs()
+        self.assertTrue(check.validate(stdout,stderr,0).ok)
+        cases = {
+            'issuance_before_outer_submit_postcheck':(1,1,0,0),
+            'inner_submit_before_issue_success':(1,0,0,1000),
+            'introspection_before_inner_submit_postcheck':(2,1,0,10000),
+        }
+        for name,args in cases.items():
+            value=shift_setup_group(stderr,*args)
+            self.assertNotEqual(value,stderr)
+            with self.subTest(case=name):self.assertFalse(check.validate(stdout,value,0).ok)
+
+    def test_setup_causal_boundaries_allow_equal_microsecond_timestamps(self):
+        stdout,stderr=valid_logs()
+        for args in [(1,1,0,11),(1,0,0,13362),(2,1,0,14009)]:
+            with self.subTest(group=args):
+                self.assertTrue(check.validate(stdout,shift_setup_group(stderr,*args),0).ok)
+
+    def test_complete_zero_busy_two_call_get_passes(self):
+        stdout,stderr=zero_busy_logs()
+        result=check.validate(stdout,stderr,0)
+        self.assertTrue(result.ok)
+        self.assertEqual(sum(line.startswith('small_get_call ') for line in result.lines),2)
+        self.assertIn('busy_count=0 busy_before_finish=0 busy_after_finish=0',stderr)
+        self.assertIn('outer_collects=1 inner_collects=1',stderr)
+
+    def test_setup_missing_duplicate_malformed_incomplete_and_cleanup_fail(self):
+        stdout,stderr=valid_logs()
+        setup=setup_lines()
+        cases = {
+            'missing_all':'\n'.join(line for line in stderr.splitlines() if not line.startswith('small_get_setup')),
+            'missing_phase':stderr.replace(setup[0]+'\n','',1),
+            'duplicate':stderr+setup[0]+'\n',
+            'malformed':stderr.replace('part=1','part=9',1),
+            'incomplete':stderr.replace('complete=1','complete=0',1),
+            'inconclusive':stderr.replace('conclusive=1','conclusive=0',1),
+            'scope_leak':stderr.replace('scope_clean=1','scope_clean=0',1),
+            'wrong_role':stderr.replace('sequence=1 role=0','sequence=1 role=2',1),
+            'duplicate_ordinal':stderr.replace('role=0 kind=0 ordinal=1','role=0 kind=0 ordinal=0'),
+            'out_of_call':stderr.replace('start_us=2 end_us=3','start_us=0 end_us=3',1),
+            'wrong_phase_order':stderr.replace('ordinal=0 phase=2 part=0 start_us=2','ordinal=0 phase=0 part=0 start_us=2',1),
+            'overflow':stderr+'\n'.join(setup*4),
+        }
+        for name,value in cases.items():
+            with self.subTest(case=name):self.assertFalse(check.validate(stdout,value,0).ok)
+        for status in [1,101,124,137]:
+            self.assertFalse(check.validate(stdout,stderr,status).ok)
 
 
 class SmallGetOutput(unittest.TestCase):

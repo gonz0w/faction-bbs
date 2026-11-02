@@ -1373,6 +1373,8 @@ impl ClientCredentials {
 /// ```
 pub struct ClientAdmission {
     start: Instant,
+    #[cfg(test)]
+    pub(crate) setup_trace: Option<crate::setup_trace::Connection>,
     #[cfg(feature = "delegation-verifier")]
     current_probe: Option<Arc<dyn Fn() -> bool + Send + Sync>>,
     #[cfg(feature = "delegation-verifier")]
@@ -1403,6 +1405,8 @@ impl ClientAdmission {
         }
         Ok(Self {
             start,
+            #[cfg(test)]
+            setup_trace: None,
             #[cfg(feature = "delegation-verifier")]
             current_probe: None,
             #[cfg(feature = "delegation-verifier")]
@@ -1437,8 +1441,22 @@ impl ClientAdmission {
         socket
             .set_nonblocking(false)
             .map_err(|_| Stage::Admission)?;
+        #[cfg(test)]
+        let setup_builder = self
+            .setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Builder, 0));
         let mut b =
             SslConnector::builder(SslMethod::tls_client()).map_err(|_| Stage::Configuration)?;
+        #[cfg(test)]
+        if let Some(interval) = setup_builder {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let setup_immutable = self
+            .setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Immutable, 0));
         b.set_min_proto_version(Some(SslVersion::TLS1_3))
             .map_err(|_| Stage::Configuration)?;
         b.set_max_proto_version(Some(SslVersion::TLS1_3))
@@ -1459,6 +1477,15 @@ impl ClientAdmission {
             .map_err(|_| Stage::Configuration)?;
         b.check_private_key().map_err(|_| Stage::Configuration)?;
         let connector = b.build();
+        #[cfg(test)]
+        if let Some(interval) = setup_immutable {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let setup_ssl = self
+            .setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Ssl, 0));
         let mut configuration = connector.configure().map_err(|_| Stage::Configuration)?;
         configuration.set_verify_hostname(true);
         check(handshake, &self.cancel)?;
@@ -1472,6 +1499,15 @@ impl ClientAdmission {
         let mut stream = configuration
             .connect(&self.expected_name, io)
             .map_err(|_| classify(handshake, &self.cancel, Stage::Handshake))?;
+        #[cfg(test)]
+        if let Some(interval) = setup_ssl {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let setup_postcheck = self
+            .setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Postcheck, 0));
         check(handshake, &self.cancel)?;
         if stream.ssl().verify_result() != X509VerifyResult::OK || stream.ssl().session_reused() {
             return Err(Stage::Handshake);
@@ -1492,6 +1528,10 @@ impl ClientAdmission {
         }
         stream.get_mut().deadline = deadline;
         check(deadline, &self.cancel)?;
+        #[cfg(test)]
+        if let Some(interval) = setup_postcheck {
+            interval.finish();
+        }
         Ok(Client {
             stream,
             deadline,

@@ -401,6 +401,13 @@ pub struct RetrievalWork {
 }
 impl RetrievalWork {
     pub fn execute(self, endpoint: &HttpEndpoint, store: &Mutex<Store>) -> Result<(), Error> {
+        #[cfg(test)]
+        let _setup_scope = self.shared.trace.get().map(|attached| {
+            attached
+                .trace
+                .setup
+                .scope(crate::setup_trace::Role::Resource)
+        });
         let result = self
             .shared
             .charge()
@@ -720,8 +727,20 @@ impl CarrierEndpoint {
         });
         admission.current_probe = Some(probe.clone());
         let handshake = (admission.start + HANDSHAKE_LIMIT).min(deadline);
+        #[cfg(test)]
+        {
+            admission.setup_trace =
+                crate::setup_trace::Connection::begin(crate::setup_trace::Kind::Binary);
+        }
+        #[cfg(test)]
+        let setup_tcp = admission
+            .setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Tcp, 0));
         let socket =
             super::tcp_connect::connect(&self.address, handshake, &admission.cancel, || probe())?;
+        #[cfg(test)]
+        crate::setup_trace::Interval::finish_optional(setup_tcp);
         socket.set_nodelay(true).map_err(|_| Stage::Configuration)?;
         admission.connect(socket)
     }
@@ -913,7 +932,17 @@ impl Operation {
     /// remain authoritative; this method does not retry or guarantee completion.
     /// It owns no socket or Session while waiting. `collect` remains immediate.
     pub fn collect_paced(&mut self) -> Result<Collection, Stage> {
+        #[cfg(test)]
+        let setup_wait = crate::setup_trace::Connection::begin(crate::setup_trace::Kind::Paced);
+        #[cfg(test)]
+        let setup_interval = setup_wait
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::PacedWait, 0));
         self.wait_for_collect()?;
+        #[cfg(test)]
+        if let Some(interval) = setup_interval {
+            interval.finish();
+        }
         self.collect()
     }
     pub fn submit_publication(&mut self, binding: Binding, request: Request) -> Result<(), Stage> {
@@ -1270,6 +1299,13 @@ impl Work {
 }
 impl OwnHomeWork {
     fn execute(self, routes: &RelayRoutes) -> Result<(), Error> {
+        #[cfg(test)]
+        let _setup_scope = self.shared.trace.get().map(|attached| {
+            attached
+                .trace
+                .setup
+                .scope(crate::setup_trace::Role::OwnHome)
+        });
         let result = (|| {
             self.shared.charge()?;
             let state = self
@@ -1999,6 +2035,7 @@ pub(crate) mod collection_trace {
     }
     pub(crate) struct Trace {
         origin: Instant,
+        pub(crate) setup: Arc<crate::setup_trace::Trace>,
         enabled: AtomicBool,
         bad: AtomicBool,
         attached: AtomicUsize,
@@ -2028,6 +2065,7 @@ pub(crate) mod collection_trace {
         pub(crate) fn new(origin: Instant) -> Arc<Self> {
             Arc::new(Self {
                 origin,
+                setup: crate::setup_trace::Trace::new(origin),
                 enabled: AtomicBool::new(false),
                 bad: AtomicBool::new(false),
                 attached: AtomicUsize::new(0),
@@ -2038,6 +2076,7 @@ pub(crate) mod collection_trace {
         }
         pub(crate) fn arm(&self) {
             self.enabled.store(true, Ordering::SeqCst);
+            self.setup.arm();
         }
         pub(super) fn invalid(&self) {
             self.bad.store(true, Ordering::SeqCst);

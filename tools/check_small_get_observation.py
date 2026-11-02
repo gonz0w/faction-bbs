@@ -7,6 +7,8 @@ import sys
 NAME = 'authority::services::publication::tests::composed_loop_tests::characterize_one_small_get_through_both_maintained_loops'
 MAX_LOG_BYTES = 1 << 20
 SCHEMAS = {
+    'small_get_setup': 'schema sequence role kind ordinal phase part start_us end_us complete'.split(),
+    'small_get_setup_summary': 'schema points conclusive scope_clean'.split(),
     'small_get_point': 'schema sequence micros role kind attempt event outcome first_us last_us'.split(),
     'small_get_call': 'schema index start_us end_us outcome diagnostic phase attempted connections busy planned_wait_us actual_wait_us'.split(),
     'small_get_summary': 'schema points calls setup_ok transport_ok exact response_bytes response_offset response_total trace_conclusive timestamp_overlap busy_count busy_before_finish busy_after_finish loops_ok physical_zero inactive drain_us root_removed token_retained clock_state_retained attempts connections outer_collects inner_collects outer_finish_before outer_finish_after inner_finish_before inner_finish_after expected_kinds calls_ok'.split(),
@@ -123,6 +125,60 @@ def _complete(points, calls, summary):
     return _points_valid(points, summary)
 
 
+def _setup_complete(records, calls, points, summary):
+    setup = records['small_get_setup']
+    headers = records['small_get_setup_summary']
+    if len(headers) != 1 or headers[0] != {'schema':1, 'points':len(setup), 'conclusive':1, 'scope_clean':1}:
+        return False
+    if not 1 <= len(setup) <= 128 or [p['sequence'] for p in setup] != list(range(1, len(setup) + 1)):
+        return False
+    if any(p['role'] > 2 or p['kind'] > 2 or p['ordinal'] > 7 or p['phase'] > 5 or p['part'] > 1 or p['complete'] != 1 or p['start_us'] > p['end_us'] for p in setup):
+        return False
+    expected_counts = {(0,0):len(calls), (0,2):len(calls)-1, (1,0):summary['inner_collects']+1, (1,1):1, (2,1):1}
+    if set((p['role'],p['kind']) for p in setup) != set(expected_counts):
+        return False
+    for (role,kind), count in expected_counts.items():
+        group = [p for p in setup if (p['role'],p['kind']) == (role,kind)]
+        if not 1 <= count <= 8 or sorted({p['ordinal'] for p in group}) != list(range(count)):
+            return False
+        previous = None
+        for ordinal in range(count):
+            run = [p for p in group if p['ordinal'] == ordinal]
+            expected = {0:[(2,0),(0,0),(1,0),(3,0),(4,0)], 1:[(0,0),(1,0),(2,0),(1,1),(3,0),(4,0)], 2:[(5,0)]}[kind]
+            if [(p['phase'],p['part']) for p in run] != expected or any(a['end_us'] > b['start_us'] for a,b in zip(run,run[1:])):
+                return False
+            if previous is not None and previous > run[0]['start_us']:
+                return False
+            previous = run[-1]['end_us']
+            if role == 0:
+                call = calls[ordinal if kind == 0 else ordinal+1]
+                if not call['start_us'] <= run[0]['start_us'] <= run[-1]['end_us'] <= call['end_us']:
+                    return False
+                if kind == 2:
+                    tcp = next(p for p in setup if (p['role'],p['kind'],p['ordinal'],p['phase']) == (0,0,ordinal+1,2))
+                    if run[-1]['end_us'] > tcp['start_us']:
+                        return False
+            elif role == 1 and kind == 1:
+                issued = next(p for p in points if p['event'] == 5)
+                submitted = next(p for p in setup if (p['role'],p['kind'],p['ordinal'],p['phase']) == (0,0,0,4))
+                if run[0]['start_us'] < submitted['end_us'] or run[-1]['end_us'] > issued['micros']:
+                    return False
+            elif role == 1 and kind == 0 and ordinal == 0:
+                issued = next(p for p in points if p['event'] == 5)
+                if run[0]['start_us'] < issued['micros']:
+                    return False
+            elif role == 1 and ordinal:
+                validated = next(p for p in points if p['role'] == 1 and p['attempt'] == ordinal-1 and p['event'] == 0)
+                if run[-1]['end_us'] > validated['micros']:
+                    return False
+            elif role == 2:
+                finished = next(p for p in points if p['role'] == 1 and p['event'] == 6)
+                submitted = next(p for p in setup if (p['role'],p['kind'],p['ordinal'],p['phase']) == (1,0,0,4))
+                if run[0]['start_us'] < submitted['end_us'] or run[-1]['end_us'] > finished['micros']:
+                    return False
+    return True
+
+
 def validate(stdout, stderr, status):
     code = int(status != 0)
     if not isinstance(status, int) or not 0 <= status <= 255 or len(stdout) > MAX_LOG_BYTES or len(stderr) > MAX_LOG_BYTES:
@@ -140,7 +196,7 @@ def validate(stdout, stderr, status):
             code |= 8
             continue
         name, values = record
-        limit = {'small_get_point': 64, 'small_get_call': 7, 'small_get_summary': 1}[name]
+        limit = {'small_get_point': 64, 'small_get_call': 7, 'small_get_summary': 1, 'small_get_setup': 128, 'small_get_setup_summary': 1}[name]
         if len(records[name]) >= limit:
             code |= 8
             continue
@@ -148,6 +204,8 @@ def validate(stdout, stderr, status):
         published.append(name + ' ' + ' '.join(key + '=' + str(values[key]) for key in SCHEMAS[name]))
     summaries = records['small_get_summary']
     if len(summaries) != 1 or not _complete(records['small_get_point'], records['small_get_call'], summaries[0]):
+        code |= 8
+    elif not _setup_complete(records, records['small_get_call'], records['small_get_point'], summaries[0]):
         code |= 8
     ok = code == 0
     published.append(f'small_get_validation schema=1 ok={int(ok)} status={status} selection={int(selection)} result={int(result)} code={code}')

@@ -47,8 +47,10 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [software evidence](dev-docs/evidence/own-home-attachments/README.md). The bounded
   waiting-collection extension has separate
   [host qualification](dev-docs/evidence/bounded-resource-collection/README.md),
-  including maximum-file console checks. That record does not establish fresh
-  NetBSD qualification for the extension. The maintained maximum-file route still
+  including maximum-file console checks. Separate
+  [NetBSD 1 GiB software checks](https://github.com/gonz0w/faction-bbs/issues/326#issuecomment-6581115822)
+  at `5ca3e7b` passed both classic and Unicode maximum-file journeys. The maintained
+  maximum-file route still
   fails its original deadline on Linux; see [#326](https://github.com/gonz0w/faction-bbs/issues/326).
 
 ## What you can do
