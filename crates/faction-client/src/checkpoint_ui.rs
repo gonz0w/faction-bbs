@@ -140,7 +140,7 @@ impl Screen<'_> {
         }
         let count = body.page_count();
         let mut number = 0;
-        self.print("Body:\r\n")?;
+        self.print("Body: \r\n")?;
         while let Some(page) = body.next_page() {
             number += 1;
             self.print(&format!("[LOCAL BODY] Page {number}/{count}\r\n"))?;
