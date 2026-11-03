@@ -386,7 +386,7 @@ fn writing_actual_record_and_menu_helper() {
             output: std::fs::File::create(&capture).unwrap(),
             saved: saved.clone(),
         };
-        std::thread::scope(|scope| {
+        let master = std::thread::scope(|scope| {
             let driver = scope.spawn(|| {
                 let wait = |needle: &str| {
                     let limit = Instant::now() + Duration::from_secs(15);
@@ -434,7 +434,7 @@ fn writing_actual_record_and_menu_helper() {
                 cfg!(feature = "network-mail"),
             )
             .unwrap();
-            let _master = driver.join().unwrap();
+            driver.join().unwrap()
         });
         drop(term);
         assert_eq!(std::fs::read(path.join("mail.fkv")).unwrap(), before);
@@ -449,6 +449,7 @@ fn writing_actual_record_and_menu_helper() {
                 .all(|l| faction_terminal::text::width(l) <= 39)
         );
         assert_configured_terminal(&observer, &saved);
+        drop(master);
     }
     #[cfg(feature = "network-mail")]
     for unicode in [false, true] {
@@ -471,7 +472,7 @@ fn writing_actual_record_and_menu_helper() {
                     output: std::fs::File::create(&capture).unwrap(),
                     saved: saved.clone(),
                 };
-                std::thread::scope(|scope| {
+                let master = std::thread::scope(|scope| {
                     let driver = scope.spawn(|| {
                         let wait = |needle: &str| {
                             let limit = Instant::now() + Duration::from_secs(15);
@@ -539,10 +540,11 @@ fn writing_actual_record_and_menu_helper() {
                         assert_eq!(screen.online_menu(&vault).unwrap(), b'W');
                         screen.write_message(&mut vault, None).unwrap();
                     }
-                    let _master = driver.join().unwrap();
+                    driver.join().unwrap()
                 });
                 drop(term);
                 assert_configured_terminal(&observer, &saved);
+                drop(master);
                 assert_eq!(vault.history().unwrap().len(), history + usize::from(queue));
                 assert_eq!(
                     vault.inspect_outbox().unwrap().len(),
