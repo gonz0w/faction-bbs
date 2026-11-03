@@ -158,3 +158,44 @@ no Reply. Existing lock/drop and parked-SSH return behavior remains in force,
 and private text stays out of board streams, logs and diagnostics. Existing N
 notice consent is unchanged. This retained-device presentation is not live chat,
 protocol threading, current presence, a complete home inbox or key continuity.
+
+## Multiline writing and paged bodies
+
+Issues [#341](https://github.com/gonz0w/faction-bbs/issues/341) and
+[#342](https://github.com/gonz0w/faction-bbs/issues/342) add a foreground private
+writer and a bounded selected-record body view. W in manual home mail starts a
+new message; W after an eligible received record starts a reply. Existing C/R
+one-line paths remain available. The offline inbox supports selected-record
+body paging but gains no compose or reply action.
+
+The transient device-local body holds at most 1024 UTF-8 bytes, including LF
+separators, and 32 logical lines. Both modes accept UTF-8 input; classic echo uses inert
+escapes. Accepted text and discarded edits use bounded zeroized storage. Enter adds a line; .done, .preview, .undo, .clear, .cancel and
+.help control the writer, and two leading dots enter one literal dot. Unknown
+commands and oversized input do not append a partial body. Empty or whitespace-only
+completion cannot queue. No plaintext draft is persisted.
+
+Selected I-record bodies and W preview/review use body rows of at most 39 cells
+including the trusted prefix, and pages of at most ten body rows. Short-line
+payload fits 33 cells after the six-cell Body label; paged payload fits 37 cells
+after the two-cell bar prefix. These bounds do not cover the complete metadata
+layout. LF becomes a logical line break; other unsafe
+scalars are escaped under the existing classic or explicit Unicode rules. Bounded
+zeroized scratch and offsets support paging without copying bodies into navigation
+metadata. A short single-line record keeps its direct post-output prompts. While
+more pages remain, Enter advances and B returns without acknowledgement. In
+.preview, B returns to the writer; during final review, B or a non-queue response
+cancels the intent and discards the unsaved body. Only
+complete body output permits the existing fresh typed read decision, bound to the
+original index and authenticated frame. The H history loop retains its escaped
+view. Group, filter, query and eligible original selection survive record return.
+
+The current prepared verified peer and, for replies, the original received frame
+remain authoritative before editing and at queue. Complete inert recipient,
+subject and body review precedes fresh typed queue confirmation. Preview, paging,
+cancellation and rejected input do not acknowledge or queue; neither writing nor
+review connects to home or acquires credentials. Explicit send remains separate.
+Control interruption, EOF, output failure and inactivity retain lock/drop and TTY
+restoration behavior. This adds no persistent draft, schema, dependency, crypto,
+protocol, notice, background lease or attachment action. Private text stays out
+of board streams and logs; terminal scrollback is not erased.

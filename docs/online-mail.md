@@ -120,6 +120,38 @@ Use **T** only for an explicit local decision to retire one operation or all pen
 ciphertext. Retirement stops further retries from this store. It is not proof of
 peer delivery, reading or exactly-once processing. History remains available.
 
+## Write a multiline message
+
+In the manual home-mail menu, choose **W** to write a new multiline body to the
+current prepared peer. After opening an eligible received record in the local
+inbox, **W** writes a multiline reply. The existing **C** and **R** one-line
+paths remain available. Offline inspection has no compose or reply action.
+Review the current verified recipient, device and full identity; a history record
+does not enroll a peer or establish continuity with a changed key.
+
+Enter adds a line. The body can contain up to 32 logical lines and 1024 UTF-8
+bytes, including newline separators. Both display modes accept UTF-8 input; classic
+mode echoes non-ASCII text as inert escapes. Commands occupy a line of their own:
+
+- **.done** completes a nonempty body for review. A blank or whitespace-only body
+  cannot be queued.
+- **.preview** shows the current body in pages without queueing; B returns to
+  the writer while more pages remain.
+- **.undo** removes the last line; **.clear** removes the body.
+- **.cancel** returns without queueing; **.help** shows the commands.
+- Start a line with **..** to enter one literal leading period. Unknown commands
+  and input beyond the limits are rejected without appending a partial line.
+
+Review shows the complete recipient, subject and body. Long bodies use pages;
+press Enter for the next page. B while more pages remain cancels the intent and
+returns to the owning context without saving the draft. After the complete review,
+type a fresh **queue** confirmation to save encrypted ciphertext; other input
+cancels the intent. Queueing is local; sending remains a separate deliberate **N** action.
+Preview and cancellation do not mark mail read, queue or connect to home. The
+draft is temporary on this device and is not saved as a plaintext draft. Ctrl-C/D,
+EOF, output failure and inactivity retain the console's lock behavior. Terminal
+scrollback is not erased.
+
 ## Opt in to retained offline mail
 
 After publishing and verifying the peer, choose **G** in the local console and

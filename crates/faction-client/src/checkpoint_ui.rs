@@ -21,6 +21,15 @@ const IDLE: Duration = Duration::from_secs(300);
 #[path = "checkpoint_ui_inbox.rs"]
 mod inbox;
 
+#[path = "checkpoint_ui_body.rs"]
+mod body;
+#[cfg(feature = "network-mail")]
+#[path = "checkpoint_ui_writer.rs"]
+mod writer;
+#[cfg(test)]
+#[path = "checkpoint_ui_writing_tests.rs"]
+mod writing_tests;
+
 #[path = "checkpoint_ui_conversation.rs"]
 mod conversation;
 #[cfg(test)]
@@ -121,6 +130,39 @@ impl Screen<'_> {
         self.print(label)?;
         self.print(&inert(s, self.unicode))?;
         self.print("\r\n")
+    }
+    /// True only after every page has reached output. This view has no state authority.
+    fn body(&mut self, text: &str) -> io::Result<bool> {
+        let mut body = body::Body::new(text, self.unicode);
+        if body.short_line() {
+            self.show("Body: ", text)?;
+            return Ok(true);
+        }
+        let count = body.page_count();
+        let mut number = 0;
+        self.print("Body:\r\n")?;
+        while let Some(page) = body.next_page() {
+            number += 1;
+            self.print(&format!("[LOCAL BODY] Page {number}/{count}\r\n"))?;
+            for row in page.rows {
+                debug_assert!(row.source.end <= text.len());
+                self.print("| ")?;
+                self.print(&row.text)?;
+                self.print("\r\n")?;
+            }
+            if number < count {
+                self.print("[Enter] Next page  [B] Return\r\n")?;
+                let mut decoder = Decoder::new();
+                loop {
+                    match decoder.feed(self.byte()?, Instant::now()) {
+                        Some(Key::Enter) => break,
+                        Some(Key::Hotkey(b'B')) => return Ok(false),
+                        _ => {}
+                    }
+                }
+            }
+        }
+        Ok(true)
     }
     fn clear(&mut self) -> io::Result<()> {
         // Fixed local clear only; no private data becomes a terminal instruction.
@@ -703,7 +745,9 @@ impl Screen<'_> {
             record.device, record.sent_at
         ))?;
         self.show("Subject: ", &record.subject)?;
-        self.show("Body: ", &record.body)?;
+        if !self.body(&record.body)? {
+            return Ok(());
+        }
         #[cfg(feature = "network-mail")]
         if let Some(descriptor) = record.attachment() {
             self.attachment_details(descriptor)?;
@@ -729,10 +773,14 @@ impl Screen<'_> {
         #[cfg(feature = "network-mail")]
         if online && let Some(identity) = received {
             self.print("[R] Reply locally  [B/Enter] Back to inbox\r\n")?;
+            self.print("[W] Write multiline reply\r\n")?;
             let mut decoder = Decoder::new();
             loop {
                 match decoder.feed(self.byte()?, Instant::now()) {
                     Some(Key::Hotkey(b'R')) => return self.reply(v, index, identity),
+                    Some(Key::Hotkey(b'W')) => {
+                        return self.write_message(v, Some((index, identity)));
+                    }
                     Some(Key::Enter | Key::Hotkey(b'B')) => return Ok(()),
                     _ => {}
                 }
@@ -986,6 +1034,152 @@ impl Screen<'_> {
             }
         }
     }
+    fn writing_line(&mut self) -> io::Result<Option<Zeroizing<String>>> {
+        use zeroize::Zeroize;
+        self.print("write> ")?;
+        // One extra byte allows the escaped leading dot at the 1024-byte body boundary.
+        let mut bytes = Zeroizing::new(Vec::with_capacity(writer::BYTES + 1));
+        let mut rejected = false;
+        loop {
+            match self.byte()? {
+                b'\r' | b'\n' => {
+                    self.print("\r\n")?;
+                    if rejected {
+                        return Ok(None);
+                    }
+                    let value = match std::str::from_utf8(&bytes) {
+                        Ok(s) if !s.chars().any(char::is_control) => s,
+                        _ => return Ok(None),
+                    };
+                    return Ok(Some(Zeroizing::new(value.to_owned())));
+                }
+                8 | 127 => {
+                    let (start, cells) = match std::str::from_utf8(&bytes) {
+                        Ok(text) => text.char_indices().next_back().map_or((0, 0), |(n, c)| {
+                            let part =
+                                Zeroizing::new(faction_terminal::text::scalar(c, self.unicode));
+                            (n, faction_terminal::text::width(&part))
+                        }),
+                        Err(e) if e.error_len().is_none() => (e.valid_up_to(), 0),
+                        Err(_) => (bytes.len().saturating_sub(1), 0),
+                    };
+                    bytes[start..].zeroize();
+                    bytes.truncate(start);
+                    for _ in 0..cells {
+                        self.print("\x08 \x08")?;
+                    }
+                }
+                b => {
+                    if bytes.len() == writer::BYTES + 1 {
+                        rejected = true;
+                        continue;
+                    }
+                    bytes.push(b);
+                    match std::str::from_utf8(&bytes) {
+                        Ok(text) => {
+                            if let Some(c) = text.chars().next_back() {
+                                if c.is_control() {
+                                    rejected = true;
+                                } else {
+                                    self.print(&Zeroizing::new(faction_terminal::text::scalar(
+                                        c,
+                                        self.unicode,
+                                    )))?;
+                                }
+                            }
+                        }
+                        Err(e) if e.error_len().is_none() => {}
+                        Err(_) => rejected = true,
+                    }
+                }
+            }
+        }
+    }
+    fn writing_body(&mut self) -> io::Result<Option<writer::Writer>> {
+        let mut draft = writer::Writer::new();
+        self.print("[LOCAL MULTILINE WRITER]\r\n1024 UTF-8 bytes / 32 lines, including separators.\r\n.done .preview .undo .clear .cancel .help\r\nTwo leading dots enter one literal dot.\r\n")?;
+        loop {
+            let Some(line) = self.writing_line()? else {
+                self.print("Rejected line; accepted body unchanged.\r\n")?;
+                continue;
+            };
+            match draft.line(&line) {
+                Ok(writer::Effect::Done)=>return Ok(Some(draft)),
+                Ok(writer::Effect::Cancel)=>return Ok(None),
+                Ok(writer::Effect::Preview)=>{self.body(draft.body())?;},
+                Ok(writer::Effect::Help)=>self.print(".done review; .preview view; .undo remove last line; .clear wipe; .cancel return; .. literal dot.\r\n")?,
+                Ok(writer::Effect::Added|writer::Effect::Changed)=>self.print(&format!("Accepted: {} bytes / {} lines\r\n",draft.body().len(),draft.lines()))?,
+                Err(_)=>self.print("Rejected command, empty completion or body limit; accepted body unchanged.\r\n")?,
+            }
+        }
+    }
+    fn write_message(
+        &mut self,
+        v: &mut CheckpointVault,
+        source: Option<(usize, [u8; 32])>,
+    ) -> io::Result<()> {
+        let target = match source {
+            Some((index, frame)) => reply::Target::prepare(v, index, frame, now()?),
+            None => reply::Target::compose(v, now()?),
+        };
+        let target = match target {
+            Ok(t) => t,
+            Err(_) => return self.writing_unavailable(v),
+        };
+        self.reply_target(&target)?;
+        self.print(
+            "Current independently verified identity; history does not prove key continuity.\r\n",
+        )?;
+        let subject = if let Some((index, _)) = source {
+            let (suggestion, shortened) = reply::suggested_subject(&v.history()?[index].subject);
+            self.show("Suggested subject: ", &suggestion)?;
+            if shortened {
+                self.print("Suggested subject shortened to the 128 UTF-8 byte limit.\r\n")?;
+            }
+            let replacement = self.compose_line(
+                "Subject (Enter keeps suggestion; fresh text replaces, 128 UTF-8 bytes): ",
+                128,
+            )?;
+            if replacement.is_empty() {
+                suggestion
+            } else {
+                replacement
+            }
+        } else {
+            self.compose_line("Subject (128 UTF-8 bytes): ", 128)?
+        };
+        let Some(draft) = self.writing_body()? else {
+            return self.print("Writing cancelled; no ciphertext queued.\r\n");
+        };
+        self.print("Review local multiline intent:\r\n")?;
+        self.reply_target(&target)?;
+        self.show("Subject: ", &subject)?;
+        if !self.body(draft.body())? {
+            return self.print("Writing cancelled; no ciphertext queued.\r\n");
+        }
+        rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
+        if self
+            .line("Type queue to persist encrypted ciphertext: ", 32, false)?
+            .as_str()
+            != "queue"
+        {
+            return self.print("Writing cancelled; no ciphertext queued.\r\n");
+        }
+        let timestamp = now()?;
+        if target.recheck(v, timestamp).is_err() {
+            return self.writing_unavailable(v);
+        }
+        let mut operation = [0; 16];
+        getrandom::fill(&mut operation).map_err(|_| invalid())?;
+        match v.queue(operation, &subject, draft.body(), timestamp, timestamp) {
+            Ok(_) => self.print("Queued durably; no delivery or read receipt.\r\n"),
+            Err(_) => self.writing_unavailable(v),
+        }
+    }
+    fn writing_unavailable(&mut self, v: &CheckpointVault) -> io::Result<()> {
+        v.inspection()?;
+        self.print("Writing unavailable; check current prepared peer, expiry and retained-store limits.\r\n")
+    }
     fn reply_unavailable(&mut self, v: &CheckpointVault) -> io::Result<()> {
         // A poisoned handle must reach the existing drop/reopen lock path.
         v.inspection()?;
@@ -1076,12 +1270,13 @@ impl Screen<'_> {
         } else {
             "[C] Compose and queue     [N] Connect / sync\r\n"
         })?;
+        self.print("[W] Write multiline message\r\n")?;
         self.print("[P] Public identity       [V] Verify peer\r\n[H] History               [O] Pending operation IDs\r\n[T] Retire ciphertext     [R] Revoke peer locally\r\n[F] Fresh device          [B] History-only backup\r\n[S] Reset local secrets   [D] Legacy local drafts\r\n[L] Lock and exit\r\n")?;
         let mut decoder = Decoder::new();
         loop {
             if let Some(Key::Hotkey(key)) = decoder.feed(self.byte()?, Instant::now()) {
                 let key = key.to_ascii_uppercase();
-                if b"IUKCNPVHOTRFBSDLGAEM".contains(&key) {
+                if b"IUKCNPVHOTRFBSDLGAEMW".contains(&key) {
                     return Ok(key);
                 }
             }
@@ -1107,6 +1302,9 @@ impl Screen<'_> {
         provider_profile: Option<&Path>,
     ) -> io::Result<()> {
         use faction_client::mail_network::{self, Mode};
+        if key == b'W' {
+            return self.write_message(v, None);
+        }
         if key == b'M' {
             return self.attachment_desk(v, settings, root, provider_profile);
         }

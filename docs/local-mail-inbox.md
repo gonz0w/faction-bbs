@@ -34,7 +34,9 @@ retained-device records, not a complete or current home-server inbox.
   subject and body. An empty list has nothing to open.
 - **B** returns from the list to the local mail menu.
 
-Browsing, filtering and opening do not mark mail read. After a received body is
+Browsing, filtering and opening do not mark mail read. Long or multiline bodies
+open in pages of up to ten rows. When more pages remain, press Enter for the next
+page or B to return without acknowledging. After the complete received body is
 shown, enabled tracking offers the existing prompt to type `read`. Only that
 fresh decision acknowledges the selected record; Enter leaves it alone. Then
 Enter returns to the inbox with updated status. An acknowledged record leaves
@@ -42,7 +44,9 @@ an unread-only list. Sent records have no read-acknowledgement prompt.
 
 Enable [local read tracking](local-unread-mail.md) deliberately with E at the mail
 menu before using read decisions. Merely opening the inbox does not upgrade an
-older encrypted checkpoint. **H** retains its sequential history reader.
+older encrypted checkpoint. The **I** selected-record reader supports body paging
+offline as well as online. **H** retains its sequential history reader and escaped
+view.
 
 ## Search retained mail
 
@@ -116,14 +120,16 @@ Reply action. Existing local notice settings are unchanged.
 
 After opening a received record in the manual home-mail console, press Enter to
 skip the read-acknowledgement prompt if tracking is enabled, then choose **R** to
-prepare a local reply. Review the current verified recipient, device and full
+prepare a one-line local reply, or **W** to write a multiline reply. Review the
+current verified recipient, device and full
 identity. The received account/device must match that already prepared peer;
 history never enrolls a recipient or proves continuity with a changed key.
 Sent, unprepared, revoked, expired or history-only state cannot authorize a reply.
 
 The suggested subject keeps an existing `Re:` prefix or adds one. It stays within
 128 UTF-8 bytes, with a notice if shortened. Press Enter to keep it, or enter a
-replacement. The one-line body starts empty and retains its 1024-byte limit.
+replacement. The one-line body starts empty and retains its 1024-byte limit. For the multiline
+writer, see [Write a multiline message](online-mail.md#write-a-multiline-message).
 Review the recipient and complete content, then type a fresh **queue** confirmation
 to persist encrypted ciphertext. Enter or other confirmation text cancels and
 returns to the inbox. Queued confirmation input is discarded.

@@ -137,8 +137,9 @@ contacts a home server.
 The [local inbox](docs/local-mail-inbox.md) includes a device-local correspondent
 picker for browsing one retained account/device at a time, local search and a
 deliberately opened conversation preview of unlocked retained mail. The manual
-inbox also offers deliberate replies to a selected received message; queueing
-stays on the device and sending is explicit.
+inbox offers paged body reading and deliberate replies to a selected received
+message. The manual console also offers multiline writing; queueing stays on the
+device and sending is explicit.
 
 The default-off [roaming terminal experiment](docs/roaming-authentication.md) adds
 a trusted UID-to-local-member path plus filesystem-owner commands for manual
