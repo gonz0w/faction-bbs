@@ -13,8 +13,7 @@ pub struct Target {
     pub address: Zeroizing<String>,
     pub device: u32,
     pub identity: [u8; 32],
-    index: usize,
-    received: [u8; 32],
+    source: Option<(usize, [u8; 32])>,
 }
 impl Target {
     pub fn prepare(
@@ -23,19 +22,28 @@ impl Target {
         received: [u8; 32],
         now: u64,
     ) -> io::Result<Self> {
-        let state = v.inspection()?;
-        let peer = state.peer.ok_or_else(invalid)?;
+        let mut target = Self::compose(v, now)?;
         let records = v.history()?;
         let record = records.get(index).ok_or_else(invalid)?;
         if record.received_id() != Some(received)
-            || record.address != peer.address
-            || record.device != peer.device
-            || !state.started
+            || record.address != target.address.as_str()
+            || record.device != target.device
+        {
+            return Err(invalid());
+        }
+        target.source = Some((index, received));
+        Ok(target)
+    }
+    /// Current prepared peer only; no history field imports recipient authority.
+    pub fn compose(v: &CheckpointVault, now: u64) -> io::Result<Self> {
+        let state = v.inspection()?;
+        let peer = state.peer.ok_or_else(invalid)?;
+        if !state.started
             || state.history_only
             || peer.revoked
             || now < state.created
             || now > state.expires
-            || records.len() >= MAX_HISTORY
+            || v.history()?.len() >= MAX_HISTORY
             || v.inspect_outbox()?.len() >= MAX_OUTBOX
         {
             return Err(invalid());
@@ -44,12 +52,14 @@ impl Target {
             address: Zeroizing::new(peer.address.to_owned()),
             device: peer.device,
             identity: *peer.identity,
-            index,
-            received,
+            source: None,
         })
     }
     pub fn recheck(&self, v: &CheckpointVault, now: u64) -> io::Result<()> {
-        let current = Self::prepare(v, self.index, self.received, now)?;
+        let current = match self.source {
+            Some((index, received)) => Self::prepare(v, index, received, now)?,
+            None => Self::compose(v, now)?,
+        };
         if current.address != self.address
             || current.device != self.device
             || current.identity != self.identity
