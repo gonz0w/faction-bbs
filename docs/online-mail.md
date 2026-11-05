@@ -168,6 +168,15 @@ selected MAM2/RSM profile and retain messages; the outgoing storage hint request
 retention but cannot enforce it. See the [archive guide](archive-mail.md) for
 first use, full-store stops and stale-position recovery limits.
 
+## Exchange from an inbox or conversation
+
+Use **X: Home exchange** in an online inbox or conversation to run the same
+explicit N or A action and return to your current local view. N may send all
+pending ciphertext; A fetches one enabled archive page. Each action prompts for
+its own home password. Opening the choice does not connect. See
+[the inbox guide](local-mail-inbox.md#exchange-home-mail-without-leaving-your-place)
+for view restoration, mode differences and failure behavior.
+
 ## Private attachments
 
 With `network-mail`, **M** opens the default-off [private attachment desk](private-attachments.md) in this trusted local console. Opt in explicitly before queueing or fetching attachments; the migration preserves mail and read/archive state but older clients cannot open the new checkpoint format. Queueing is local and upload is a separate foreground action. The separate ciphertext spool needs its own backup and retention decisions. Ordinary text mail and Sync remain available.

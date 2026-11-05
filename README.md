@@ -20,7 +20,7 @@ and fonts vary. Explore the [artwork](docs/artwork-nightwire.md) and
 
 ## Status
 
-**Working hobby preview · updated 2026-11-02 · no supported release yet.**
+**Working hobby preview · updated 2026-11-04 · no supported release yet.**
 
 The local BBS core and restricted SSH service work. Optional features are enabled
 by the sysop; experiments and future protocols are separate from normal operation.
@@ -33,6 +33,7 @@ by the sysop; experiments and future protocols are separate from normal operatio
 - **Privacy:** the [offline vault](docs/local-mail-vault.md) and optional
   [manual encrypted home mail](docs/online-mail.md) keep keys and decryption on
   the member's device. The native client offers a local inbox, explicit replies,
+  multiline composing, paged bodies, deliberate [inbox home exchanges](docs/local-mail-inbox.md#exchange-home-mail-without-leaving-your-place),
   bounded archive catch-up and a [private attachment desk](docs/private-attachments.md).
   Compatible home storage is required. Ordinary SSH access does not receive private
   mail plaintext or keys.

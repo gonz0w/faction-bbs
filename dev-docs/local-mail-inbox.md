@@ -199,3 +199,30 @@ Control interruption, EOF, output failure and inactivity retain lock/drop and TT
 restoration behavior. This adds no persistent draft, schema, dependency, crypto,
 protocol, notice, background lease or attachment action. Private text stays out
 of board streams and logs; terminal scrollback is not erased.
+
+## Foreground home exchange and scoped return
+
+Issue [#344](https://github.com/gonz0w/faction-bbs/issues/344) adds an explicit
+online-only X choice in the global/group inbox and conversation. Navigation
+retains no password. The selected local entry carries the existing home settings;
+no remote board frame or retained record grants that capability. The submenu
+flushes queued navigation input before accepting N/A/B. Opening or canceling
+has no network or checkpoint effect. Offline/native-mail views carry no exchange
+capability and expose no exchange action.
+
+N reuses Sync with its actual home-wide pending-send behavior; archive-enabled
+Sync does not receive. A reuses a single CatchUp page when already enabled;
+otherwise it explains the existing G prerequisite without upgrading or connecting.
+The choice discloses those differences and does not chain actions, upgrade the
+schema or enroll a recipient. The existing hidden password-per-cycle, deadline,
+cancel/poison/drop and result paths stay authoritative. No new dependency,
+transport behavior, background task or credential lease is introduced.
+
+After a completed or recoverably failed action, recompute eligible canonical
+indices and literal search matches from the actual vault, retaining the exact
+account/device group, filter and query. Keep the original selected index when
+eligible and otherwise clamp within the same scope. Rebuild even on recoverable
+archive failure because earlier entries may already be saved. Conversation and
+list navigation never acknowledge these new entries or retire sent operations.
+The home-wide report is not a scoped conversation delivery receipt. Private
+content and local controls remain outside the parked board stream.

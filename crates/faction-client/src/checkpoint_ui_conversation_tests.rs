@@ -511,7 +511,7 @@ fn conversation_actual_interface_helper() {
                     activity: Instant::now(),
                     unicode,
                 }
-                .conversation(&mut vault, true, 0, &mut list, &query)
+                .conversation(&mut vault, true, None, 0, &mut list, &query)
                 .unwrap();
                 let _input = driver.join().unwrap();
             });
@@ -582,7 +582,7 @@ fn conversation_actual_interface_helper() {
                 activity: Instant::now(),
                 unicode: true,
             }
-            .conversation(&mut vault, online, 0, &mut list, &query)
+            .conversation(&mut vault, online, None, 0, &mut list, &query)
             .unwrap();
             drop(term);
             let output = std::fs::read_to_string(&capture).unwrap();
@@ -614,7 +614,7 @@ fn conversation_actual_interface_helper() {
                     activity: Instant::now(),
                     unicode: false,
                 }
-                .conversation(&mut vault, false, 0, &mut list, &query)
+                .conversation(&mut vault, false, None, 0, &mut list, &query)
                 .unwrap();
                 let _input = driver.join().unwrap();
             });
@@ -679,7 +679,7 @@ fn conversation_actual_interface_helper() {
             },
             unicode: false,
         }
-        .conversation(&mut vault, false, 0, &mut list, &Default::default())
+        .conversation(&mut vault, false, None, 0, &mut list, &Default::default())
         .unwrap_err();
         if !fail_output {
             assert_eq!(
