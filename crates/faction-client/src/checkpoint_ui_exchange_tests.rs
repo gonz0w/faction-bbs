@@ -8,6 +8,35 @@ use std::{cell::RefCell, io::Write, os::unix::fs::PermissionsExt};
 
 #[test]
 fn home_exchange_actual_consumer_preserves_scope_on_success_and_partial_failure() {
+    let before = rustix::process::getrlimit(rustix::process::Resource::Core);
+    // Native device allocation disables core dumps for its process. Exercise the
+    // full UI fixture in a child so other tests retain their inherited limits.
+    let child = std::process::Command::new(std::env::current_exe().unwrap())
+        .args([
+            "--exact",
+            "checkpoint_ui::exchange_tests::home_exchange_actual_consumer_helper",
+            "--ignored",
+            "--nocapture",
+        ])
+        .output()
+        .unwrap();
+    assert!(
+        child.status.success(),
+        "controlled UI exchange fixture failed: {} {}",
+        String::from_utf8_lossy(&child.stdout),
+        String::from_utf8_lossy(&child.stderr)
+    );
+    let after = rustix::process::getrlimit(rustix::process::Resource::Core);
+    assert_eq!(
+        (after.current, after.maximum),
+        (before.current, before.maximum),
+        "controlled UI exchange must preserve the parent test process core limits"
+    );
+}
+
+#[test]
+#[ignore = "owned subprocess helper, exercised by the home exchange consumer control"]
+fn home_exchange_actual_consumer_helper() {
     let mut random = [0; 16];
     getrandom::fill(&mut random).unwrap();
     let root = std::env::temp_dir()
