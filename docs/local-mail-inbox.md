@@ -145,6 +145,34 @@ Files and main-menu routes. The offline inbox and ordinary SSH keep their existi
 behavior. No reply body, subject, count or key is sent to the BBS, and no plaintext
 reply draft or index is saved.
 
+## Exchange home mail without leaving your place
+
+In the manual online console, **X: Home exchange** is available in the global
+inbox, a correspondent inbox and its conversation preview. It opens a local
+choice; entering it or choosing **B** does not connect or change the vault.
+The offline console has no Home exchange action.
+
+Choose **N** for the existing home-wide Send pending / Connect-sync action.
+It may send **all pending ciphertext**, regardless of the correspondent or search
+you are viewing. With archive checkpoints enabled, N only sends; without them,
+it also briefly receives. Choose **A** to fetch one archive page of at most four
+entries. If archive checkpoints are disabled, A explains that they must first
+be enabled with G at the mail menu; it does not upgrade or connect. A does not
+send pending mail. Neither choice automatically runs the other.
+
+Each connection asks for a fresh hidden home account password. On completion or
+a recoverable failure, the same local view returns with its correspondent,
+All/Unread filter, search and eligible selected record kept. Records are rebuilt
+from the actual vault, so newly saved messages appear where they match. A failed
+archive cycle may have saved earlier entries; it does not imply an unchanged vault.
+An unavailable selected record clamps within the same view.
+
+These actions do not acknowledge messages or retire pending ciphertext. A send
+write is not proof of delivery or reading. The result covers the home exchange,
+not only the displayed correspondent. Ctrl-C/D and terminal or store failures
+retain the existing locking rules. No background polling or password retention
+is added; the board receives no private mail or local counts.
+
 ## Lock and return
 
 Use B to return to the mail menu and **L** to lock. From parked Files, this returns
@@ -153,7 +181,8 @@ failure or the existing inactivity timeout lock the console. A failed checkpoint
 write keeps the existing poison/drop/reopen rule; reopen the canonical store
 before trying again.
 
-Inbox navigation performs no home connection or background refresh. Keys, message
+Ordinary inbox navigation does not connect; only a deliberate Home exchange
+action contacts home. There is no background refresh. Keys, message
 text and read decisions stay on the member device. It creates no plaintext index
 or sidecar, sends no receipts and retains no new background credentials. A local
 view can remain usable during a home outage. Terminal scrollback is not erased.

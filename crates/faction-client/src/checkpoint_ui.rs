@@ -44,6 +44,37 @@ mod reply;
 #[path = "checkpoint_ui_attachments.rs"]
 mod attachments;
 
+#[cfg(all(test, feature = "network-mail"))]
+#[path = "checkpoint_ui_exchange_tests.rs"]
+mod exchange_tests;
+
+// A borrowed, foreground-only capability. Offline views never receive one.
+struct HomeExchange<'a> {
+    #[cfg(feature = "network-mail")]
+    settings: &'a faction_client::mail_network::Settings,
+    #[cfg(not(feature = "network-mail"))]
+    _unavailable: std::marker::PhantomData<&'a ()>,
+    #[cfg(all(test, feature = "network-mail"))]
+    cycle: Option<&'a ControlledCycle<'a>>,
+}
+#[cfg(all(test, feature = "network-mail"))]
+type ControlledCycle<'a> = dyn Fn(
+        &mut CheckpointVault,
+        &str,
+        faction_client::mail_network::Mode,
+    ) -> Result<faction_client::mail_network::Report, faction_client::mail_network::Error>
+    + 'a;
+#[cfg(feature = "network-mail")]
+impl<'a> HomeExchange<'a> {
+    fn new(settings: &'a faction_client::mail_network::Settings) -> Self {
+        Self {
+            settings,
+            #[cfg(test)]
+            cycle: None,
+        }
+    }
+}
+
 // Default output is classic ASCII. Unicode is an explicit local capability
 // override, never inferred from TERM/remote replies. Escape controls, bidi marks,
 // invisible format characters and line separators even with the override.
@@ -420,7 +451,12 @@ impl Screen<'_> {
                 .collect(),
         ))
     }
-    fn correspondents(&mut self, v: &mut CheckpointVault, online: bool) -> io::Result<()> {
+    fn correspondents(
+        &mut self,
+        v: &mut CheckpointVault,
+        online: bool,
+        exchange: Option<&HomeExchange<'_>>,
+    ) -> io::Result<()> {
         let peers = v
             .history()?
             .iter()
@@ -469,7 +505,7 @@ impl Screen<'_> {
                     Key::Hotkey(b'B') => return Ok(()),
                     Key::Enter | Key::Hotkey(b'O') => {
                         if let Some(index) = groups.selected() {
-                            self.inbox_list(v, online, Some(index))?;
+                            self.inbox_list(v, online, exchange, Some(index))?;
                             let peers = v
                                 .history()?
                                 .iter()
@@ -489,16 +525,36 @@ impl Screen<'_> {
         self.inbox_mode(v, false)
     }
     fn inbox_mode(&mut self, v: &mut CheckpointVault, online: bool) -> io::Result<()> {
-        self.inbox_list(v, online, None)
+        self.inbox_with_exchange(v, online, None)
+    }
+    fn inbox_with_exchange(
+        &mut self,
+        v: &mut CheckpointVault,
+        online: bool,
+        exchange: Option<&HomeExchange<'_>>,
+    ) -> io::Result<()> {
+        self.inbox_list(v, online, exchange, None)
     }
     fn inbox_list(
         &mut self,
         v: &mut CheckpointVault,
         online: bool,
+        exchange: Option<&HomeExchange<'_>>,
         group: Option<usize>,
     ) -> io::Result<()> {
         let mut list = inbox::Inbox::new(Self::inbox_group_entries(v, group)?);
         let mut search = inbox::Search::default();
+        self.inbox_view(v, online, exchange, group, &mut list, &mut search)
+    }
+    fn inbox_view(
+        &mut self,
+        v: &mut CheckpointVault,
+        online: bool,
+        exchange: Option<&HomeExchange<'_>>,
+        group: Option<usize>,
+        list: &mut inbox::Inbox,
+        search: &mut inbox::Search,
+    ) -> io::Result<()> {
         let mut decoder = Decoder::new();
         let mut unknown = false;
         loop {
@@ -571,6 +627,9 @@ impl Screen<'_> {
             } else {
                 self.print("[T] Conversation\r\n")?;
             }
+            if exchange.is_some() {
+                self.print("[X] Home exchange\r\n")?;
+            }
             self.print("[S] Search  [B] Back\r\n")?;
             loop {
                 let Some(key) = decoder.feed(self.byte()?, Instant::now()) else {
@@ -594,24 +653,33 @@ impl Screen<'_> {
                     Key::Hotkey(b'S') => {
                         if let Some(query) = self.search_line()? {
                             let matching = Self::inbox_matches(v, &query)?;
-                            search = query;
+                            *search = query;
                             list.search(matching);
                         } else {
                             self.print("Search rejected; previous query kept.\r\n")?;
                         }
                         decoder = Decoder::new();
                     }
+                    #[cfg(feature = "network-mail")]
+                    Key::Hotkey(b'X') if exchange.is_some() => {
+                        self.home_exchange(v, exchange.unwrap())?;
+                        list.refresh_matching(
+                            Self::inbox_group_entries(v, group)?,
+                            Self::inbox_matches(v, search)?,
+                        );
+                        decoder = Decoder::new();
+                    }
                     Key::Hotkey(b'B') => return Ok(()),
                     Key::Hotkey(b'C') if group.is_none() => {
-                        self.correspondents(v, online)?;
+                        self.correspondents(v, online, exchange)?;
                         list.refresh_matching(
                             Self::inbox_entries(v)?,
-                            Self::inbox_matches(v, &search)?,
+                            Self::inbox_matches(v, search)?,
                         );
                         decoder = Decoder::new();
                     }
                     Key::Hotkey(b'T') if group.is_some() => {
-                        self.conversation(v, online, group.unwrap(), &mut list, &search)?;
+                        self.conversation(v, online, exchange, group.unwrap(), list, search)?;
                         decoder = Decoder::new();
                     }
                     Key::Enter | Key::Hotkey(b'O') => {
@@ -619,7 +687,7 @@ impl Screen<'_> {
                             self.inbox_record_mode(v, entry, online)?;
                             list.refresh_matching(
                                 Self::inbox_group_entries(v, group)?,
-                                Self::inbox_matches(v, &search)?,
+                                Self::inbox_matches(v, search)?,
                             );
                             decoder = Decoder::new();
                         }
@@ -634,6 +702,7 @@ impl Screen<'_> {
         &mut self,
         v: &mut CheckpointVault,
         online: bool,
+        exchange: Option<&HomeExchange<'_>>,
         group: usize,
         list: &mut inbox::Inbox,
         search: &inbox::Search,
@@ -685,9 +754,11 @@ impl Screen<'_> {
                     self.unicode,
                 ))?;
             }
-            self.print(
-                "[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open full record\r\n[B] Back\r\n",
-            )?;
+            self.print("[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open full record\r\n")?;
+            if exchange.is_some() {
+                self.print("[X] Home exchange\r\n")?;
+            }
+            self.print("[B] Back\r\n")?;
             loop {
                 let Some(key) = decoder.feed(self.byte()?, Instant::now()) else {
                     continue;
@@ -697,6 +768,16 @@ impl Screen<'_> {
                     Key::Down | Key::Hotkey(b'J') => model.down(),
                     Key::Hotkey(b'N') => model.next(),
                     Key::Hotkey(b'P') => model.previous(),
+                    #[cfg(feature = "network-mail")]
+                    Key::Hotkey(b'X') if exchange.is_some() => {
+                        self.home_exchange(v, exchange.unwrap())?;
+                        list.refresh_matching(
+                            Self::inbox_group_entries(v, Some(group))?,
+                            Self::inbox_matches(v, search)?,
+                        );
+                        model.refresh(list);
+                        decoder = Decoder::new();
+                    }
                     Key::Hotkey(b'B') => {
                         if let Some(entry) = model.selected() {
                             list.select_index(entry.index);
@@ -1301,7 +1382,7 @@ impl Screen<'_> {
         key: u8,
         provider_profile: Option<&Path>,
     ) -> io::Result<()> {
-        use faction_client::mail_network::{self, Mode};
+        use faction_client::mail_network::Mode;
         if key == b'W' {
             return self.write_message(v, None);
         }
@@ -1309,7 +1390,16 @@ impl Screen<'_> {
             return self.attachment_desk(v, settings, root, provider_profile);
         }
         if key == b'I' {
-            return self.inbox_mode(v, true);
+            return self.inbox_with_exchange(v, true, Some(&HomeExchange::new(settings)));
+        }
+        if matches!(key, b'N' | b'A') {
+            return self.manual_exchange(
+                v,
+                settings,
+                key,
+                #[cfg(test)]
+                None,
+            );
         }
         if !b"UKCNOGA".contains(&key) {
             return self.action(v, key);
@@ -1333,17 +1423,6 @@ impl Screen<'_> {
                 }
             }
             return self.pause();
-        }
-        if key == b'A' {
-            if !v.inspection()?.archive_enabled {
-                self.print("Enable archive checkpoints with G before catch-up.\r\n")?;
-                return self.pause();
-            }
-            if v.archive_checkpoint(now()?).is_err() {
-                self.print("Catch-up unavailable; check verified peer, recovery, expiry and full history/outbox.\r\nNo archive cursor or pending ciphertext was changed.\r\n")?;
-                return self.pause();
-            }
-            self.print("One explicit archive page: at most four entries. Server order and completeness are not guaranteed.\r\n")?;
         }
         if key == b'O' {
             self.print("Durable pending ciphertext; delivery remains unproven.\r\nA socket write never retires these IDs. Use Retire only as a deliberate local decision.\r\n")?;
@@ -1394,22 +1473,110 @@ impl Screen<'_> {
                 "prepare",
             )?;
         }
+        self.home_cycle(
+            v,
+            settings,
+            mode,
+            #[cfg(test)]
+            None,
+        )
+    }
+    fn home_exchange(
+        &mut self,
+        v: &mut CheckpointVault,
+        exchange: &HomeExchange<'_>,
+    ) -> io::Result<()> {
+        self.print("\r\n---------------------------------------\r\n")?;
+        // Navigation typeahead is not authority for a home connection.
+        rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
+        self.print("[LOCAL HOME EXCHANGE]\r\n[N] Sync: ALL pending ciphertext\r\n    May send to every queued recipient.\r\n")?;
+        self.print(if v.inspection()?.archive_enabled {
+            "Archive mode: N will not receive.\r\n[A] Receive one archive page (max 4).\r\n    A does not send pending ciphertext.\r\n"
+        } else {
+            "N also permits bounded live receive.\r\n[A] Requires archive checkpoints (G).\r\n    No automatic upgrade or connection.\r\n"
+        })?;
+        self.print("[B] Return\r\n")?;
+        let mut decoder = Decoder::new();
+        loop {
+            match decoder.feed(self.byte()?, Instant::now()) {
+                Some(Key::Hotkey(b'B')) => return Ok(()),
+                Some(Key::Hotkey(key @ (b'N' | b'A'))) => {
+                    return self.manual_exchange(
+                        v,
+                        exchange.settings,
+                        key,
+                        #[cfg(test)]
+                        exchange.cycle,
+                    );
+                }
+                _ => {}
+            }
+        }
+    }
+    fn manual_exchange(
+        &mut self,
+        v: &mut CheckpointVault,
+        settings: &faction_client::mail_network::Settings,
+        key: u8,
+        #[cfg(test)] cycle: Option<&ControlledCycle<'_>>,
+    ) -> io::Result<()> {
+        use faction_client::mail_network::Mode;
+        self.clear()?;
+        if key == b'A' {
+            if !v.inspection()?.archive_enabled {
+                self.print("Enable archive checkpoints with G before catch-up.\r\n")?;
+                return self.pause();
+            }
+            if v.archive_checkpoint(now()?).is_err() {
+                self.print("Catch-up unavailable; check verified peer, recovery, expiry and full history/outbox.\r\nNo archive cursor or pending ciphertext was changed.\r\n")?;
+                return self.pause();
+            }
+            self.print("One explicit archive page: at most four entries. Server order and completeness are not guaranteed.\r\n")?;
+        }
+        self.home_cycle(
+            v,
+            settings,
+            if key == b'A' {
+                Mode::CatchUp
+            } else {
+                Mode::Sync
+            },
+            #[cfg(test)]
+            cycle,
+        )
+    }
+    fn home_cycle(
+        &mut self,
+        v: &mut CheckpointVault,
+        settings: &faction_client::mail_network::Settings,
+        mode: faction_client::mail_network::Mode,
+        #[cfg(test)] cycle: Option<&ControlledCycle<'_>>,
+    ) -> io::Result<()> {
+        use faction_client::mail_network::{self, Mode};
         let password = self.line(
             "HOME account password (hidden; never sent to a BBS): ",
             128,
             true,
         )?;
         self.print("Connecting directly to your home. Ctrl-C locks and cancels.\r\n")?;
-        let runtime = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()?;
-        let timestamp = now()?;
-        let result = runtime.block_on(async {
-            tokio::select! {
-                result=mail_network::cycle(v,settings,&password,mode,timestamp)=>Ok(result),
-                cancelled=self.network_cancel()=>{cancelled?;Err(invalid())}
-            }
-        })?;
+        #[cfg(test)]
+        let controlled = cycle.map(|cycle| cycle(v, &password, mode));
+        #[cfg(not(test))]
+        let controlled: Option<Result<mail_network::Report, mail_network::Error>> = None;
+        let result = if let Some(result) = controlled {
+            result
+        } else {
+            let runtime = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()?;
+            let timestamp = now()?;
+            runtime.block_on(async {
+                tokio::select! {
+                    result=mail_network::cycle(v,settings,&password,mode,timestamp)=>Ok(result),
+                    cancelled=self.network_cancel()=>{cancelled?;Err(invalid())}
+                }
+            })?
+        };
         drop(password);
         self.activity = Instant::now();
         match result {
