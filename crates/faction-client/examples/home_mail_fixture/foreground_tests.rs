@@ -718,3 +718,164 @@ async fn foreground_prosody_projection_requires_the_observed_child_order() {
         Outcome::Accepted
     );
 }
+
+const MARK_347: &str = "faction issue 347 disposable synthetic foreground fixture\n";
+const MARK_348: &str =
+    "faction issue 348 disposable synthetic foreground archive recovery fixture\n";
+
+fn mark_fixture(owned: &Owned, marker: &str) {
+    use std::os::unix::fs::PermissionsExt;
+
+    let file = owned.0.join("OWNERSHIP");
+    fs::write(&file, marker).unwrap();
+    fs::set_permissions(file, fs::Permissions::from_mode(0o600)).unwrap();
+}
+
+fn recovery_fixture(save_cursor: bool) -> (Owned, Delivery) {
+    let mut pair = Pair::new(false);
+    pair.sender.enable_archive(NOW).unwrap();
+    let mut bootstrap = pair.delivery.wire.clone();
+    bootstrap.sent_at = 0;
+    pair.receiver.receive_network(&bootstrap, NOW).unwrap();
+    let reply = pair
+        .receiver
+        .queue([42; 16], "warm reply", BODY, NOW, NOW)
+        .unwrap();
+    pair.sender.receive(&reply, NOW).unwrap();
+    let mut seed = pair
+        .sender
+        .queue([8; 16], "ordinary seed", BODY, NOW, NOW)
+        .unwrap();
+    assert!(!seed.prekey);
+    seed.sent_at = 0;
+    let seed = if save_cursor {
+        let token = pair.receiver.archive_checkpoint(NOW).unwrap();
+        pair.receiver
+            .receive_archive(&token, "recovery-seed", &seed, NOW)
+            .unwrap()
+    } else {
+        pair.receiver.receive_network(&seed, NOW).unwrap()
+    };
+    pair.receiver.mark_read(2, seed.frame).unwrap();
+    let operation = [9; 16];
+    let wire = pair
+        .sender
+        .queue(operation, "selected newer", BODY, NOW, NOW)
+        .unwrap();
+    assert!(!wire.prekey);
+    let Pair {
+        sender,
+        receiver,
+        owned,
+        ..
+    } = pair;
+    drop(sender);
+    drop(receiver);
+    (owned, Delivery { operation, wire })
+}
+
+#[tokio::test]
+async fn foreground_entry_348_selects_only_the_requested_pending_operation() {
+    use super::foreground::Trial;
+
+    let (owned, expected) = recovery_fixture(true);
+    let operation = hex(&expected.operation);
+    let trial = Trial::parse("foreground-348", &operation).unwrap();
+    mark_fixture(&owned, MARK_348);
+    let sender_path = owned.0.join("sender/mail.fkv");
+    let sender_before = fs::read(&sender_path).unwrap();
+    let mut prepared = trial.prepare(&owned.0, PASS, PASS, NOW).unwrap();
+    assert_eq!(prepared.pending.len(), 3);
+    let selected = &prepared.pending[prepared.selected];
+    assert_eq!(selected.operation, expected.operation);
+    assert_eq!(selected.wire, expected.wire);
+    let cursor = prepared.receiver.archive_checkpoint(NOW).unwrap();
+    assert_eq!(cursor.after.as_deref(), Some("recovery-seed"));
+    let mut channel = Controlled::new(BOB_FULL, Ok);
+    assert_eq!(
+        attempt(
+            &mut channel,
+            &mut prepared.receiver,
+            selected,
+            trial.route(),
+            NOW,
+            |_| Ok(())
+        )
+        .await
+        .unwrap(),
+        Outcome::Accepted
+    );
+    let [sent] = channel.sent.as_slice() else {
+        panic!("send only the selected retained operation");
+    };
+    assert_eq!(sent.attr("to"), Some(BOB_FULL));
+    assert_eq!(sent.attr("id"), Some(operation.as_str()));
+    let mut bare = sent.clone();
+    bare.set_attr("".into(), "to".try_into().unwrap(), BOB);
+    assert_eq!(
+        bare,
+        mail_wire::message(&expected.wire, expected.operation).unwrap()
+    );
+    assert_eq!(prepared.receiver.archive_checkpoint(NOW).unwrap(), cursor);
+    assert_eq!(fs::read(sender_path).unwrap(), sender_before);
+}
+
+#[test]
+fn foreground_entry_348_requires_its_marker_cursor_and_ordinary_pending_operation() {
+    use super::foreground::Trial;
+
+    for invalid in [
+        "full",
+        "0909",
+        "00000000000000000000000000000000",
+        "0909090909090909090909090909090A",
+    ] {
+        assert!(Trial::parse("foreground-348", invalid).is_err());
+    }
+    let (owned, expected) = recovery_fixture(true);
+    let trial = Trial::parse("foreground-348", &hex(&expected.operation)).unwrap();
+    assert!(trial.prepare(&owned.0, PASS, PASS, NOW).is_err());
+    mark_fixture(&owned, MARK_347);
+    assert!(trial.prepare(&owned.0, PASS, PASS, NOW).is_err());
+    let old_trial = Trial::parse("foreground-347", "full").unwrap();
+    assert!(old_trial.prepare(&owned.0, PASS, PASS, NOW).is_err());
+    mark_fixture(&owned, MARK_348);
+    for rejected in [[7; 16], [10; 16]] {
+        let rejected = Trial::parse("foreground-348", &hex(&rejected)).unwrap();
+        assert!(rejected.prepare(&owned.0, PASS, PASS, NOW).is_err());
+    }
+    let (no_cursor, expected) = recovery_fixture(false);
+    mark_fixture(&no_cursor, MARK_348);
+    let trial = Trial::parse("foreground-348", &hex(&expected.operation)).unwrap();
+    assert!(trial.prepare(&no_cursor.0, PASS, PASS, NOW).is_err());
+}
+
+#[test]
+fn foreground_entry_347_keeps_the_fresh_fixture_marker_and_routes() {
+    use super::foreground::Trial;
+
+    let pair = Pair::new(false);
+    let Pair {
+        mut sender,
+        receiver,
+        owned,
+        ..
+    } = pair;
+    sender.enable_archive(NOW).unwrap();
+    drop(sender);
+    drop(receiver);
+    mark_fixture(&owned, MARK_347);
+    for (mode, route) in [
+        ("bare", Route::Bare),
+        ("full", Route::Full),
+        ("missing", Route::Missing),
+    ] {
+        let trial = Trial::parse("foreground-347", mode).unwrap();
+        assert_eq!(trial.route(), route);
+        let prepared = trial.prepare(&owned.0, PASS, PASS, NOW).unwrap();
+        assert_eq!(prepared.pending.len(), 1);
+    }
+    mark_fixture(&owned, MARK_348);
+    let old = Trial::parse("foreground-347", "full").unwrap();
+    assert!(old.prepare(&owned.0, PASS, PASS, NOW).is_err());
+}
