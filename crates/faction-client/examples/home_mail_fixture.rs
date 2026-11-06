@@ -11,6 +11,10 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 use zeroize::Zeroizing;
+
+#[path = "home_mail_fixture/foreground.rs"]
+mod foreground;
+
 fn json(s: &str) -> String {
     let mut out = String::from("\"");
     for c in s.chars() {
@@ -51,6 +55,9 @@ fn run() -> io::Result<()> {
         .duration_since(UNIX_EPOCH)
         .map_err(|_| invalid())?
         .as_secs();
+    if action == "foreground-347" && args.len() == 3 && fields.len() == 4 {
+        return foreground::run(path, &args[2], &fields, now);
+    }
     if action == "init" && args.len() == 4 && fields.len() == 1 {
         let device = args[3].parse().map_err(|_| invalid())?;
         let (v, _recovery) = CheckpointVault::create(
@@ -181,3 +188,7 @@ fn main() {
         std::process::exit(1)
     }
 }
+
+#[cfg(test)]
+#[path = "home_mail_fixture/foreground_tests.rs"]
+mod foreground_tests;
