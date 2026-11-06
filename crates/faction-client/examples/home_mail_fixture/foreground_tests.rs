@@ -244,9 +244,9 @@ fn tampered_payload(mut frame: Element) -> Result<Element, Error> {
     Ok(frame)
 }
 
-fn own_stanza_id(mut frame: Element) -> Result<Element, Error> {
+fn foreign_stanza_id(mut frame: Element) -> Result<Element, Error> {
     frame.append_child(
-        "<stanza-id xmlns='urn:xmpp:sid:0' by='bob@receiver.test' id='fixture-position'/>"
+        "<stanza-id xmlns='urn:xmpp:sid:0' by='alice@sender.test' id='fixture-position'/>"
             .parse()
             .unwrap(),
     );
@@ -287,7 +287,7 @@ async fn foreground_rejections_leave_history_cursor_and_pending_unchanged() {
             tampered_payload,
             Outcome::DifferentCiphertext,
         ),
-        (Route::Full, BOB_FULL, own_stanza_id, Outcome::Codec),
+        (Route::Full, BOB_FULL, foreign_stanza_id, Outcome::Codec),
         (
             Route::Full,
             BOB_FULL,
@@ -468,4 +468,253 @@ fn foreground_report_distinguishes_no_attempt_completed_and_unconfirmed_write() 
         record_outcome(&mut report, outcome).unwrap();
         assert_eq!(report, expected.as_bytes());
     }
+}
+
+const SID_NS: &str = "urn:xmpp:sid:0";
+const OWN_SID: &str =
+    "<stanza-id xmlns='urn:xmpp:sid:0' by='bob@receiver.test' id='fixture-position'/>";
+
+fn prosody_frame(delivery: &Delivery, extensions: &[&str]) -> Element {
+    let mut frame = outer_to(
+        mail_wire::message(&delivery.wire, delivery.operation).unwrap(),
+        BOB_FULL,
+    );
+    frame.set_attr(
+        "".into(),
+        "from".try_into().unwrap(),
+        "alice@sender.test/faction101",
+    );
+    frame.set_attr(
+        "http://www.w3.org/XML/1998/namespace".into(),
+        "lang".try_into().unwrap(),
+        "en",
+    );
+    for xml in extensions {
+        frame.append_child(xml.parse().unwrap());
+    }
+    let mut xml = Vec::new();
+    frame.write_to(&mut xml).unwrap();
+    std::str::from_utf8(&xml).unwrap().parse().unwrap()
+}
+
+async fn observed_prosody(pair: &mut Pair, frame: &Element, bound: &'static str) -> Outcome {
+    let mut channel = Controlled::new(bound, Ok);
+    channel.arrivals.push_back(frame.clone());
+    let mut observed = Vec::new();
+    let outcome = attempt(
+        &mut channel,
+        &mut pair.receiver,
+        &pair.delivery,
+        Route::Full,
+        NOW,
+        |stanza| {
+            observed.push(stanza.clone());
+            Ok(())
+        },
+    )
+    .await
+    .unwrap();
+    assert_eq!(observed, [frame.clone()]);
+    assert_eq!(channel.sent.len(), 1);
+    assert!(channel.sent[0].is("message", "jabber:client"));
+    assert_eq!(channel.sent[0].attr("to"), Some(BOB_FULL));
+    assert!(channel.sent[0].get_child("stanza-id", SID_NS).is_none());
+    outcome
+}
+
+#[tokio::test]
+async fn foreground_prosody_shape_requires_projection_and_archive_id_has_no_state_authority() {
+    let mut pair = Pair::new(false);
+    let sender_before = fs::read(pair.owned.0.join("sender/mail.fkv")).unwrap();
+    let receiver_path = pair.owned.0.join("receiver/mail.fkv");
+    let before = pair.receiver.archive_checkpoint(NOW).unwrap();
+    let frame = prosody_frame(&pair.delivery, &[OWN_SID]);
+    let strict = |xml| {
+        mail_wire::decode_message(
+            xml,
+            mail_wire::Binding {
+                peer: ALICE,
+                peer_device: 101,
+                peer_identity: pair.delivery.wire.identity,
+                own: BOB,
+                own_device: 202,
+            },
+        )
+    };
+    assert!(
+        strict(&frame).is_err(),
+        "the unchanged decoder must reject the raw shape"
+    );
+    let mut expected = pair.delivery.wire.clone();
+    expected.sent_at = 0;
+    assert_eq!(
+        strict(&prosody_frame(&pair.delivery, &[])).unwrap(),
+        expected
+    );
+
+    let outcome = observed_prosody(&mut pair, &frame, BOB_FULL).await;
+    assert_eq!(format!("{outcome:?}"), "ProjectedAccepted");
+    let committed = fs::read(&receiver_path).unwrap();
+    let records = pair.receiver.history().unwrap();
+    assert_eq!(records.len(), 1);
+    assert_eq!(records[0].direction, Direction::Received);
+    assert_eq!(records[0].subject.as_str(), SUBJECT);
+    assert_eq!(records[0].body.as_str(), BODY);
+    assert_eq!(records[0].sent_at, NOW);
+    assert_eq!(pair.receiver.read_summary().unwrap().unread, Some(1));
+    assert_eq!(pair.receiver.archive_checkpoint(NOW).unwrap(), before);
+
+    let id_variant = OWN_SID.replace("fixture-position", &"x".repeat(256));
+    let frame_variant = prosody_frame(&pair.delivery, &[&id_variant]);
+    assert_ne!(frame, frame_variant);
+    assert_eq!(
+        observed_prosody(&mut pair, &frame_variant, BOB_FULL).await,
+        Outcome::Duplicate
+    );
+    assert_eq!(fs::read(receiver_path).unwrap(), committed);
+    assert_eq!(pair.receiver.archive_checkpoint(NOW).unwrap(), before);
+    assert_eq!(pair.receiver.read_summary().unwrap().unread, Some(1));
+    pair.assert_pending(&sender_before);
+}
+
+#[tokio::test]
+async fn foreground_prosody_projection_rejects_unsupported_metadata_and_preserves_checks() {
+    let mut pair = Pair::new(false);
+    let sender_before = fs::read(pair.owned.0.join("sender/mail.fkv")).unwrap();
+    let receiver_path = pair.owned.0.join("receiver/mail.fkv");
+    let receiver_before = fs::read(&receiver_path).unwrap();
+    let cursor = pair.receiver.archive_checkpoint(NOW).unwrap();
+    let malformed = [
+        OWN_SID.replace(SID_NS, "urn:xmpp:sid:wrong"),
+        OWN_SID.replace(BOB, ALICE),
+        OWN_SID.replace(BOB, BOB_FULL),
+        OWN_SID.replace(" by='bob@receiver.test'", ""),
+        OWN_SID.replace(" id='fixture-position'", ""),
+        OWN_SID.replace("fixture-position", ""),
+        OWN_SID.replace("fixture-position", "contains space"),
+        OWN_SID.replace("fixture-position", "non-ascii-é"),
+        OWN_SID.replace("fixture-position", &"x".repeat(257)),
+        OWN_SID.replace("by=", "xmlns:other='urn:other' other:by="),
+        OWN_SID.replace("id=", "xmlns:other='urn:other' other:id="),
+        OWN_SID.replace("/>", " extra='value'/>"),
+        OWN_SID.replace("/>", "> </stanza-id>"),
+        OWN_SID.replace("/>", "><child/></stanza-id>"),
+    ];
+    let mut cases = malformed
+        .iter()
+        .map(|extension| {
+            (
+                prosody_frame(&pair.delivery, &[extension]),
+                BOB_FULL,
+                Outcome::Codec,
+            )
+        })
+        .collect::<Vec<_>>();
+    for extensions in [[OWN_SID, OWN_SID], [OWN_SID, "<other xmlns='urn:other'/>"]] {
+        cases.push((
+            prosody_frame(&pair.delivery, &extensions),
+            BOB_FULL,
+            Outcome::Codec,
+        ));
+    }
+    let frame = prosody_frame(&pair.delivery, &[OWN_SID]);
+    let mut missing_store = frame.clone();
+    missing_store
+        .remove_child("store", "urn:xmpp:hints")
+        .unwrap();
+    cases.extend([
+        (missing_store, BOB_FULL, Outcome::Codec),
+        (
+            wrong_recipient(frame.clone()).unwrap(),
+            BOB_FULL,
+            Outcome::Codec,
+        ),
+        (
+            tampered_payload(frame.clone()).unwrap(),
+            BOB_FULL,
+            Outcome::DifferentCiphertext,
+        ),
+        (frame, BOB_OTHER, Outcome::Destination),
+    ]);
+    for (frame, bound, expected) in cases {
+        assert_eq!(observed_prosody(&mut pair, &frame, bound).await, expected);
+        assert_eq!(fs::read(&receiver_path).unwrap(), receiver_before);
+        assert!(pair.receiver.history().unwrap().is_empty());
+        assert_eq!(pair.receiver.archive_checkpoint(NOW).unwrap(), cursor);
+    }
+    pair.assert_pending(&sender_before);
+}
+
+#[tokio::test]
+async fn foreground_prosody_envelope_grants_neither_bare_projection_nor_sender_trust() {
+    let mut pair = Pair::new(true);
+    let receiver_path = pair.owned.0.join("receiver/mail.fkv");
+    let receiver_before = fs::read(&receiver_path).unwrap();
+    let cursor = pair.receiver.archive_checkpoint(NOW).unwrap();
+    let frame = prosody_frame(&pair.delivery, &[OWN_SID]);
+
+    let mut channel = Controlled::new(BOB_FULL, Ok);
+    channel.arrivals.push_back(frame.clone());
+    assert_eq!(
+        attempt(
+            &mut channel,
+            &mut pair.receiver,
+            &pair.delivery,
+            Route::Bare,
+            NOW,
+            |observed| {
+                assert_eq!(observed, &frame);
+                Ok(())
+            },
+        )
+        .await
+        .unwrap(),
+        Outcome::Codec
+    );
+    assert_eq!(
+        observed_prosody(&mut pair, &frame, BOB_FULL).await,
+        Outcome::AcceptanceFailed
+    );
+    assert_eq!(fs::read(receiver_path).unwrap(), receiver_before);
+    assert!(pair.receiver.history().unwrap().is_empty());
+    assert_eq!(pair.receiver.archive_checkpoint(NOW).unwrap(), cursor);
+}
+
+#[tokio::test]
+async fn foreground_prosody_projection_requires_the_observed_child_order() {
+    let mut pair = Pair::new(false);
+    let sender_before = fs::read(pair.owned.0.join("sender/mail.fkv")).unwrap();
+    let receiver_path = pair.owned.0.join("receiver/mail.fkv");
+    let receiver_before = fs::read(&receiver_path).unwrap();
+    let cursor = pair.receiver.archive_checkpoint(NOW).unwrap();
+    let mut root = prosody_frame(&pair.delivery, &[OWN_SID]);
+    let children = [
+        root.remove_child("encrypted", OMEMO).unwrap(),
+        root.remove_child("store", "urn:xmpp:hints").unwrap(),
+        root.remove_child("stanza-id", SID_NS).unwrap(),
+    ];
+    for order in [[2, 0, 1], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 1, 0]] {
+        let mut reordered = root.clone();
+        for index in order {
+            reordered.append_child(children[index].clone());
+        }
+        assert_eq!(
+            observed_prosody(&mut pair, &reordered, BOB_FULL).await,
+            Outcome::Codec,
+            "unexpected projection for child order {order:?}"
+        );
+        assert_eq!(fs::read(&receiver_path).unwrap(), receiver_before);
+        assert!(pair.receiver.history().unwrap().is_empty());
+        assert_eq!(pair.receiver.archive_checkpoint(NOW).unwrap(), cursor);
+    }
+    pair.assert_pending(&sender_before);
+
+    // Without the archive ID the existing strict decoder still accepts this
+    // ordering, independent of the fixture's narrower projection profile.
+    root.append_child(children[1].clone());
+    root.append_child(children[0].clone());
+    assert_eq!(
+        observed_prosody(&mut pair, &root, BOB_FULL).await,
+        Outcome::Accepted
+    );
 }

@@ -47,6 +47,7 @@ pub(super) enum Outcome {
     AcceptanceFailed,
     Duplicate,
     Accepted,
+    ProjectedAccepted,
 }
 
 // Only the sender can emit an application stanza. The receiver has no
@@ -74,6 +75,34 @@ impl Channel for Live<'_> {
     async fn next(&mut self) -> Result<Element, Error> {
         self.receiver.next().await
     }
+}
+
+// Only the observed order of encrypted, store and stanza-id permits this
+// fixture projection. The unchanged decoder still validates the first two.
+fn without_archive_id(frame: &Element, own: &str) -> Option<Element> {
+    const SID: &str = "urn:xmpp:sid:0";
+
+    let mut children = frame.children();
+    let encrypted = children.next()?;
+    let store = children.next()?;
+    let sid = children.next()?;
+    let id = sid.attr("id")?;
+    if children.next().is_some()
+        || !encrypted.is("encrypted", mail_wire::OMEMO)
+        || !store.is("store", "urn:xmpp:hints")
+        || !sid.is("stanza-id", SID)
+        || sid.attrs().len() != 2
+        || sid.attr("by") != Some(own)
+        || sid.nodes().next().is_some()
+        || !(1..=256).contains(&id.len())
+        || !id.bytes().all(|byte| byte.is_ascii_graphic())
+    {
+        return None;
+    }
+
+    let mut projected = frame.clone();
+    projected.remove_child("stanza-id", SID)?;
+    Some(projected)
 }
 
 pub(super) async fn attempt(
@@ -139,15 +168,31 @@ pub(super) async fn attempt(
         let Some(peer) = state.peer else {
             return Ok(Outcome::AcceptanceFailed);
         };
-        let binding = Binding {
-            peer: peer.address,
-            peer_device: peer.device,
-            peer_identity: *peer.identity,
-            own: &vault.legacy()?.home,
-            own_device: state.local_device,
+        let own = &vault.legacy()?.home;
+        let decode = |xml| {
+            mail_wire::decode_message(
+                xml,
+                Binding {
+                    peer: peer.address,
+                    peer_device: peer.device,
+                    peer_identity: *peer.identity,
+                    own,
+                    own_device: state.local_device,
+                },
+            )
         };
-        let Ok(wire) = mail_wire::decode_message(&frame, binding) else {
-            return Ok(Outcome::Codec);
+        let (wire, projected) = match decode(&frame) {
+            Ok(wire) => (wire, false),
+            Err(_) if route == Route::Full => {
+                let Some(projected) = without_archive_id(&frame, own) else {
+                    return Ok(Outcome::Codec);
+                };
+                let Ok(wire) = decode(&projected) else {
+                    return Ok(Outcome::Codec);
+                };
+                (wire, true)
+            }
+            Err(_) => return Ok(Outcome::Codec),
         };
         let queued = &delivery.wire;
         if wire.from != queued.from
@@ -165,6 +210,7 @@ pub(super) async fn attempt(
         // and commits only in the disposable receiver vault.
         return Ok(match vault.receive_network(&wire, now) {
             Ok(receipt) if receipt.duplicate => Outcome::Duplicate,
+            Ok(_) if projected => Outcome::ProjectedAccepted,
             Ok(_) => Outcome::Accepted,
             Err(_) => Outcome::AcceptanceFailed,
         });
