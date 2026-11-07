@@ -155,9 +155,14 @@ frozen latency workload, host profile tests and actual console observations.
 For the purpose-3 extension, controlled host checks observed Busy release the
 synchronous admission, actual issuance and introspection progress, and the exact
 17-byte result complete at shared attempt seven and client attempt three.
-These checks do not establish new-code native qualification, full maximum-file CI
-or the cause of historical [#326](https://github.com/gonz0w/faction-bbs/issues/326)
-deadline failures. No additional worker, ninth attempt, new dependency, crypto,
+Full Repository CI at `61f569d` passed, including maximum-file console checks.
+Separate NetBSD software controls passed 11 provider and two SDK compatibility
+cases at 1 GiB runtime. The corrected SDK tests used a test-only private OpenSSL
+configuration repair and a private `python3` alias to the existing versioned
+interpreter; production code, assertions and limits were unchanged. These controls
+do not establish a new native maximum-file result or the cause of historical
+[#326](https://github.com/gonz0w/faction-bbs/issues/326) deadline failures. No
+additional worker, ninth attempt, new dependency, crypto,
 schema or configuration key is introduced. See
 [#358](https://github.com/gonz0w/faction-bbs/issues/358).
 
