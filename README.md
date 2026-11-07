@@ -38,8 +38,9 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [private attachment desk](docs/private-attachments.md).
   Compatible home storage is required. Ordinary SSH access does not receive private
   mail plaintext or keys. Classic and Unicode two-client host tests with synthetic
-  TLS homes exercised the new exchange and later archive recovery; native and
-  same-SSH qualification remain pending.
+  TLS homes exercised the new exchange and later archive recovery. A separate
+  NetBSD software VM exercised the original exchange and same-SSH return path;
+  that observation predates the #358 provider change.
 - **Limits:** provider operation and cross-home attachment delivery are software
   previews, not deployed services. An explicitly enabled own-home route completed
   maximum-size classic and Unicode exercises on the host and a NetBSD software
@@ -148,7 +149,8 @@ message. The manual console also offers multiline writing; queueing stays on the
 device and sending is explicit. The separate [brief exchange](docs/online-mail.md#exchange-from-an-inbox-or-conversation)
 receives briefly or sends one selected queued text and then receives; it adds no
 presence announcement or background connection. Existing X, N and A actions stay
-unchanged. Native and same-SSH qualification for this new path remain pending.
+unchanged. The original path was also exercised on a NetBSD software VM with
+same-SSH return; later provider changes require their own qualification.
 
 The default-off [roaming terminal experiment](docs/roaming-authentication.md) adds
 a trusted UID-to-local-member path plus filesystem-owner commands for manual

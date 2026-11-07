@@ -191,7 +191,8 @@ persisted writes. A is the explicit archive receive path. Schema 2 keeps live
 synchronization. Neither mode promises background notification/reconnect,
 attachments, roaming or multi-device operation. The owner-approved separate
 foreground attempt in [ADR 0081](decisions/0081-durable-mail-archive.md#owner-approved-amendment--2026-11-07)
-does not change those actions. Native and same-SSH qualification remain pending.
+does not change those actions. A NetBSD software VM exercised the original
+foreground and same-SSH paths before the separate #358 provider change.
 Source checks and the prior qualified primitives do not establish a
 security audit, full protocol conformance, physical hardware support or capacity.
 
@@ -215,7 +216,9 @@ without connecting. Classic and Unicode review, cancellation and dispatch contro
 have been tested. Classic and Unicode two-client host tests with synthetic TLS
 homes exercised production selected send, live receive and later MAM
 recovery/deduplication while preserving cursor, read state and pending operations.
-Native and same-SSH qualification remain pending.
+The original product source `81922457`, with the `f01977a` test-only CA fixture
+repair, also completed NetBSD software VM and same-SSH controls. This observation
+does not qualify the later #358 provider code.
 
 Full outer peer routing derives from the verified account and device. The OMEMO
 bare account, operation ID and ciphertext remain immutable. Only this new path may

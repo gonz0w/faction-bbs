@@ -188,8 +188,9 @@ connect or press Enter to return to the unchanged view. Each attempt then asks
 for a fresh hidden home password. Ctrl-C/D retains the existing lock-and-exit
 behavior. Review, cancellation and dispatch controls were tested in classic and
 Unicode modes. Two-client host tests with synthetic TLS homes exercised selected
-send, live receive and later archive recovery in both modes. Native and same-SSH
-qualification remain in progress under
+send, live receive and later archive recovery in both modes. A separate NetBSD
+software VM exercised the original exchange and same-SSH return in both modes;
+that observation predates the #358 provider change. See
 [#355](https://github.com/gonz0w/faction-bbs/issues/355) and
 [#356](https://github.com/gonz0w/faction-bbs/issues/356).
 
