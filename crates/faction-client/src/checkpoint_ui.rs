@@ -48,6 +48,14 @@ mod attachments;
 #[path = "checkpoint_ui_exchange_tests.rs"]
 mod exchange_tests;
 
+#[cfg(feature = "network-mail")]
+#[path = "checkpoint_ui_foreground.rs"]
+mod foreground;
+
+#[cfg(all(test, feature = "network-mail"))]
+#[path = "checkpoint_ui_foreground_tests.rs"]
+mod foreground_tests;
+
 // A borrowed, foreground-only capability. Offline views never receive one.
 struct HomeExchange<'a> {
     #[cfg(feature = "network-mail")]
@@ -56,6 +64,8 @@ struct HomeExchange<'a> {
     _unavailable: std::marker::PhantomData<&'a ()>,
     #[cfg(all(test, feature = "network-mail"))]
     cycle: Option<&'a ControlledCycle<'a>>,
+    #[cfg(all(test, feature = "network-mail"))]
+    foreground: Option<&'a foreground::ControlledForeground<'a>>,
 }
 #[cfg(all(test, feature = "network-mail"))]
 type ControlledCycle<'a> = dyn Fn(
@@ -71,6 +81,8 @@ impl<'a> HomeExchange<'a> {
             settings,
             #[cfg(test)]
             cycle: None,
+            #[cfg(test)]
+            foreground: None,
         }
     }
 }
@@ -755,7 +767,19 @@ impl Screen<'_> {
                 ))?;
             }
             self.print("[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open full record\r\n")?;
-            if exchange.is_some() {
+            #[cfg(feature = "network-mail")]
+            let brief = if online {
+                exchange.and_then(|exchange| {
+                    foreground::Target::prepare(v, exchange.settings, group, now().ok()?).ok()
+                })
+            } else {
+                None
+            };
+            #[cfg(not(feature = "network-mail"))]
+            let brief: Option<()> = None;
+            if brief.is_some() {
+                self.print("[E] Brief exchange  [X] Home exchange\r\n")?;
+            } else if exchange.is_some() {
                 self.print("[X] Home exchange\r\n")?;
             }
             self.print("[B] Back\r\n")?;
@@ -768,6 +792,21 @@ impl Screen<'_> {
                     Key::Down | Key::Hotkey(b'J') => model.down(),
                     Key::Hotkey(b'N') => model.next(),
                     Key::Hotkey(b'P') => model.previous(),
+                    #[cfg(feature = "network-mail")]
+                    Key::Hotkey(b'E') if brief.is_some() => {
+                        self.brief_exchange(
+                            v,
+                            exchange.unwrap(),
+                            group,
+                            model.selected().map(|entry| entry.index),
+                        )?;
+                        list.refresh_matching(
+                            Self::inbox_group_entries(v, Some(group))?,
+                            Self::inbox_matches(v, search)?,
+                        );
+                        model.refresh(list);
+                        decoder = Decoder::new();
+                    }
                     #[cfg(feature = "network-mail")]
                     Key::Hotkey(b'X') if exchange.is_some() => {
                         self.home_exchange(v, exchange.unwrap())?;

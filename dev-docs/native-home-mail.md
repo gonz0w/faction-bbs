@@ -207,6 +207,13 @@ operation after fresh peer discovery, then receive briefly. Attachment releases
 and bulk outbox sends are excluded. Cancellation closes the session; a local write
 is not a delivery receipt and no arrival does not establish that the peer is offline.
 
+The tested conversation review exposes E, pages the current home, peer, device
+and identity, and offers R or B; S is conditional on the highlighted eligible
+pending text and reviews its retained record, operation and subject. A literal
+`exchange` confirmation precedes the fresh hidden password; blank input returns
+without connecting. Classic and Unicode review/cancellation controls have been
+tested; production dispatch and end-to-end qualification remain in progress.
+
 Full outer peer routing derives from the verified account and device. The OMEMO
 bare account, operation ID and ciphertext remain immutable. Only this new path may
 admit one qualified own stanza-id: the encrypted element, empty store hint and SID

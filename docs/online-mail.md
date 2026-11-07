@@ -178,10 +178,26 @@ password. It does not send the entire outbox, announce presence or keep a
 connection running. The action and its controls remain subject to implementation
 and qualification; the existing N and A instructions below still apply.
 
+The tested review presents **E: Brief exchange** in the matching online
+conversation. Review the full home, peer, device and identity over the displayed
+pages, then choose **R** to receive briefly or **B** to return. To send one text,
+select its sent **PENDING** record in the **All** scope before choosing E, then
+choose **S** and review the record, operation and subject. S appears only for an
+eligible highlighted text. The Unread scope may contain only received messages,
+so it may offer R without S. At the confirmation prompt, type `exchange` to
+connect or press Enter to return to the unchanged view. Each attempt then asks
+for a fresh hidden home password. Ctrl-C/D retains the existing lock-and-exit
+behavior. These review and cancellation controls were tested in classic and
+Unicode modes; dispatch and end-to-end qualification remain in progress under
+[#355](https://github.com/gonz0w/faction-bbs/issues/355) and
+[#356](https://github.com/gonz0w/faction-bbs/issues/356).
+
 Live messages accepted by that future action leave the archive position and read
 decisions intact. Later manual catch-up can recover older retained messages and
 deduplicate repeats, within the existing skipped-message limit. A local write is
 not a delivery receipt, and no observed arrival does not prove the peer is offline.
+The attempt has a ten-second overall connection/session deadline, a two-second
+receive idle wait and a 32-stanza limit; pending operations remain pending.
 
 Use **X: Home exchange** in an online inbox or conversation to run the same
 explicit N or A action and return to your current local view. N may send all
