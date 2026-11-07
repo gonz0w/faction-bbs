@@ -56,6 +56,14 @@ four entries for the already verified peer, starting after the saved position.
 It does not publish keys or retry pending sends during catch-up. Use **H** to read
 accepted history and **A** again when you deliberately want another page.
 
+An owner-approved separate brief foreground attempt is planned for a prepared
+archive-enabled vault with a saved position and verified peer. It leaves this
+manual catch-up action unchanged and does not advance the saved position. Later
+catch-up can recover older retained messages and deduplicate repeats, subject to
+the existing skipped-message limit and the home's retention. Its controls and
+availability remain subject to implementation and qualification; see
+[online mail](online-mail.md#exchange-from-an-inbox-or-conversation).
+
 The page count includes duplicates and your own retained sent copies, so four
 entries need not mean four new received messages. A recognized sent copy advances
 the position without decrypting or creating another history record. Neither that

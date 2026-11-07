@@ -126,6 +126,15 @@ pending ciphertext; it does not enter live receive. Unsolicited live mail during
 these actions is rejected rather than changing native state outside the archive
 position. Schema 02 retains its existing live synchronization behavior.
 
+The owner-approved [bounded foreground amendment](decisions/0081-durable-mail-archive.md#owner-approved-amendment--2026-11-07)
+adds a distinct, deliberately selected live attempt for a warm prepared vault with
+a nonempty cursor. It does not change U, K, N or A. Authenticated live commits leave
+the cursor, read decisions and pending operations intact; a later manual A can
+recover older retained messages and deduplicate replays. The 32 skipped-key limit
+still rejects the 33rd. Server retention and detection of self-consistent omission
+remain unguaranteed. See the [foreground contract](native-home-mail.md#bounded-foreground-contract).
+The amendment is accepted policy, pending implementation and qualification.
+
 Every outgoing encrypted message, including a retry from schema 02, now includes
 exactly one empty `<store xmlns='urn:xmpp:hints'/>`, following
 [XEP-0334](https://xmpp.org/extensions/xep-0334.html). This is a retention request

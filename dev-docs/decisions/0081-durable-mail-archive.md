@@ -9,6 +9,9 @@ authorize a deployment, release, public listener or new external service.
 
 ## Decision
 
+The following is the original 2026-10-25 decision; the narrow 2026-11-07
+amendment below adds a separate mode without changing these manual actions.
+
 Add an explicit manual own-home MAM2 page to the default-off `network-mail` client.
 Fetch at most four entries for the already independently verified peer. Require
 the matching own archive, query IDs and finishing response before applying any
@@ -57,6 +60,35 @@ One bounded page is sufficient for deliberate offline catch-up within the existi
 small retained store. A generic archive synchronizer would require additional
 retention, pagination, cancellation, multi-device and background policy. This
 change does not adopt those policies or a new protocol/crypto dependency graph.
+
+## Owner-approved amendment — 2026-11-07
+
+The owner [adopted the bounded foreground mode](https://github.com/gonz0w/faction-bbs/issues/355#issuecomment-6709420166)
+for [#355](https://github.com/gonz0w/faction-bbs/issues/355) and
+[#356](https://github.com/gonz0w/faction-bbs/issues/356). This is a separate,
+deliberate attempt on a warm, prepared native session with a current independently
+verified peer, archive-enabled vault and nonempty saved cursor. It receives briefly,
+or sends exactly one selected retained ordinary-text ciphertext and then receives
+briefly. Each attempt requires a fresh home password. Existing Publish, Prepare,
+N and A semantics remain unchanged; they remain archive-only after opt-in.
+
+Authenticated live input commits through the existing atomic vault receive path
+without changing the cursor, read decisions or pending operations. A later manual
+MAM page can recover older retained messages and deduplicate replays. A live arrival
+requiring more than 32 skipped older keys is rejected. Neither retention nor detection
+of self-consistent server omissions is guaranteed. Routing uses the verified peer and
+device; outer addresses and the narrowly qualified own stanza-id metadata grant no
+identity, time, cursor or receipt authority. Immutable OMEMO bare addressing and
+ciphertext remain unchanged.
+
+The original connection/session and parser limits remain in force. There is no
+presence, bulk outbox send, automatic MAM, reconnect, background activity,
+credential lease or continuous chat. No new key publication, device enrollment,
+crypto, schema, dependency, host service or VM authority follows. Classic and
+Unicode private local access, ordinary SSH and feature-off/offline use remain.
+The owner playground stays stopped. This amendment defines accepted policy, not
+completed implementation or qualification; source-matched tests, review and CI
+remain required before the new behavior is claimed as available.
 
 ## Consequences
 

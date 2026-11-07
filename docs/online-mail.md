@@ -170,6 +170,19 @@ first use, full-store stops and stale-position recovery limits.
 
 ## Exchange from an inbox or conversation
 
+The owner has approved a separate brief foreground exchange for a prepared,
+archive-enabled vault with a saved position and a currently verified peer. Its
+intended choices are receive briefly, or select exactly one retained queued text
+message to send and then receive briefly. Each attempt requires a fresh home
+password. It does not send the entire outbox, announce presence or keep a
+connection running. The action and its controls remain subject to implementation
+and qualification; the existing N and A instructions below still apply.
+
+Live messages accepted by that future action leave the archive position and read
+decisions intact. Later manual catch-up can recover older retained messages and
+deduplicate repeats, within the existing skipped-message limit. A local write is
+not a delivery receipt, and no observed arrival does not prove the peer is offline.
+
 Use **X: Home exchange** in an online inbox or conversation to run the same
 explicit N or A action and return to your current local view. N may send all
 pending ciphertext; A fetches one enabled archive page. Each action prompts for

@@ -189,5 +189,38 @@ page and an encrypted atomic cursor. Archive-enabled U/K/N omit initial presence
 and reject live encrypted frames before checkpoint mutation; N returns after
 persisted writes. A is the explicit archive receive path. Schema 2 keeps live
 synchronization. Neither mode promises background notification/reconnect,
-attachments, roaming or multi-device operation. Source checks and the prior qualified primitives do not establish a
+attachments, roaming or multi-device operation. The owner-approved separate
+foreground attempt in [ADR 0081](decisions/0081-durable-mail-archive.md#owner-approved-amendment--2026-11-07)
+does not change those actions and is subject to implementation and qualification.
+Source checks and the prior qualified primitives do not establish a
 security audit, full protocol conformance, physical hardware support or capacity.
+
+## Bounded foreground contract
+
+The accepted separate attempt requires a warm prepared session, an archive-enabled
+vault with a saved nonempty cursor, and the current independently verified peer.
+Cold, empty-cursor, history-only, revoked, expired or full states reject before
+connection or mutation. The reviewed peer context must be rechecked before release
+or acceptance. A fresh hidden home password authorizes each single connection:
+receive briefly, or send exactly one selected retained ordinary-text pending
+operation after fresh peer discovery, then receive briefly. Attachment releases
+and bulk outbox sends are excluded. Cancellation closes the session; a local write
+is not a delivery receipt and no arrival does not establish that the peer is offline.
+
+Full outer peer routing derives from the verified account and device. The OMEMO
+bare account, operation ID and ciphertext remain immutable. Only this new path may
+admit one qualified own stanza-id: the encrypted element, empty store hint and SID
+element occur in the exact qualified child order; SID has exactly `by` and `id`,
+`by` equals the own bare account, and `id` is 1–256 ASCII graphic bytes. The SID
+element is empty. Foreign, duplicate, reordered, oversized or otherwise malformed
+metadata is rejected and grants no cursor, time, trust or receipt meaning. Existing
+decoders and modes remain strict.
+
+Authenticated input uses the existing atomic `receive_network` vault boundary,
+preserving cursor, read state and pending work. Later deliberate archive retrieval
+can recover older retained ciphertext and deduplicate it, subject to the existing
+32 skipped-key bound and rejection at 33. The original cooperative ten-second
+connection/session deadline, two-second receive idle wait, 32-stanza limit, XML
+16 KiB interval/64 KiB stream, depth 32 and rejection at parser event 256 remain.
+No presence, automatic archive query, polling, reconnect or background lease is
+added. This contract is policy for #355/#356, not evidence of qualified behavior.

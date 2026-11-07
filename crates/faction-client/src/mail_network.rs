@@ -11,6 +11,11 @@ use std::{
     os::unix::fs::MetadataExt,
     path::{Component, Path},
 };
+mod foreground;
+pub use foreground::{
+    ForegroundAction, ForegroundPeer, ForegroundReport, ForegroundWrite, foreground_cycle,
+};
+
 /// Trusted local configuration. Home passwords and device secrets have no field.
 pub struct Settings {
     pub account: String,
@@ -643,6 +648,7 @@ async fn exchange_ready<C: Channel>(
 
 #[cfg(test)]
 mod tests {
+    mod foreground;
     mod foreground_recovery;
 
     use super::*;
