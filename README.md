@@ -38,7 +38,9 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [private attachment desk](docs/private-attachments.md).
   Compatible home storage is required. Ordinary SSH access does not receive private
   mail plaintext or keys. Classic and Unicode two-client host tests with synthetic
-  TLS homes exercised the new exchange and later archive recovery. A separate
+  TLS homes exercised the new exchange and later archive recovery. Classic and
+  Unicode host journeys also exercised fresh conversation writing and selected
+  queued-text exchange; their native validation remains pending. A separate
   NetBSD software VM exercised the original exchange and same-SSH return path;
   that observation predates the #358 provider change.
 - **Limits:** provider operation and cross-home attachment delivery are software
@@ -145,8 +147,9 @@ The [local inbox](docs/local-mail-inbox.md) includes a device-local corresponden
 picker for browsing one retained account/device at a time, local search and a
 deliberately opened conversation preview of unlocked retained mail. The manual
 inbox offers paged body reading and deliberate replies to a selected received
-message. The manual console also offers multiline writing; queueing stays on the
-device and sending is explicit. The separate [brief exchange](docs/online-mail.md#exchange-from-an-inbox-or-conversation)
+message. A verified online conversation also offers fresh multiline writing and
+an explicit queued-text picker; queueing stays on the device and sending is
+explicit. The separate [brief exchange](docs/online-mail.md#exchange-from-an-inbox-or-conversation)
 receives briefly or sends one selected queued text and then receives; it adds no
 presence announcement or background connection. Existing X, N and A actions stay
 unchanged. The original path was also exercised on a NetBSD software VM with

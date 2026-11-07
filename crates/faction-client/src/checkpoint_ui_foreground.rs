@@ -17,6 +17,43 @@ pub(super) struct Target {
     pub identity: [u8; 32],
 }
 impl Target {
+    pub fn pending(&self, v: &CheckpointVault) -> io::Result<Vec<usize>> {
+        let records = v.history()?.iter().collect::<Vec<_>>();
+        Ok(self.pending_records(&records, &v.inspect_outbox()?))
+    }
+    pub(super) fn pending_records(
+        &self,
+        records: &[&faction_client::mail_checkpoint::Record],
+        pending: &[faction_client::mail_checkpoint::OutboxInspection<'_>],
+    ) -> Vec<usize> {
+        records
+            .iter()
+            .enumerate()
+            .filter_map(|(index, record)| {
+                (record.direction == Direction::Sent
+                    && record.attachment().is_none()
+                    && record.address == self.address.as_str()
+                    && record.device == self.device
+                    && record.identity == self.identity
+                    && records
+                        .iter()
+                        .filter(|other| other.operation() == record.operation())
+                        .count()
+                        == 1
+                    && pending
+                        .iter()
+                        .filter(|item| item.operation == record.operation())
+                        .count()
+                        == 1
+                    && pending.iter().any(|item| {
+                        item.operation == record.operation()
+                            && item.address == self.address.as_str()
+                            && item.device == self.device
+                    }))
+                .then_some(index)
+            })
+            .collect()
+    }
     pub fn prepare(
         v: &CheckpointVault,
         settings: &Settings,
@@ -92,6 +129,81 @@ pub(super) fn report(report: &ForegroundReport) -> String {
 }
 
 impl Screen<'_> {
+    fn queued_text(&mut self, v: &CheckpointVault, target: &Target) -> io::Result<Option<usize>> {
+        let entries = target
+            .pending(v)?
+            .into_iter()
+            .map(|index| inbox::Entry {
+                index,
+                status: inbox::Status::Pending,
+            })
+            .collect();
+        let mut list = inbox::Inbox::new(entries);
+        if let Some(index) = list.eligible().iter().map(|entry| entry.index).min() {
+            list.select_index(index);
+        }
+        let mut model = conversation::Conversation::new(&list);
+        let mut decoder = Decoder::new();
+        rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
+        loop {
+            self.print("\r\n[LOCAL QUEUED TEXT]\r\n")?;
+            let (page, pages) = model.page();
+            self.print(&format!(
+                "Page {page}/{pages}; selection {}/{}\r\n",
+                if model.len() == 0 {
+                    0
+                } else {
+                    model.position() + 1
+                },
+                model.len()
+            ))?;
+            if model.len() == 0 {
+                self.print("No eligible queued ordinary text.\r\n")?;
+            }
+            for entry in model.visible() {
+                let record = &v.history()?[entry.index];
+                self.print(&format!(
+                    "{} {:02} ",
+                    if model.selected() == Some(*entry) {
+                        '>'
+                    } else {
+                        ' '
+                    },
+                    entry.index + 1
+                ))?;
+                self.print(&inbox::compact(&record.subject, self.unicode, 34))?;
+                self.print("\r\n")?;
+            }
+            self.print("[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Review selected text\r\n[B] Return\r\n")?;
+            loop {
+                match decoder.feed(self.byte()?, Instant::now()) {
+                    Some(Key::Up | Key::Hotkey(b'K')) => model.up(),
+                    Some(Key::Down | Key::Hotkey(b'J')) => model.down(),
+                    Some(Key::Hotkey(b'N')) => model.next(),
+                    Some(Key::Hotkey(b'P')) => model.previous(),
+                    Some(Key::Hotkey(b'B')) => return Ok(None),
+                    Some(Key::Enter | Key::Hotkey(b'O')) => {
+                        if let Some(entry) = model.selected() {
+                            if target.pending(v)?.contains(&entry.index) {
+                                return Ok(Some(entry.index));
+                            }
+                            self.print("Selection changed; no text selected.\r\n")?;
+                            return Ok(None);
+                        }
+                    }
+                    _ => continue,
+                }
+                break;
+            }
+        }
+    }
+    fn brief_actions(&mut self, selected: bool) -> io::Result<()> {
+        self.print("At most 10 seconds; idle wait 2 seconds.\r\nAt most 32 stanzas; no automatic retry.\r\nA write is not delivery or reading.\r\nNo arrival does not prove offline.\r\n[R] Receive briefly\r\n")?;
+        if selected {
+            self.print("[S] Send selected text\r\n")?;
+        }
+        self.print("[Q] Choose queued text\r\n[B] Return\r\n")
+    }
     /// Full inert review with the existing borrowed, bounded body pager.
     fn brief_review(&mut self, text: &str) -> io::Result<bool> {
         let mut pages = body::Body::new(text, self.unicode);
@@ -124,10 +236,11 @@ impl Screen<'_> {
         v: &mut CheckpointVault,
         exchange: &HomeExchange<'_>,
         group: usize,
-        index: Option<usize>,
+        mut index: Option<usize>,
     ) -> io::Result<()> {
         let target = Target::prepare(v, exchange.settings, group, now()?)?;
-        let selected = target.selected(v, index)?;
+        let mut selected = target.selected(v, index)?;
+        let mut picked = false;
         self.clear()?;
         rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
         self.print("[LOCAL BRIEF EXCHANGE]\r\n")?;
@@ -141,17 +254,26 @@ impl Screen<'_> {
         if !self.brief_review(&review)? {
             return Ok(());
         }
-        self.print("At most 10 seconds; idle wait 2 seconds.\r\nAt most 32 stanzas; no automatic retry.\r\nA write is not delivery or reading.\r\nNo arrival does not prove offline.\r\n[R] Receive briefly\r\n")?;
-        if selected.is_some() {
-            self.print("[S] Send selected text\r\n")?;
-        }
-        self.print("[B] Return\r\n")?;
+        self.brief_actions(selected.is_some())?;
         let mut decoder = Decoder::new();
         let sending = loop {
             match decoder.feed(self.byte()?, Instant::now()) {
                 Some(Key::Hotkey(b'B')) => return Ok(()),
                 Some(Key::Hotkey(b'R')) => break false,
                 Some(Key::Hotkey(b'S')) if selected.is_some() => break true,
+                Some(Key::Hotkey(b'Q')) => {
+                    if let Some(chosen) = self.queued_text(v, &target)? {
+                        index = Some(chosen);
+                        selected = target.selected(v, index)?;
+                        if selected.is_some() {
+                            picked = true;
+                            break true;
+                        }
+                        self.print("Selection changed; no text selected.\r\n")?;
+                    }
+                    self.brief_actions(selected.is_some())?;
+                    decoder = Decoder::new();
+                }
                 _ => {}
             }
         };
@@ -187,7 +309,14 @@ impl Screen<'_> {
             current.address == target.address
                 && current.device == target.device
                 && current.identity == target.identity
-                && (!sending || current.selected(v, index).ok() == Some(selected))
+                && (!sending
+                    || (current.selected(v, index).ok() == Some(selected)
+                        && (!picked
+                            || index.is_some_and(|index| {
+                                current
+                                    .pending(v)
+                                    .is_ok_and(|pending| pending.contains(&index))
+                            }))))
         }) {
             v.inspection()?;
             self.print("Selection changed; nothing connected.\r\n")?;

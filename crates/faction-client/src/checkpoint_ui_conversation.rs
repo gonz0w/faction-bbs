@@ -3,6 +3,27 @@ use super::inbox::{self, Entry, Inbox};
 use zeroize::Zeroizing;
 
 const PAGE: usize = 2;
+#[cfg(feature = "network-mail")]
+pub(super) fn compose_target(
+    v: &faction_client::mail_checkpoint::CheckpointVault,
+    settings: &faction_client::mail_network::Settings,
+    group: usize,
+    time: u64,
+) -> std::io::Result<super::reply::Target> {
+    let target = super::reply::Target::compose(v, time)?;
+    let records = v.history()?;
+    let anchor = records
+        .get(group)
+        .ok_or_else(faction_client::mail_data::invalid)?;
+    if v.legacy()?.home != settings.account
+        || anchor.address != target.address.as_str()
+        || anchor.device != target.device
+        || anchor.identity != target.identity
+    {
+        return Err(faction_client::mail_data::invalid());
+    }
+    Ok(target)
+}
 pub struct Conversation {
     entries: Vec<Entry>,
     position: usize,

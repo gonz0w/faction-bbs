@@ -1,4 +1,6 @@
 //! Real vault authority and PTY Screen controls; transport qualification is separate.
+#[path = "checkpoint_ui_conversation_actions_tests.rs"]
+mod actions;
 use super::*;
 use faction_client::{
     mail_checkpoint::Wire,
@@ -168,6 +170,7 @@ impl Fixture {
 }
 impl Drop for Fixture {
     fn drop(&mut self) {
+        actions::retain_finished(self);
         std::fs::remove_dir_all(&self.root).unwrap();
     }
 }
