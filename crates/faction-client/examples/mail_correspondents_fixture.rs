@@ -85,6 +85,24 @@ mod fixture {
         Ok(())
     }
 
+    #[cfg(feature = "network-mail")]
+    fn pending_wires(path: &Path, now: u64) -> io::Result<()> {
+        let vault = CheckpointVault::unlock(Store::at(path, false)?, PASS, false)?;
+        let mut rows = Vec::new();
+        for delivery in vault.pending_deliveries(now)? {
+            let message = faction_client::mail_wire::message(&delivery.wire, delivery.operation)?;
+            let mut bytes = Vec::new();
+            message.write_to(&mut bytes).map_err(|_| invalid())?;
+            rows.push(format!(
+                "{{\"operation\":{},\"message\":{}}}",
+                json(&hex(&delivery.operation)),
+                json(&hex(&bytes))
+            ));
+        }
+        println!("[{}]", rows.join(","));
+        Ok(())
+    }
+
     pub fn run() -> io::Result<()> {
         let args = std::env::args().skip(1).collect::<Vec<_>>();
         if !(2..=3).contains(&args.len()) {
@@ -100,6 +118,10 @@ mod fixture {
             .as_secs();
         if args[0] == "inspect" && args.len() == 2 {
             return inspect(path, now);
+        }
+        #[cfg(feature = "network-mail")]
+        if args[0] == "pending-wires" && args.len() == 2 {
+            return pending_wires(path, now);
         }
         if args[0] != "seed" || args.len() != 3 {
             return Err(invalid());

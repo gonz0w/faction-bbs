@@ -768,6 +768,13 @@ impl Screen<'_> {
             }
             self.print("[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open full record\r\n")?;
             #[cfg(feature = "network-mail")]
+            let writing = online
+                && exchange.is_some_and(|exchange| {
+                    now().ok().is_some_and(|time| {
+                        conversation::compose_target(v, exchange.settings, group, time).is_ok()
+                    })
+                });
+            #[cfg(feature = "network-mail")]
             let brief = if online {
                 exchange.and_then(|exchange| {
                     foreground::Target::prepare(v, exchange.settings, group, now().ok()?).ok()
@@ -782,6 +789,10 @@ impl Screen<'_> {
             } else if exchange.is_some() {
                 self.print("[X] Home exchange\r\n")?;
             }
+            #[cfg(feature = "network-mail")]
+            if writing {
+                self.print("[W] Write fresh text  ")?;
+            }
             self.print("[B] Back\r\n")?;
             loop {
                 let Some(key) = decoder.feed(self.byte()?, Instant::now()) else {
@@ -792,6 +803,16 @@ impl Screen<'_> {
                     Key::Down | Key::Hotkey(b'J') => model.down(),
                     Key::Hotkey(b'N') => model.next(),
                     Key::Hotkey(b'P') => model.previous(),
+                    #[cfg(feature = "network-mail")]
+                    Key::Hotkey(b'W') if writing => {
+                        self.write_message_in(v, None, Some((exchange.unwrap().settings, group)))?;
+                        list.refresh_matching(
+                            Self::inbox_group_entries(v, Some(group))?,
+                            Self::inbox_matches(v, search)?,
+                        );
+                        model.refresh(list);
+                        decoder = Decoder::new();
+                    }
                     #[cfg(feature = "network-mail")]
                     Key::Hotkey(b'E') if brief.is_some() => {
                         self.brief_exchange(
@@ -1238,9 +1259,21 @@ impl Screen<'_> {
         v: &mut CheckpointVault,
         source: Option<(usize, [u8; 32])>,
     ) -> io::Result<()> {
-        let target = match source {
-            Some((index, frame)) => reply::Target::prepare(v, index, frame, now()?),
-            None => reply::Target::compose(v, now()?),
+        self.write_message_in(v, source, None)
+    }
+    fn write_message_in(
+        &mut self,
+        v: &mut CheckpointVault,
+        source: Option<(usize, [u8; 32])>,
+        conversation: Option<(&faction_client::mail_network::Settings, usize)>,
+    ) -> io::Result<()> {
+        let target = if let Some((settings, group)) = conversation {
+            conversation::compose_target(v, settings, group, now()?)
+        } else {
+            match source {
+                Some((index, frame)) => reply::Target::prepare(v, index, frame, now()?),
+                None => reply::Target::compose(v, now()?),
+            }
         };
         let target = match target {
             Ok(t) => t,
@@ -1286,7 +1319,11 @@ impl Screen<'_> {
             return self.print("Writing cancelled; no ciphertext queued.\r\n");
         }
         let timestamp = now()?;
-        if target.recheck(v, timestamp).is_err() {
+        if target.recheck(v, timestamp).is_err()
+            || conversation.is_some_and(|(settings, group)| {
+                conversation::compose_target(v, settings, group, timestamp).is_err()
+            })
+        {
             return self.writing_unavailable(v);
         }
         let mut operation = [0; 16];

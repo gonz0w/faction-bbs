@@ -111,6 +111,17 @@ same correspondent, filter and search remain active, with the original selection
 kept if still eligible. **B** returns to that correspondent inbox. An empty
 result cannot select a different correspondent.
 
+In an online conversation matching the current independently verified peer, **W**
+opens a fresh multiline message to that peer. Review the recipient and complete
+content and confirm **queue** to save encrypted ciphertext locally. Composing
+does not contact home or acknowledge mail. Cancellation or queueing returns to
+the same group, filter, search and eligible selection; a new sent record may be
+hidden by the current filter or search. See the
+[multiline writer](online-mail.md#write-a-multiline-message) for limits and commands.
+Offline, old history or a different or no-longer-current peer cannot authorize
+writing. Full, cold, expired, revoked and history-only states retain their existing
+refusals.
+
 Previewing alone does not acknowledge, reply, queue or send mail, or contact home.
 It is a view of retained records on this device, not live chat, protocol threading,
 current presence or proof of contact or key continuity. The offline reader has no
@@ -135,9 +146,10 @@ to persist encrypted ciphertext. Enter or other confirmation text cancels and
 returns to the inbox. Queued confirmation input is discarded.
 
 Reply does not mark the source read, connect to your home or ask for a home
-password. Sending still requires a separate deliberate N action. A pending reply
-proves neither delivery nor reading. Normal cancel returns to the same inbox;
-Ctrl-C/D, input/output failure and inactivity retain their locking behavior.
+password. Sending still requires a separate deliberate N action or an eligible
+brief E exchange. A pending reply proves neither delivery nor reading. Normal
+cancel returns to the same inbox; Ctrl-C/D, input/output failure and inactivity
+retain their locking behavior.
 Failed writes retain the canonical-store close/reopen rule.
 
 Reply is available only in the manual network-mail console, including its picker,
@@ -151,6 +163,12 @@ In the manual online console, **X: Home exchange** is available in the global
 inbox, a correspondent inbox and its conversation preview. It opens a local
 choice; entering it or choosing **B** does not connect or change the vault.
 The offline console has no Home exchange action.
+
+In an eligible online conversation, **E: Brief exchange** also offers a separate
+receive or one-text send. Its **Q** choice selects queued ordinary text even when
+Unread or search hides sent records; see the
+[brief exchange guide](online-mail.md#exchange-from-an-inbox-or-conversation) for
+selection, confirmation and limits.
 
 Choose **N** for the existing home-wide Send pending / Connect-sync action.
 It may send **all pending ciphertext**, regardless of the correspondent or search
@@ -181,8 +199,8 @@ failure or the existing inactivity timeout lock the console. A failed checkpoint
 write keeps the existing poison/drop/reopen rule; reopen the canonical store
 before trying again.
 
-Ordinary inbox navigation does not connect; only a deliberate Home exchange
-action contacts home. There is no background refresh. Keys, message
+Ordinary inbox navigation and composing do not connect; only a deliberate
+exchange action contacts home. There is no background refresh. Keys, message
 text and read decisions stay on the member device. It creates no plaintext index
 or sidecar, sends no receipts and retains no new background credentials. A local
 view can remain usable during a home outage. Terminal scrollback is not erased.

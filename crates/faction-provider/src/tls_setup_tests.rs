@@ -423,31 +423,9 @@ fn shared_setup_distinct_families_and_busy_slots_keep_bounded_local_candidates()
     );
     assert!(credentials.connector.try_lock().unwrap().is_none());
     assert!(separate.connector.try_lock().unwrap().is_none());
-    let barrier = std::sync::Barrier::new(2);
-    std::thread::scope(|threads| {
-        let mut workers = Vec::new();
-        for _ in 0..2 {
-            let credentials = &credentials;
-            let barrier = &barrier;
-            workers.push(threads.spawn(move || {
-                let prepared = credentials.prepare_connector(None).unwrap();
-                assert!(matches!(prepared, PreparedConnector::Cold(_)));
-                assert!(credentials.connector.try_lock().unwrap().is_none());
-                barrier.wait();
-                let connector = credentials.finish_connector(prepared, None);
-                assert!(
-                    connector
-                        .configure()
-                        .unwrap()
-                        .into_ssl("provider.test")
-                        .is_ok()
-                );
-            }));
-        }
-        for worker in workers {
-            worker.join().unwrap();
-        }
-    });
+    rendezvous::two_cold_candidates(&credentials)
+        .outcome
+        .unwrap();
     assert!(credentials.connector.try_lock().unwrap().is_some());
     assert!(matches!(
         credentials.prepare_connector(None),
@@ -944,3 +922,6 @@ fn shared_setup_warm_http_epoch_change_refuses_before_application_write() {
     });
     SetupPeer::lane_empty(&runtime);
 }
+
+#[path = "tls_setup_rendezvous_tests.rs"]
+mod rendezvous;

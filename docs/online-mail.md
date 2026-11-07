@@ -124,7 +124,9 @@ peer delivery, reading or exactly-once processing. History remains available.
 
 In the manual home-mail menu, choose **W** to write a new multiline body to the
 current prepared peer. After opening an eligible received record in the local
-inbox, **W** writes a multiline reply. The existing **C** and **R** one-line
+inbox, **W** writes a multiline reply. In the online conversation matching the
+current verified account, device and identity, **W** starts a fresh message to
+that peer. The existing **C** and **R** one-line
 paths remain available. Offline inspection has no compose or reply action.
 Review the current verified recipient, device and full identity; a history record
 does not enroll a peer or establish continuity with a changed key.
@@ -146,7 +148,10 @@ Review shows the complete recipient, subject and body. Long bodies use pages;
 press Enter for the next page. B while more pages remain cancels the intent and
 returns to the owning context without saving the draft. After the complete review,
 type a fresh **queue** confirmation to save encrypted ciphertext; other input
-cancels the intent. Queueing is local; sending remains a separate deliberate **N** action.
+cancels the intent. Queueing is local; sending remains a separate deliberate
+**N** action or eligible brief **E** exchange. Conversation writing returns to the same group, filter,
+search and eligible selection, even if those settings hide the new sent record.
+It does not require the archive position needed by E.
 Preview and cancellation do not mark mail read, queue or connect to home. The
 draft is temporary on this device and is not saved as a plaintext draft. Ctrl-C/D,
 EOF, output failure and inactivity retain the console's lock behavior. Terminal
@@ -177,22 +182,34 @@ Each attempt requires a fresh home
 password. It does not send the entire outbox, announce presence or keep a
 connection running. The existing N and A instructions below still apply.
 
-The tested review presents **E: Brief exchange** in the matching online
+The review presents **E: Brief exchange** in the matching online
 conversation. Review the full home, peer, device and identity over the displayed
 pages, then choose **R** to receive briefly or **B** to return. To send one text,
 select its sent **PENDING** record in the **All** scope before choosing E, then
 choose **S** and review the record, operation and subject. S appears only for an
-eligible highlighted text. The Unread scope may contain only received messages,
-so it may offer R without S. At the confirmation prompt, type `exchange` to
-connect or press Enter to return to the unchanged view. Each attempt then asks
-for a fresh hidden home password. Ctrl-C/D retains the existing lock-and-exit
-behavior. Review, cancellation and dispatch controls were tested in classic and
-Unicode modes. Two-client host tests with synthetic TLS homes exercised selected
-send, live receive and later archive recovery in both modes. A separate NetBSD
-software VM exercised the original exchange and same-SSH return in both modes;
-that observation predates the #358 provider change. See
-[#355](https://github.com/gonz0w/faction-bbs/issues/355) and
-[#356](https://github.com/gonz0w/faction-bbs/issues/356).
+eligible highlighted text. Alternatively, choose **Q** to select one eligible
+queued ordinary text independently of the displayed Unread filter or search.
+The picker lists eligible texts in retained append order, two per page.
+Use Up/Down or J/K to move, N/P to page, and Enter/O to review the selected
+row. Review the recipient, record, operation and subject; an empty or stale choice
+sends nothing. B returns to the exchange menu, and B there returns to the
+conversation. The picker does not connect or change read, archive or pending
+state. Returning preserves the conversation view. At the confirmation prompt,
+type `exchange` to connect or press Enter to return to the unchanged view. Each
+attempt then asks for a fresh hidden home password. Ctrl-C/D retains the existing lock-and-exit
+behavior. The original R and S review, cancellation and dispatch controls were
+tested in classic and Unicode modes. Two-client host tests with synthetic TLS
+homes exercised selected send, live receive and later archive recovery in both
+modes. Classic and Unicode host and NetBSD 11 ARM64 software VM journeys also
+exercised fresh conversation writing, cancellation, one selected queued-text
+send, authenticated receipt and preserved local state. NetBSD checks also covered
+same-SSH BBS/SFTP outage, privacy and return at 1 GiB runtime. See
+[#359](https://github.com/gonz0w/faction-bbs/issues/359) and
+[#360](https://github.com/gonz0w/faction-bbs/issues/360) for these conversation actions.
+
+The existing full-store refusal also applies to E: a local W can queue the eighth
+pending operation, after which E is unavailable until deliberate maintenance.
+Pending ciphertext is never automatically retired.
 
 Live messages accepted by this action leave the archive position and read
 decisions intact. Later manual catch-up can recover older retained messages and

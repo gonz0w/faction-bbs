@@ -135,7 +135,12 @@ carbons and group chats are outside this live profile. The separate
 
 Compose requires nonempty subject/body with bounds of 128/1024 UTF-8 bytes.
 The console offers
-one-line input, inert preview and an explicit `queue` confirmation. The existing
+one-line input and an empty-start multiline writer (at most 32 body lines),
+inert review and an explicit `queue` confirmation. In an exact current verified
+online conversation, W reuses that writer and the existing atomic local queue;
+it rechecks recipient authority and preserves the group, filter, query and eligible
+selection on return. It does not require the foreground exchange archive cursor,
+connect, acknowledge a message or retire pending ciphertext. The existing
 checkpoint transaction stores native state, sent history, a nonzero operation ID
 and immutable ciphertext together. Only a successfully persisted outbox entry
 can reach the transport. Retries use that entry's same ID and ciphertext.
@@ -208,17 +213,28 @@ operation after fresh peer discovery, then receive briefly. Attachment releases
 and bulk outbox sends are excluded. Cancellation closes the session; a local write
 is not a delivery receipt and no arrival does not establish that the peer is offline.
 
-The tested conversation review exposes E, pages the current home, peer, device
+The conversation review exposes E, pages the current home, peer, device
 and identity, and offers R or B; S is conditional on the highlighted eligible
-pending text and reviews its retained record, operation and subject. A literal
-`exchange` confirmation precedes the fresh hidden password; blank input returns
-without connecting. Classic and Unicode review, cancellation and dispatch controls
-have been tested. Classic and Unicode two-client host tests with synthetic TLS
-homes exercised production selected send, live receive and later MAM
+pending text and reviews its retained record, operation and subject. Q opens a
+bounded picker of eligible canonical pending ordinary texts for the exact current
+peer independently of the conversation filter and query. Explicit selection
+uses the same review and confirmation path for one operation; an empty or stale
+selection sends nothing. Returning preserves the conversation view. The existing
+full-store refusal applies to E even after W queues the eighth pending operation.
+A literal `exchange` confirmation precedes the fresh hidden password; blank input
+returns without connecting. The original R and S classic and Unicode review, cancellation
+and dispatch controls have been tested. Classic and Unicode two-client host tests
+with synthetic TLS homes exercised production selected send, live receive and later MAM
 recovery/deduplication while preserving cursor, read state and pending operations.
+Classic and Unicode host and NetBSD 11 ARM64 software VM journeys exercised the
+conversation writer and queued-text picker, including cancellation, exact selected
+wire, authenticated receipt, retained view and state, privacy and teardown.
+NetBSD checks also covered same-SSH BBS/SFTP outage and return at 1 GiB runtime;
+independent native evidence review accepted source `c3c6371`. The later [#362](https://github.com/gonz0w/faction-bbs/issues/362)
+provider test-only coordinator repair is separate host/CI qualification work and
+was not included in the guest inputs.
 The original product source `81922457`, with the `f01977a` test-only CA fixture
-repair, also completed NetBSD software VM and same-SSH controls. This observation
-does not qualify the later #358 provider code.
+repair, also completed earlier NetBSD software VM and same-SSH controls.
 
 Full outer peer routing derives from the verified account and device. The OMEMO
 bare account, operation ID and ciphertext remain immutable. Only this new path may

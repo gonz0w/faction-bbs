@@ -38,9 +38,10 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [private attachment desk](docs/private-attachments.md).
   Compatible home storage is required. Ordinary SSH access does not receive private
   mail plaintext or keys. Classic and Unicode two-client host tests with synthetic
-  TLS homes exercised the new exchange and later archive recovery. A separate
-  NetBSD software VM exercised the original exchange and same-SSH return path;
-  that observation predates the #358 provider change.
+  TLS homes exercised the new exchange and later archive recovery. Classic and
+  Unicode host and NetBSD 11 ARM64 software VM journeys also exercised fresh
+  conversation writing and selected queued-text exchange. NetBSD checks covered
+  same-SSH BBS/SFTP outage, privacy and return at 1 GiB runtime.
 - **Limits:** provider operation and cross-home attachment delivery are software
   previews, not deployed services. An explicitly enabled own-home route completed
   maximum-size classic and Unicode exercises on the host and a NetBSD software
@@ -145,12 +146,13 @@ The [local inbox](docs/local-mail-inbox.md) includes a device-local corresponden
 picker for browsing one retained account/device at a time, local search and a
 deliberately opened conversation preview of unlocked retained mail. The manual
 inbox offers paged body reading and deliberate replies to a selected received
-message. The manual console also offers multiline writing; queueing stays on the
-device and sending is explicit. The separate [brief exchange](docs/online-mail.md#exchange-from-an-inbox-or-conversation)
+message. A verified online conversation also offers fresh multiline writing and
+an explicit queued-text picker; queueing stays on the device and sending is
+explicit. The separate [brief exchange](docs/online-mail.md#exchange-from-an-inbox-or-conversation)
 receives briefly or sends one selected queued text and then receives; it adds no
 presence announcement or background connection. Existing X, N and A actions stay
-unchanged. The original path was also exercised on a NetBSD software VM with
-same-SSH return; later provider changes require their own qualification.
+unchanged. Host and NetBSD software VM controls cover conversation writing and
+selected exchange; NetBSD checks also cover same-SSH return.
 
 The default-off [roaming terminal experiment](docs/roaming-authentication.md) adds
 a trusted UID-to-local-member path plus filesystem-owner commands for manual
