@@ -614,6 +614,52 @@ pub fn decode_message(xml: &Element, binding: Binding<'_>) -> io::Result<Wire> {
     })
 }
 
+/// Serialize one retained ciphertext for a separately selected full-resource route.
+pub fn foreground_message(wire: &Wire, operation: [u8; 16]) -> io::Result<Element> {
+    let mut xml = message(wire, operation)?;
+    xml.set_attr(
+        "".into(),
+        "to".try_into().map_err(|_| invalid())?,
+        format!("{}/faction{}", wire.to, wire.to_device),
+    );
+    Ok(xml)
+}
+/// Foreground-only metadata profile; the general decoder remains strict.
+pub fn decode_foreground_message(xml: &Element, binding: Binding<'_>) -> io::Result<Wire> {
+    budget(xml)?;
+    if xml.attr("from") != Some(format!("{}/faction{}", binding.peer, binding.peer_device).as_str())
+        || xml.attr("to") != Some(format!("{}/faction{}", binding.own, binding.own_device).as_str())
+    {
+        return Err(invalid());
+    }
+    const SID: &str = "urn:xmpp:sid:0";
+    if xml.get_child("stanza-id", SID).is_none() {
+        return decode_message(xml, binding);
+    }
+    let mut children = xml.children();
+    let encrypted = children.next().ok_or_else(invalid)?;
+    let hint = children.next().ok_or_else(invalid)?;
+    let sid = children.next().ok_or_else(invalid)?;
+    let id = sid.attr("id").ok_or_else(invalid)?;
+    if children.next().is_some()
+        || !encrypted.is("encrypted", OMEMO)
+        || !hint.is("store", "urn:xmpp:hints")
+        || !sid.is("stanza-id", SID)
+        || sid.attrs().len() != 2
+        || sid.attr("by") != Some(binding.own)
+        || sid.nodes().next().is_some()
+        || !(1..=256).contains(&id.len())
+        || !id.bytes().all(|byte| byte.is_ascii_graphic())
+    {
+        return Err(invalid());
+    }
+    let mut projected = xml.clone();
+    projected
+        .remove_child("stanza-id", SID)
+        .ok_or_else(invalid)?;
+    decode_message(&projected, binding)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -657,6 +703,83 @@ mod tests {
     }
     fn public_keys() -> Vec<(u32, [u8; 32])> {
         (4..=28).map(|id| (id, [id as u8; 32])).collect()
+    }
+    #[test]
+    fn foreground_wire_routes_full_without_changing_bare_ciphertext() {
+        let original = wire();
+        let mut expected = message(&original, [8; 16]).unwrap();
+        expected.set_attr(
+            "".into(),
+            "to".try_into().unwrap(),
+            "alice@home.test/faction101",
+        );
+        assert_eq!(foreground_message(&original, [8; 16]).unwrap(), expected);
+        assert_eq!(original.to, OWN);
+        assert_eq!(original.key, vec![1, 2, 3, 4]);
+    }
+    fn foreground_frame() -> Element {
+        let raw = independent_message().replace("/reference", "/faction202").replace("/local", "/faction101").replace("</message>", "<store xmlns='urn:xmpp:hints'/><stanza-id xmlns='urn:xmpp:sid:0' by='alice@home.test' id='saved-opaque'/></message>");
+        parse(&raw)
+    }
+    #[test]
+    fn foreground_wire_admits_only_qualified_own_archive_metadata() {
+        let frame = foreground_frame();
+        assert!(
+            decode_message(&frame, binding()).is_err(),
+            "old decoder stays strict"
+        );
+        let expected = decode_message(&parse(&independent_message()), binding()).unwrap();
+        assert_eq!(
+            decode_foreground_message(&frame, binding()).unwrap(),
+            expected
+        );
+        let mut foreign = frame.clone();
+        let mut sid = foreign.remove_child("stanza-id", "urn:xmpp:sid:0").unwrap();
+        sid.set_attr("".into(), "by".try_into().unwrap(), "eve@home.test");
+        foreign.append_child(sid);
+        assert!(
+            decode_foreground_message(&foreign, binding()).is_err(),
+            "foreign archive owner"
+        );
+        let raw = xml(&frame);
+        for (before, after) in [
+            ("saved-opaque", ""),
+            ("saved-opaque", "bad id"),
+            ("saved-opaque", "bad&#x9;id"),
+            (
+                "</message>",
+                "<stanza-id xmlns='urn:xmpp:sid:0' by='alice@home.test' id='second'/></message>",
+            ),
+            ("<stanza-id ", "<stanza-id extra='x' "),
+        ] {
+            assert!(
+                decode_foreground_message(&parse(&raw.replace(before, after)), binding()).is_err(),
+                "accepted metadata mutation {before} -> {after}"
+            );
+        }
+        let too_long = raw.replace("saved-opaque", &"a".repeat(257));
+        assert!(decode_foreground_message(&parse(&too_long), binding()).is_err());
+        let mut reordered = frame.clone();
+        let hint = reordered.remove_child("store", "urn:xmpp:hints").unwrap();
+        reordered.append_child(hint);
+        assert!(decode_foreground_message(&reordered, binding()).is_err());
+    }
+    #[test]
+    fn foreground_wire_rejects_wrong_outer_resource_even_without_metadata() {
+        let raw = independent_message()
+            .replace("/reference", "/faction202")
+            .replace("/local", "/faction101");
+        for (before, after) in [
+            ("/faction202", "/reference"),
+            ("/faction101", "/local"),
+            ("/faction202", ""),
+            ("/faction101", ""),
+        ] {
+            assert!(
+                decode_foreground_message(&parse(&raw.replace(before, after)), binding()).is_err(),
+                "accepted wrong route {before} -> {after}"
+            );
+        }
     }
     #[test]
     fn mail_wire_accepts_inert_standard_root_iq_xml_language() {

@@ -170,6 +170,7 @@ fn home_exchange_actual_consumer_helper() {
                 let exchange = HomeExchange {
                     settings: &settings,
                     cycle: Some(&cycle),
+                    foreground: None,
                 };
                 let (master, slave) = faction_client_pty::open(24, 40).unwrap();
                 let mut input = std::fs::File::from(master);

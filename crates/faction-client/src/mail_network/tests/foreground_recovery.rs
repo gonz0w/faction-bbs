@@ -15,7 +15,10 @@ fn body(index: usize) -> String {
 
 // Check ordered received inventory and read decisions against fixture input,
 // separately from what the scripted archive reports in fin.
-fn history(vault: &CheckpointVault, recovered: impl IntoIterator<Item = usize>) -> Vec<[u8; 32]> {
+pub(super) fn history(
+    vault: &CheckpointVault,
+    recovered: impl IntoIterator<Item = usize>,
+) -> Vec<[u8; 32]> {
     let records = vault.history().unwrap();
     let expected = [
         (
@@ -66,7 +69,7 @@ fn history(vault: &CheckpointVault, recovered: impl IntoIterator<Item = usize>) 
     ids
 }
 
-async fn recover(fixture: &Recovery, vault: &mut CheckpointVault, duplicate: bool) {
+pub(super) async fn recover(fixture: &Recovery, vault: &mut CheckpointVault, duplicate: bool) {
     let count = fixture.inventory.len();
     for start in (0..count).step_by(4) {
         let end = (start + 4).min(count);
@@ -221,14 +224,14 @@ async fn foreground_archive_post_live_faults_preserve_the_last_valid_checkpoint(
     history(&live, [1, 0]);
 }
 
-struct Recovery {
-    settings: Settings,
-    inventory: Vec<crate::mail_checkpoint::Delivery>,
-    owned: Owned,
+pub(super) struct Recovery {
+    pub(super) settings: Settings,
+    pub(super) inventory: Vec<crate::mail_checkpoint::Delivery>,
+    pub(super) owned: Owned,
 }
 
 impl Recovery {
-    async fn warm(older: usize) -> Self {
+    pub(super) async fn warm(older: usize) -> Self {
         use crate::mail_vault::Store;
         use std::os::unix::fs::DirBuilderExt;
 
@@ -302,7 +305,7 @@ impl Recovery {
         }
     }
 
-    fn open(&self, branch: &str) -> CheckpointVault {
+    pub(super) fn open(&self, branch: &str) -> CheckpointVault {
         let path = self.owned.0.join(branch);
         CheckpointVault::unlock(
             crate::mail_vault::Store::at(&path, false).unwrap(),
@@ -312,7 +315,7 @@ impl Recovery {
         .unwrap()
     }
 
-    fn bytes(&self, branch: &str) -> Vec<u8> {
+    pub(super) fn bytes(&self, branch: &str) -> Vec<u8> {
         fs::read(self.owned.0.join(branch).join("mail.fkv")).unwrap()
     }
 

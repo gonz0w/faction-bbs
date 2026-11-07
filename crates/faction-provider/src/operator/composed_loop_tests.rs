@@ -210,6 +210,7 @@ fn characterize_own_home_shared_limit_after_two_and_three_busy_collects() {
         let resume_rx = Mutex::new(resume_rx);
         let (finish_tx, finish_rx) = mpsc::sync_channel(1);
         let hooks = composed_loop::Hooks {
+            before_work: None,
             lifecycle: None,
             attach: Some(Box::new(move |delivery| {
                 if attach_armed.swap(false, Ordering::SeqCst) {
@@ -450,6 +451,7 @@ fn maintained_operator_reaps_consumed_delivery_when_real_worker_finishes_after_c
     let (finished_tx, finished_rx) = mpsc::sync_channel(1);
     let (resume_tx, resume_rx) = mpsc::sync_channel(1);
     let hooks = composed_loop::Hooks {
+        before_work: None,
         lifecycle: Some(composed_loop::LifecycleHooks {
             worker_once: AtomicBool::new(true),
             cleanup_once: AtomicBool::new(true),
@@ -618,6 +620,7 @@ fn collection_trace_controls_disabled_enabled_order_privacy_and_overflow() {
     assert!(trace.snapshot().points.is_empty());
     let attached_trace = trace.clone();
     let hooks = composed_loop::Hooks {
+        before_work: None,
         lifecycle: None,
         attach: Some(Box::new(move |delivery| {
             delivery.test_attach_collection_trace(attached_trace.clone())
@@ -763,6 +766,7 @@ fn characterize_one_small_get_through_both_maintained_loops() {
         let hooks: [_; 2] = std::array::from_fn(|_| {
             let holder = holder.clone();
             composed_loop::Hooks {
+                before_work: None,
                 lifecycle: None,
                 attach: Some(Box::new(move |delivery| {
                     if let Some(trace) = holder.get() {
@@ -1267,4 +1271,385 @@ fn small_get_call_line(
         d.timings.planned_wait_us,
         d.timings.actual_wait_us
     )
+}
+
+fn own_home_wait_committed_result(get: bool, callback: bool) {
+    use crate::delivery::CompletionWitness;
+    struct Stop<'a> {
+        runtimes: [&'a Runtime; 2],
+        cancel: Arc<AtomicBool>,
+    }
+    impl Drop for Stop<'_> {
+        fn drop(&mut self) {
+            self.cancel.store(true, Ordering::SeqCst);
+            for runtime in self.runtimes {
+                runtime.stop();
+            }
+        }
+    }
+    {
+        let h = Homes::new(true);
+        let root = h.pair.root.clone();
+        let stores = [h.empty(0), h.empty(1)];
+        let ciphertext = [37; 17];
+        let mut binding = h.pair.binding(0);
+        binding.id = sha256(&ciphertext);
+        binding.size = 17;
+        let servers: [_; 2] = std::array::from_fn(|i| {
+            Server::new_composed(
+                &h.pair.homes[i].server.0,
+                &h.pair.homes[i].server.1,
+                &[
+                    h.pair.homes[i].ca.0.clone(),
+                    h.pair.homes[1 - i].ca.0.clone(),
+                ],
+            )
+            .unwrap()
+        });
+        let profiles: [_; 2] = std::array::from_fn(|i| {
+            PublicationWireProfile::new(h.pair.homes[i].name.into(), vec!["observer".into()])
+                .unwrap()
+        });
+        let routes: [_; 2] = std::array::from_fn(|i| {
+            let home = &h.pair.homes[i];
+            let foreign = &h.pair.homes[1 - i];
+            RelayRoutes::new(
+                home.runtime(),
+                carrier_endpoint(home, &home.relay, home.callback.local_addr().unwrap()),
+                vec![RelayPeer {
+                    home: foreign.name.into(),
+                    publication: h.endpoint(i),
+                    introspection: home.endpoint(foreign),
+                    resource: carrier_endpoint(
+                        foreign,
+                        &home.relay,
+                        foreign.callback.local_addr().unwrap(),
+                    ),
+                }],
+            )
+            .unwrap()
+        });
+        let armed = Arc::new(AtomicBool::new(false));
+        let attach_armed = armed.clone();
+        let (witness_tx, witness_rx) = mpsc::sync_channel::<CompletionWitness>(1);
+        let (resume_tx, resume_rx) = mpsc::sync_channel(1);
+        let resume_rx = Mutex::new(resume_rx);
+        let (finish_tx, finish_rx) = mpsc::sync_channel(1);
+        let (wait_tx, wait_rx) = mpsc::sync_channel(1);
+        let work_armed = Arc::new(AtomicBool::new(false));
+        let gate_armed = work_armed.clone();
+        let (work_entered, work_waiting) = mpsc::sync_channel(1);
+        let (work_release, work_resume) = mpsc::sync_channel(1);
+        let work_resume = Mutex::new(work_resume);
+        let hooks = composed_loop::Hooks {
+            before_work: Some(Box::new(move || {
+                if gate_armed.swap(false, Ordering::SeqCst) {
+                    work_entered.send(()).unwrap();
+                    work_resume
+                        .lock()
+                        .unwrap()
+                        .recv_timeout(Duration::from_secs(2))
+                        .unwrap();
+                }
+            })),
+            lifecycle: None,
+            attach: Some(Box::new(move |delivery| {
+                if attach_armed.swap(false, Ordering::SeqCst) {
+                    let witness = delivery.test_completion_witness();
+                    witness.observe_finish(finish_tx.clone());
+                    delivery.test_observe_waiting_collect(wait_tx.clone());
+                    if callback {
+                        work_armed.store(true, Ordering::SeqCst);
+                    }
+                    witness_tx.send(witness).unwrap();
+                    if !callback {
+                        resume_rx
+                            .lock()
+                            .unwrap()
+                            .recv_timeout(Duration::from_secs(2))
+                            .unwrap();
+                    }
+                }
+            })),
+        };
+        let cancel = Arc::new(AtomicBool::new(false));
+        let (loops_ok, drain) = thread::scope(|scope| {
+            let stop = Stop {
+                runtimes: [h.pair.homes[0].runtime(), h.pair.homes[1].runtime()],
+                cancel: cancel.clone(),
+            };
+            let loops: [_; 2] = std::array::from_fn(|i| {
+                let home = &h.pair.homes[i];
+                let server = &servers[i];
+                let profile = &profiles[i];
+                let routes = &routes[i];
+                let store = &stores[i];
+                let hooks = (i == 1).then_some(&hooks);
+                let cancel = &cancel;
+                let listener = home.callback.try_clone().unwrap();
+                scope.spawn(move || {
+                    thread::scope(|workers| {
+                        composed_loop::run(
+                            workers,
+                            composed_loop::Inputs {
+                                server,
+                                listener,
+                                runtime: home.runtime(),
+                                cancel,
+                                routes,
+                                store,
+                                home: home.name,
+                                profile,
+                                port: 0,
+                            },
+                            hooks,
+                        )
+                    })
+                })
+            });
+            let sender = &h.pair.homes[0];
+            let endpoint = carrier_endpoint(
+                sender,
+                &sender.device,
+                sender.callback.local_addr().unwrap(),
+            );
+            for (index, request) in [
+                Request::Begin(binding.clone()),
+                Request::PutChunk {
+                    id: binding.id,
+                    offset: 0,
+                    bytes: ciphertext.to_vec(),
+                },
+                Request::Commit { id: binding.id },
+            ]
+            .into_iter()
+            .enumerate()
+            {
+                let mut operation = endpoint.operation(cancel.clone());
+                operation
+                    .submit_publication(binding.clone(), request)
+                    .unwrap();
+                let mut response = None;
+                for _ in 0..6 {
+                    match operation.collect_paced().unwrap() {
+                        Collection::Busy => (),
+                        Collection::Complete(value) => {
+                            response = Some(value);
+                            break;
+                        }
+                    }
+                }
+                assert!(
+                    response
+                        == Some(Response::Progress {
+                            binding: binding.clone(),
+                            offset: if index == 0 { 0 } else { 17 },
+                            committed: index == 2,
+                        }),
+                    "legitimate publication setup failed"
+                );
+            }
+            capture_carrier_optional(&h, "own-home-wait-committed");
+            let recipient = &h.pair.homes[1];
+            let endpoint = carrier_endpoint(
+                recipient,
+                &recipient.device,
+                recipient.callback.local_addr().unwrap(),
+            );
+            let mut operation = endpoint.operation(cancel.clone());
+            armed.store(true, Ordering::SeqCst);
+            operation
+                .submit_own_home(
+                    binding.clone(),
+                    if get {
+                        Request::GetChunk {
+                            id: binding.id,
+                            offset: 0,
+                        }
+                    } else {
+                        Request::Status { id: binding.id }
+                    },
+                )
+                .unwrap();
+            let mut replay_frame = operation.test_collect_frame();
+            replay_frame[6] = 6;
+            let witness = witness_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+            if callback {
+                work_waiting
+                    .recv_timeout(Duration::from_secs(2))
+                    .expect("existing worker never entered its selected gate");
+                assert_eq!(witness.test_original_attempts(), 1);
+                let (busy, bounds) = thread::scope(|collect| {
+                    let client = collect.spawn(|| operation.collect_own_home_waiting());
+                    let (start, end) = wait_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+                    assert!(end <= start + Duration::from_millis(100));
+                    assert!(recipient.runtime().state.active.load(Ordering::SeqCst));
+                    assert_eq!(witness.test_original_attempts(), 2);
+                    // Start the real worker only once WAIT holds local admission.
+                    // Its actual issuance callback needs this same owner loop.
+                    work_release.send(()).unwrap();
+                    (client.join().unwrap(), (start, end))
+                });
+                assert!(
+                    matches!(busy, Ok(Collection::Busy)),
+                    "waiting monopolized callback or fabricated completion"
+                );
+                assert!(bounds.1 <= bounds.0 + Duration::from_millis(100));
+                finish_rx.recv_timeout(Duration::from_secs(2)).expect(
+                    "Busy failed to release admission for genuine local issuance/introspection",
+                );
+                {
+                    let completed = witness.hold();
+                    assert!(
+                        matches!(completed.as_ref(), Some(Ok(Response::Chunk { offset: 0, bytes, total: 17 })) if bytes == &ciphertext)
+                    );
+                }
+                assert_eq!(
+                    witness.test_original_attempts(),
+                    6,
+                    "callback work spent extra shared attempts"
+                );
+                let result = operation.collect_own_home_waiting();
+                assert!(
+                    matches!(result, Ok(Collection::Complete(Response::Chunk { offset: 0, bytes, total: 17 })) if bytes == ciphertext)
+                );
+                assert_eq!(witness.test_original_attempts(), 7);
+                assert_eq!(operation.test_attempts(), 3);
+                capture_carrier_optional(&h, "own-home-wait-callback-release");
+            } else {
+                let held = witness.hold();
+                resume_tx.send(()).unwrap();
+                // Genuine finish entry precedes its completion-slot lock. No outer
+                // collect has run, so this samples actual inner accounting.
+                finish_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+                assert_eq!(
+                    witness.test_original_attempts(),
+                    5,
+                    "different inner accounting: stop characterization"
+                );
+                assert!(held.is_none());
+                assert!(
+                    operation.collect_waiting().is_err(),
+                    "service-only API admitted device"
+                );
+                assert_eq!(operation.test_attempts(), 1);
+                let (actual, entered) = thread::scope(|collect| {
+                    let client = collect.spawn(|| operation.collect_own_home_waiting());
+                    let entered = wait_rx.recv_timeout(Duration::from_secs(2));
+                    if let Ok((_, end)) = entered {
+                        assert!(
+                            Instant::now() < end,
+                            "completion release missed original wait window"
+                        );
+                    }
+                    drop(held);
+                    let result = client.join().unwrap();
+                    if let Ok((_, end)) = entered {
+                        assert!(
+                            Instant::now() < end,
+                            "exact result arrived outside original wait window"
+                        );
+                    }
+                    (result, entered)
+                });
+                assert!(
+                    entered.is_ok(),
+                    "actual purpose3 WAIT never entered its bounded wait: {entered:?}"
+                );
+                let (start, end) = entered.unwrap();
+                assert!(end <= start + Duration::from_millis(100));
+                assert_eq!(
+                    witness.test_original_attempts(),
+                    6,
+                    "wait spent an extra shared attempt"
+                );
+                assert_eq!(operation.test_attempts(), 2);
+                let expected = if get {
+                    Response::Chunk {
+                        offset: 0,
+                        bytes: ciphertext.to_vec(),
+                        total: 17,
+                    }
+                } else {
+                    Response::Progress {
+                        binding: binding.clone(),
+                        offset: 17,
+                        committed: true,
+                    }
+                };
+                assert!(
+                    matches!(actual, Ok(Collection::Complete(value)) if value == expected),
+                    "waiting collect substituted committed result"
+                );
+                capture_carrier_optional(
+                    &h,
+                    if get {
+                        "own-home-wait-get"
+                    } else {
+                        "own-home-wait-status"
+                    },
+                );
+            }
+            let attempts = operation.test_attempts();
+            assert_eq!(
+                operation.collect_own_home_paced().err(),
+                Some(tls::Stage::Denied)
+            );
+            assert_eq!(operation.test_attempts(), attempts);
+            assert!(
+                endpoint.test_exchange(&replay_frame).is_empty(),
+                "consumed own-home correlation replay disclosed bytes"
+            );
+            assert!(witness.test_original_attempts() <= 8);
+            drop(witness);
+            drop(stop);
+            let started = Instant::now();
+            let ok = loops
+                .into_iter()
+                .all(|worker| matches!(worker.join(), Ok(Ok(Ok(())))));
+            (ok, started.elapsed())
+        });
+        assert!(loops_ok);
+        assert!(drain < Duration::from_secs(5));
+        for home in &h.pair.homes {
+            assert_eq!(home.charged(), 0);
+            assert!(!home.runtime().state.active.load(Ordering::SeqCst));
+        }
+        drop(stores);
+        drop(h);
+        assert!(!root.exists());
+    }
+}
+
+#[test]
+fn own_home_wait_committed_status_inside_original_window() {
+    own_home_wait_committed_result(false, false);
+}
+#[test]
+fn own_home_wait_committed_get17_inside_original_window() {
+    own_home_wait_committed_result(true, false);
+}
+
+#[test]
+fn before_work_hook_invokes_the_selected_existing_worker_gate() {
+    let called = Arc::new(AtomicUsize::new(0));
+    let observed = called.clone();
+    let hooks = composed_loop::Hooks {
+        lifecycle: None,
+        attach: None,
+        before_work: Some(Box::new(move || {
+            observed.fetch_add(1, Ordering::SeqCst);
+        })),
+    };
+    hooks.before_work();
+    assert_eq!(
+        called.load(Ordering::SeqCst),
+        1,
+        "before-work observer never invoked"
+    );
+}
+
+#[test]
+fn own_home_wait_callback_busy_releases_for_real_local_issuance_and_introspection() {
+    own_home_wait_committed_result(true, true);
 }
