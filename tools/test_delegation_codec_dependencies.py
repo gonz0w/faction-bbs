@@ -24,6 +24,18 @@ def manifest():
 
 
 class CodecDependencies(unittest.TestCase):
+    def test_required_ninth_job_aggregate_is_accepted(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        self.assertIn('  provider_verifier_durable:\n', source)
+        policy.validate_ci(source)
+
+    def test_missing_ninth_job_prerequisite_is_rejected(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        expected = 'needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]'
+        self.assertIn(expected, source)
+        with self.assertRaises(ValueError):
+            policy.validate_ci(source.replace(expected, expected.replace(', provider_verifier_durable', ''), 1))
+
     def test_exact_profile_and_no_product_membership(self):
         policy.validate_profile(manifest(), {'workspace': {'members': ['crates/faction-client']}})
         for member in ['crates/faction-delegation-codec', 'crates/*', 'crates/faction-*']:
@@ -123,7 +135,7 @@ class CodecDependencies(unittest.TestCase):
         gate = '          python3 tools/check_delegation_codec_dependencies.py\n'
         moved = source.replace(gate,'') + gate
         with self.assertRaises(ValueError): policy.validate_ci(moved)
-        with self.assertRaises(ValueError): policy.validate_ci(source.replace('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: [native_mail]'))
+        with self.assertRaises(ValueError): policy.validate_ci(source.replace('needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: [native_mail]'))
 
     def test_ci_post_run_conditionals_and_job_tolerance_refused(self):
         source = ci_fixture()
@@ -140,12 +152,12 @@ class CodecDependencies(unittest.TestCase):
 
     def test_current_ci_requires_both_serial_successors_without_losing_codec_gate(self):
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
-        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', source.splitlines())
+        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]', source.splitlines())
         policy.validate_ci(source)
 
     def test_each_successor_and_the_previous_four_job_aggregate_cannot_bypass_codec_gate(self):
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
-        expected = 'needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]'
+        expected = 'needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]'
         for missing in [', provider_composed', ', own_home_client', ', provider_composed, own_home_client', ', bbs_regressions']:
             self.assertIn(expected, source)
             with self.subTest(missing=missing), self.assertRaises(ValueError):
@@ -162,7 +174,7 @@ class CodecDependencies(unittest.TestCase):
 
 def ci_fixture():
     lines = ['jobs:', '  documentation:', '    name: Documentation and policy',
-             '    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', '    if: ${{ always() }}',
+             '    needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]', '    if: ${{ always() }}',
              '    runs-on: ubuntu-24.04', '    timeout-minutes: 15', '    steps:',
              '      - name: Validate the isolated delegation wire codec', '        env:',
              '          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-delegation-codec',

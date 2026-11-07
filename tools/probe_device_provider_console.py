@@ -103,7 +103,7 @@ _TRANSFER_MARKERS = [
 ]
 
 
-# One fixed failure-line schema. This is local diagnostic data, never remote
+# Two separate fixed failure-line schemas. This is local diagnostic data, never remote
 # authority. Unobserved carrier values are explicit, not observed zero timings.
 _DIAGNOSTIC_SCHEMA = (
     ('direction', ('upload','fetch'), False),
@@ -126,13 +126,20 @@ _DIAGNOSTIC_SCHEMA = (
     ('observed_collect_connect_us', (1<<64)-1, True), ('observed_collect_exchange_us', (1<<64)-1, True),
     ('observed_planned_wait_us', (1<<64)-1, True), ('observed_actual_wait_us', (1<<64)-1, True),
 )
+_DIAGNOSTIC_SCHEMA_V2 = _DIAGNOSTIC_SCHEMA + (
+    ('terminal_carrier_attempts', 8, True), ('terminal_busy', 8, True),
+    ('exchange_origin', ('unobserved','write','read_error','read_eof','decode','refused'), False),
+)
 
 
 def _validated_transfer_diagnostic(data):
-    if type(data) is not dict or len(data) != len(_DIAGNOSTIC_SCHEMA):return None
+    if type(data) is not dict:return None
+    if len(data) == len(_DIAGNOSTIC_SCHEMA):schema = _DIAGNOSTIC_SCHEMA
+    elif len(data) == len(_DIAGNOSTIC_SCHEMA_V2):schema = _DIAGNOSTIC_SCHEMA_V2
+    else:return None
     if any(type(key) is not str for key in data):return None
-    if set(data) != {name for name, _, _ in _DIAGNOSTIC_SCHEMA}:return None
-    for name, domain, optional in _DIAGNOSTIC_SCHEMA:
+    if set(data) != {name for name, _, _ in schema}:return None
+    for name, domain, optional in schema:
         value = data[name]
         if type(domain) is tuple:
             if type(value) is not str or value not in domain:return None
@@ -146,21 +153,32 @@ def _validated_transfer_diagnostic(data):
     elif any(type(data[name]) is not int for name in aggregate):return None
     cycle = ['cycle_completed','cycle_logical_attempted','cycle_carrier_attempts',
              'cycle_busy','cycle_connect_calls','last_phase_us']
+    if schema is _DIAGNOSTIC_SCHEMA_V2:
+        cycle += ['terminal_carrier_attempts','terminal_busy']
     if data['state'] != 'observed':
         if any(data[name] != 'unavailable' for name in cycle):return None
+        if schema is _DIAGNOSTIC_SCHEMA_V2 and data['exchange_origin'] != 'unobserved':return None
     elif any(type(data[name]) is not int for name in cycle):return None
+    elif schema is _DIAGNOSTIC_SCHEMA_V2:
+        if data['terminal_busy'] > data['terminal_carrier_attempts']:return None
+        if data['terminal_carrier_attempts'] > data['cycle_carrier_attempts']:return None
+        if data['terminal_busy'] > data['cycle_busy']:return None
     return dict(data)
 
 
 def _parse_transfer_diagnostic(buffer):
     if type(buffer) is not bytes or len(buffer) > _TRANSFER_OUTPUT:return None
-    lines = [line for line in buffer.split(b'\r\n')[:-1]
-             if line.startswith(b'Attachment diagnostic v1')]
+    parts = buffer.split(b'\r\n')
+    if parts[-1].startswith(b'Attachment diagnostic '):return None
+    lines = [line for line in parts[:-1] if line.startswith(b'Attachment diagnostic ')]
     if len(lines) != 1 or len(lines[0]) > 1024:return None
     words = lines[0].split(b' ')
-    if words[:3] != [b'Attachment',b'diagnostic',b'v1'] or len(words) != 3+len(_DIAGNOSTIC_SCHEMA):return None
+    if words[:3] == [b'Attachment',b'diagnostic',b'v1']:schema = _DIAGNOSTIC_SCHEMA
+    elif words[:3] == [b'Attachment',b'diagnostic',b'v2']:schema = _DIAGNOSTIC_SCHEMA_V2
+    else:return None
+    if len(words) != 3+len(schema):return None
     data = {}
-    for word, (name, domain, optional) in zip(words[3:], _DIAGNOSTIC_SCHEMA):
+    for word, (name, domain, optional) in zip(words[3:], schema):
         prefix = name.encode('ascii')+b'='
         if not word.startswith(prefix):return None
         raw = word[len(prefix):]
@@ -179,7 +197,8 @@ def _parse_transfer_diagnostic(buffer):
 def _transfer_diagnostic_summary(data):
     data = _validated_transfer_diagnostic(data)
     if data is None:return 'diagnostic=unavailable'
-    return ' '.join('diag_'+name+'='+str(data[name]) for name, _, _ in _DIAGNOSTIC_SCHEMA)
+    schema = _DIAGNOSTIC_SCHEMA if len(data) == len(_DIAGNOSTIC_SCHEMA) else _DIAGNOSTIC_SCHEMA_V2
+    return ' '.join('diag_'+name+'='+str(data[name]) for name, _, _ in schema)
 
 
 def _transfer_failure_summary(observation):

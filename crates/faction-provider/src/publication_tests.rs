@@ -4150,6 +4150,141 @@ fn diagnostic_interface_starts_explicitly_unobserved() {
 }
 
 #[test]
+fn diagnostic_exchange_origin_distinguishes_eof_truncation_decode_and_refusal() {
+    use crate::delivery::{DiagnosticPhase, ExchangeOrigin};
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    for (case, bytes, expected) in [
+        (0, vec![], ExchangeOrigin::ReadEof),
+        (1, vec![0, 0], ExchangeOrigin::ReadError),
+        (
+            2,
+            b"\0\0\0\x40PRIVATE_CONTENT_SENTINEL".to_vec(),
+            ExchangeOrigin::ReadError,
+        ),
+        (3, b"\0\0\0\x04BAD!".to_vec(), ExchangeOrigin::Decode),
+    ] {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+        let operation = thread::scope(|scope| {
+            let client = scope.spawn(|| {
+                let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+                assert_eq!(
+                    operation.submit_publication(binding.clone(), Request::Begin(binding.clone())),
+                    Err(tls::Stage::Frame)
+                );
+                operation
+            });
+            let session = local
+                .server(&local.ca.0)
+                .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            session.test_delivery_raw_reply(&bytes);
+            client.join().unwrap()
+        });
+        let observed = operation.diagnostic_snapshot().unwrap();
+        assert_eq!(observed.exchange_origin, expected, "case {case}");
+        assert!(!format!("{observed:?}").contains("PRIVATE_CONTENT_SENTINEL"));
+        assert_eq!(observed.phase, DiagnosticPhase::SubmitExchange);
+        assert_eq!(
+            (observed.attempted, observed.busy, observed.connections),
+            (1, 0, 1)
+        );
+        assert_eq!(local.charged(), 0);
+    }
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+    thread::scope(|scope| {
+        let client = scope.spawn(|| {
+            let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            operation
+                .submit_publication(binding.clone(), Request::Begin(binding.clone()))
+                .unwrap();
+            assert_eq!(operation.collect().err(), Some(tls::Stage::Denied));
+            operation
+        });
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (delivery, work) = session.submit_publication().unwrap();
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        session.test_delivery_raw_reply(b"\0\0\0\x07FDEL01\x05");
+        let observed = client.join().unwrap().diagnostic_snapshot().unwrap();
+        assert_eq!(observed.exchange_origin, ExchangeOrigin::Refused);
+        assert_eq!(observed.phase, DiagnosticPhase::CollectExchange);
+        assert_eq!(
+            (observed.attempted, observed.busy, observed.connections),
+            (2, 0, 2)
+        );
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    });
+}
+
+#[cfg(feature = "operator")]
+#[test]
+fn diagnostic_actual_shared_limit_preserves_rejection_and_empty_wire() {
+    use crate::delivery::Collection;
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+    thread::scope(|scope| {
+        let caller = scope.spawn(|| {
+            let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            operation
+                .submit_publication(binding.clone(), Request::Begin(binding.clone()))
+                .unwrap();
+            operation
+        });
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (mut delivery, work) = session.submit_publication().unwrap();
+        let mut operation = caller.join().unwrap();
+        for _ in 0..7 {
+            thread::scope(|scope| {
+                let caller = scope.spawn(|| operation.collect());
+                let session = local
+                    .server(&local.ca.0)
+                    .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                assert!(!session.collect_delivery(&mut delivery).unwrap());
+                assert!(matches!(caller.join().unwrap(), Ok(Collection::Busy)));
+            });
+        }
+        let frame = operation.test_collect_frame();
+        let endpoint = &endpoint;
+        let caller = scope.spawn(move || endpoint.test_exchange(&frame));
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        assert_eq!(
+            session.collect_delivery(&mut delivery),
+            Err(Error::Transport(tls::Stage::Limit))
+        );
+        assert!(caller.join().unwrap().is_empty());
+        let observed = delivery.diagnostic_snapshot();
+        assert_eq!(observed.attempted, 8);
+        assert!(!observed.finished && !observed.consumed);
+        let observed = operation.diagnostic_snapshot().unwrap();
+        assert_eq!((observed.attempted, observed.busy), (8, 7));
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    });
+}
+
+#[test]
 fn diagnostic_actual_submit_exchange_survives_cancellation() {
     use crate::delivery::DiagnosticPhase;
     let h = Homes::new(false);
@@ -5446,4 +5581,426 @@ fn waiting_resource_collect_reuses_the_single_published_binding() {
     );
     assert!(matches!(server_result, Ok(true)));
     assert_waiting_chunk(client_result.unwrap());
+}
+
+#[test]
+fn own_home_wait_rejects_unbound_purpose_correlation_actor_and_legacy_device_api() {
+    for case in 0..9 {
+        let h = Homes::new(false);
+        let local = &h.pair.homes[0];
+        let store = h.empty(0);
+        let other = if case == 8 {
+            let t = tls::wall_now();
+            let other = cert(
+                Some((&local.ca.0, &local.ca.1)),
+                "other-approved-device",
+                8809,
+                t as i64 - 60,
+                t as i64 + 3600,
+            );
+            let foreign = &h.pair.homes[1];
+            let mut entries = local.registry(3, 0, foreign).bindings().to_vec();
+            entries.push(crate::authority::CredentialBinding {
+                certificate_sha256: sha256(&other.0.to_der().unwrap()),
+                principal: Principal {
+                    account: "other@a.test".into(),
+                    device: 9,
+                    identity: [3; 32],
+                },
+                valid_from: t - 60,
+                valid_until: t + 3600,
+                approved: true,
+                account_enabled: true,
+                device_enabled: true,
+                generation: 3,
+            });
+            local
+                .runtime()
+                .control()
+                .replace_delegation_policy(
+                    Registry::new(3, 0, vec![local.name.into(), foreign.name.into()], entries)
+                        .unwrap(),
+                    h.policy(0, 3, 0, |_| ()),
+                )
+                .unwrap();
+            h.install(1, 3, 0, 3, 0, |_| ());
+            h.other_credentials.lock().unwrap().push((
+                "own-home-other-device".into(),
+                (other.0.clone(), other.1.clone()),
+            ));
+            Some(other)
+        } else {
+            None
+        };
+        let (listener, operation, mut delivery, work, _) =
+            metadata_capture_work(&h, &store, case != 6, Arc::new(AtomicBool::new(false)));
+        let mut frame = operation.test_collect_frame();
+        frame[6] = 6;
+        match case {
+            0 => frame[8] ^= 1,
+            1 => frame[7] = 2,
+            2 => frame[7] = 1,
+            3 => {
+                let (length_at, _, mut binding, _) = collect_request_parts(&frame);
+                binding.recipient.identity[0] ^= 1;
+                let encoded =
+                    faction_files::private_blobs::encode_request(&Request::Begin(binding)).unwrap();
+                frame[42..length_at].copy_from_slice(&encoded);
+            }
+            4 => {
+                let (length_at, _, binding, _) = collect_request_parts(&frame);
+                let encoded = faction_files::private_blobs::encode_request(&Request::GetChunk {
+                    id: binding.id,
+                    offset: 0,
+                })
+                .unwrap();
+                frame.truncate(length_at);
+                frame.extend((encoded.len() as u16).to_be_bytes());
+                frame.extend(encoded);
+            }
+            _ => (),
+        }
+        let credential = if case == 5 {
+            &local.relay
+        } else if let Some(other) = &other {
+            other
+        } else {
+            &local.device
+        };
+        let endpoint = carrier_endpoint(local, credential, listener.local_addr().unwrap());
+        let (entered, entry) = std::sync::mpsc::sync_channel(1);
+        delivery.test_observe_waiting_collect(entered);
+        let (result, raw) = thread::scope(|scope| {
+            let client = scope.spawn(|| endpoint.test_exchange(&frame));
+            let result = if case == 7 {
+                local
+                    .server(&local.ca.0)
+                    .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap()
+                    .collect_delivery(&mut delivery)
+                    .map(crate::delivery::Event::Collected)
+            } else {
+                local
+                    .server(&local.ca.0)
+                    .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap()
+                    .serve(
+                        Some(&mut delivery),
+                        &store,
+                        local.name,
+                        &PublicationWireProfile::new(local.name.into(), vec!["observer".into()])
+                            .unwrap(),
+                    )
+            };
+            (result, client.join().unwrap())
+        });
+        assert!(
+            result.is_err(),
+            "invalid waiting route case {case} accepted"
+        );
+        assert!(raw.is_empty(), "invalid case {case} disclosed bytes");
+        assert!(
+            entry.try_recv().is_err(),
+            "invalid case {case} entered wait"
+        );
+        assert!(!local.runtime().state.active.load(Ordering::SeqCst));
+        capture_carrier_optional(&h, "own-home-wait-rejection");
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    }
+}
+
+#[test]
+fn own_home_wait_rechecks_source_fresh_session_policy_and_original_deadline() {
+    for case in 0..4 {
+        let h = Homes::new(false);
+        let local = &h.pair.homes[0];
+        let store = h.empty(0);
+        let source_cancel = Arc::new(AtomicBool::new(false));
+        let (listener, operation, mut delivery, work, _) =
+            metadata_capture_work(&h, &store, true, source_cancel.clone());
+        let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+        let mut frame = operation.test_collect_frame();
+        frame[6] = 6;
+        let (entered, entry) = std::sync::mpsc::sync_channel(1);
+        delivery.test_observe_waiting_collect(entered);
+        let fresh_cancel = Arc::new(AtomicBool::new(false));
+        thread::scope(|scope| {
+            let client = scope.spawn(|| endpoint.test_exchange(&frame));
+            let incoming = local
+                .server(&local.ca.0)
+                .accept_composed(&listener, local.runtime(), fresh_cancel.clone())
+                .unwrap();
+            let tight = Instant::now() + Duration::from_millis(80);
+            if case == 3 {
+                *delivery.hold_deadline_metadata() = tight;
+            }
+            let collector = scope.spawn(|| {
+                incoming.serve(
+                    Some(&mut delivery),
+                    &store,
+                    local.name,
+                    &PublicationWireProfile::new(local.name.into(), vec!["observer".into()])
+                        .unwrap(),
+                )
+            });
+            let (start, end) = entry.recv_timeout(Duration::from_secs(2)).unwrap();
+            assert!(end <= start + Duration::from_millis(100));
+            match case {
+                0 => source_cancel.store(true, Ordering::SeqCst),
+                1 => fresh_cancel.store(true, Ordering::SeqCst),
+                2 => h.install(0, 3, 0, 3, 0, |_| ()),
+                3 => assert!(end <= tight),
+                _ => unreachable!(),
+            }
+            assert!(
+                collector.join().unwrap().is_err(),
+                "invalidated case {case} returned Busy/result"
+            );
+            assert!(
+                client.join().unwrap().is_empty(),
+                "invalidated case {case} disclosed bytes"
+            );
+        });
+        assert!(!local.runtime().state.active.load(Ordering::SeqCst));
+        assert_eq!(delivery.test_original_attempts(), 2);
+        capture_carrier_optional(&h, "own-home-wait-current");
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    }
+}
+
+#[test]
+fn own_home_wait_refuses_publication_without_charge_and_exhausted_shared_window() {
+    for own_home in [false, true] {
+        let h = Homes::new(false);
+        let local = &h.pair.homes[0];
+        let store = h.empty(0);
+        let (listener, mut operation, mut delivery, work, _) =
+            metadata_capture_work(&h, &store, own_home, Arc::new(AtomicBool::new(false)));
+        if !own_home {
+            assert_eq!(
+                operation.collect_own_home_waiting().err(),
+                Some(tls::Stage::Denied)
+            );
+            assert_eq!(operation.test_attempts(), 1);
+            listener.set_nonblocking(true).unwrap();
+            assert!(matches!(listener.accept(),Err(e) if e.kind()==std::io::ErrorKind::WouldBlock));
+        } else {
+            for _ in 0..7 {
+                thread::scope(|scope| {
+                    let client = scope.spawn(|| operation.collect());
+                    let incoming = local
+                        .server(&local.ca.0)
+                        .accept_composed(
+                            &listener,
+                            local.runtime(),
+                            Arc::new(AtomicBool::new(false)),
+                        )
+                        .unwrap();
+                    assert!(matches!(
+                        incoming.serve(
+                            Some(&mut delivery),
+                            &store,
+                            local.name,
+                            &PublicationWireProfile::new(
+                                local.name.into(),
+                                vec!["observer".into()]
+                            )
+                            .unwrap()
+                        ),
+                        Ok(crate::delivery::Event::Collected(false))
+                    ));
+                    assert!(matches!(
+                        client.join().unwrap(),
+                        Ok(crate::delivery::Collection::Busy)
+                    ));
+                });
+            }
+            assert_eq!(delivery.test_original_attempts(), 8);
+            let mut frame = operation.test_collect_frame();
+            frame[6] = 6;
+            let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+            thread::scope(|scope| {
+                let client = scope.spawn(|| endpoint.test_exchange(&frame));
+                let incoming = local
+                    .server(&local.ca.0)
+                    .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                assert!(
+                    incoming
+                        .serve(
+                            Some(&mut delivery),
+                            &store,
+                            local.name,
+                            &PublicationWireProfile::new(
+                                local.name.into(),
+                                vec!["observer".into()]
+                            )
+                            .unwrap()
+                        )
+                        .is_err()
+                );
+                assert!(client.join().unwrap().is_empty());
+            });
+            assert_eq!(delivery.test_original_attempts(), 8);
+        }
+        capture_carrier_optional(&h, "own-home-wait-publication-exhaustion");
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    }
+}
+
+fn own_home_paced_measured_wait_control(deadline: bool, after_busy: bool) {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(1);
+    let store = h.empty(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, address);
+    let cancel = Arc::new(AtomicBool::new(false));
+    thread::scope(|scope| {
+        let b = binding.clone();
+        let original_cancel = cancel.clone();
+        let client = scope.spawn(move || {
+            let mut op = endpoint.operation(original_cancel);
+            op.submit_own_home(b.clone(), Request::Status { id: b.id })
+                .unwrap();
+            op
+        });
+        let mut session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (entered, waiting) = std::sync::mpsc::channel();
+        let (release, resume) = std::sync::mpsc::channel();
+        let positive = session.hold_delivery_after_prefix(entered, resume);
+        let release_receipt = scope.spawn(move || {
+            waiting.recv_timeout(Duration::from_secs(5)).unwrap();
+            thread::sleep(Duration::from_millis(100));
+            release.send(()).unwrap();
+        });
+        let crate::delivery::Event::Submitted(mut delivery, work) =
+            crate::delivery::Incoming::device(session)
+                .serve(
+                    None,
+                    &store,
+                    local.name,
+                    &PublicationWireProfile::new(local.name.into(), vec!["observer".into()])
+                        .unwrap(),
+                )
+                .unwrap()
+        else {
+            panic!("actual own-home submit missing");
+        };
+        release_receipt.join().unwrap();
+        let mut operation = client.join().unwrap();
+        assert!(positive.load(Ordering::SeqCst) > 0);
+        assert_eq!(operation.test_attempts(), 1);
+        assert_eq!(delivery.test_original_attempts(), 1);
+        assert_eq!(local.charged(), 2);
+        if after_busy {
+            let (wait_tx, wait_rx) = std::sync::mpsc::sync_channel(1);
+            delivery.test_observe_waiting_collect(wait_tx);
+            thread::scope(|collect| {
+                let client = collect.spawn(|| operation.collect_own_home_paced());
+                let incoming = local
+                    .server(&local.ca.0)
+                    .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                assert!(matches!(
+                    incoming.serve(
+                        Some(&mut delivery),
+                        &store,
+                        local.name,
+                        &PublicationWireProfile::new(local.name.into(), vec!["observer".into()])
+                            .unwrap()
+                    ),
+                    Ok(crate::delivery::Event::Collected(false))
+                ));
+                assert!(matches!(
+                    client.join().unwrap(),
+                    Ok(crate::delivery::Collection::Busy)
+                ));
+            });
+            let (start, end) = wait_rx.try_recv().unwrap();
+            assert!(end <= start + Duration::from_millis(100));
+            assert_eq!(operation.test_attempts(), 2);
+            assert_eq!(delivery.test_original_attempts(), 2);
+            assert_eq!(operation.diagnostic_snapshot().unwrap().busy, 1);
+        }
+        let expected_attempts = if after_busy { 2 } else { 1 };
+        if deadline {
+            operation.test_narrow_deadline(Duration::from_millis(20));
+        }
+        let (entered, waiting) = std::sync::mpsc::channel();
+        let (done, finished) = std::sync::mpsc::channel();
+        let (paced_tx, paced_rx) = std::sync::mpsc::sync_channel(1);
+        operation.test_observe_collect_wait(paced_tx);
+        let began = Instant::now();
+        let collector = scope.spawn(move || {
+            entered.send(()).unwrap();
+            let result = operation.collect_own_home_paced();
+            done.send(()).unwrap();
+            (result, operation)
+        });
+        waiting.recv_timeout(Duration::from_secs(1)).unwrap();
+        let pacing_observed = paced_rx.recv_timeout(Duration::from_millis(200));
+        if !deadline {
+            thread::sleep(Duration::from_millis(25));
+            assert!(
+                finished.try_recv().is_err(),
+                "the real measured local wait must still be in progress"
+            );
+            cancel.store(true, Ordering::SeqCst);
+        }
+        let (result, operation) = collector.join().unwrap();
+        assert!(
+            pacing_observed.is_ok(),
+            "own-home route skipped actual measured pacing"
+        );
+        assert!(began.elapsed() < Duration::from_secs(1));
+        assert_eq!(
+            result.err(),
+            Some(if deadline {
+                tls::Stage::Deadline
+            } else {
+                tls::Stage::Cancelled
+            })
+        );
+        assert_eq!(operation.test_attempts(), expected_attempts);
+        assert_eq!(delivery.test_original_attempts(), expected_attempts);
+        listener.set_nonblocking(true).unwrap();
+        assert!(
+            matches!(listener.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock),
+            "a cancelled/expired local pacing wait must not open another TCP connection"
+        );
+        assert_eq!(local.charged(), 2);
+        assert_eq!(h.bytes(0).len(), 17);
+        capture_carrier_optional(&h, "own-home-paced-wait-control");
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    });
+}
+#[test]
+fn own_home_paced_wait_cancellation_spends_no_extra_connection_or_attempt() {
+    own_home_paced_measured_wait_control(false, false);
+}
+#[test]
+fn own_home_paced_wait_deadline_spends_no_extra_connection_or_attempt() {
+    own_home_paced_measured_wait_control(true, false);
+}
+
+#[test]
+fn own_home_paced_after_busy_cancellation_spends_no_extra_connection_or_attempt() {
+    own_home_paced_measured_wait_control(false, true);
+}
+#[test]
+fn own_home_paced_after_busy_deadline_spends_no_extra_connection_or_attempt() {
+    own_home_paced_measured_wait_control(true, true);
 }

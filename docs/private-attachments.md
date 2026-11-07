@@ -191,7 +191,13 @@ after checking the reported state. These limits do not change normal board budge
 This preview requires updated provider software at both homes for the waiting
 collection protocol. An older resource provider rejects the request, and the
 transfer stops without an automatic retry. The brief resource wait does not extend
-the transfer deadline. The [extension's host observations](../dev-docs/evidence/bounded-resource-collection/README.md)
+the transfer deadline. The newer device own-home waiting path additionally requires
+matching updated operator and device software; an older peer's refusal fails closed.
+Controlled host and NetBSD software compatibility checks cover that path. Full
+Repository CI at `61f569d` passed, including maximum-file console checks; the
+NetBSD controls do not establish a new native maximum-file result. See
+[#358](https://github.com/gonz0w/faction-bbs/issues/358).
+The earlier [extension's host observations](../dev-docs/evidence/bounded-resource-collection/README.md)
 include both console modes. The older native qualifications below record earlier
 collection behavior; they are not fresh NetBSD tests of this extension.
 

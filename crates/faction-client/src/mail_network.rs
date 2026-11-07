@@ -11,6 +11,11 @@ use std::{
     os::unix::fs::MetadataExt,
     path::{Component, Path},
 };
+mod foreground;
+pub use foreground::{
+    ForegroundAction, ForegroundPeer, ForegroundReport, ForegroundWrite, foreground_cycle,
+};
+
 /// Trusted local configuration. Home passwords and device secrets have no field.
 pub struct Settings {
     pub account: String,
@@ -643,6 +648,9 @@ async fn exchange_ready<C: Channel>(
 
 #[cfg(test)]
 mod tests {
+    mod foreground;
+    mod foreground_recovery;
+
     use super::*;
     use std::{
         fs,
@@ -1046,6 +1054,7 @@ mod tests {
         offset: usize,
         presence: usize,
         wires: Vec<crate::mail_checkpoint::Wire>,
+        operations: Vec<[u8; 16]>,
         sent: Vec<faction_xmpp::Element>,
         index: usize,
         end: MamEnd,
@@ -1057,6 +1066,7 @@ mod tests {
             Self {
                 offset: 0,
                 presence: 0,
+                operations: vec![[1; 16]; wires.len()],
                 wires,
                 sent: vec![],
                 index: 0,
@@ -1095,7 +1105,9 @@ mod tests {
                 );
                 let forwarded = faction_xmpp::Element::builder("forwarded", "urn:xmpp:forward:0")
                     .append(delay)
-                    .append(crate::mail_wire::message(wire, [1; 16]).unwrap())
+                    .append(
+                        crate::mail_wire::message(wire, self.operations[self.index - 1]).unwrap(),
+                    )
                     .build();
                 let mut result = faction_xmpp::Element::builder("result", crate::mail_archive::MAM)
                     .append(forwarded)

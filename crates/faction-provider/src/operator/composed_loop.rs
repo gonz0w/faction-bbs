@@ -1,6 +1,9 @@
 //! The maintained composed worker/pending/admission loop; no alternate router.
 use super::ProviderError;
-use super::{Delivery, Event, PublicationWireProfile, RelayRoutes, Runtime, Server, Store, mapped};
+use super::{
+    Delivery, DeliverySnapshot, Event, PublicationWireProfile, RelayRoutes, Runtime, Server, Stage,
+    Store, mapped,
+};
 use std::{
     io::{self, Write},
     net::TcpListener,
@@ -22,9 +25,61 @@ pub(super) struct Inputs<'env> {
     pub(super) profile: &'env PublicationWireProfile,
     pub(super) port: u16,
 }
+#[derive(Clone, Copy)]
+pub(super) enum RejectionPhase {
+    Serve = 1,
+    Cleanup = 2,
+}
+pub(super) fn rejection_line(
+    phase: RejectionPhase,
+    error: Option<ProviderError>,
+    pending: Option<DeliverySnapshot>,
+) -> String {
+    let category = match error {
+        Some(ProviderError::Transport(Stage::Limit)) => 1,
+        Some(ProviderError::Transport(Stage::Deadline)) => 2,
+        Some(ProviderError::Transport(Stage::Cancelled)) => 3,
+        Some(ProviderError::Transport(Stage::Denied)) => 4,
+        Some(ProviderError::Transport(Stage::Frame)) => 5,
+        Some(ProviderError::Store(faction_files::private_blobs::Error::Busy)) => 6,
+        Some(ProviderError::Store(_)) => 7,
+        Some(ProviderError::Transport(_)) => 8,
+        None => 9,
+    };
+    let present = u8::from(pending.is_some());
+    let state = pending.unwrap_or_default();
+    format!(
+        "carrier_rejection schema=1 phase={} category={category} pending={present} shared_attempts={} finished={} consumed={}",
+        phase as u8,
+        state.attempted,
+        u8::from(state.finished),
+        u8::from(state.consumed)
+    )
+}
+pub(super) fn diagnostic_budget(value: Option<&std::ffi::OsStr>) -> u8 {
+    if value == Some(std::ffi::OsStr::new("1")) {
+        8
+    } else {
+        0
+    }
+}
+pub(super) fn emit_rejection(
+    output: &mut impl Write,
+    remaining: &mut u8,
+    phase: RejectionPhase,
+    error: Option<ProviderError>,
+    pending: Option<DeliverySnapshot>,
+) {
+    if *remaining == 0 {
+        return;
+    }
+    *remaining -= 1;
+    let _ = writeln!(output, "{}", rejection_line(phase, error, pending));
+}
 fn reap_finished<'scope>(
     worker: &mut Option<thread::ScopedJoinHandle<'scope, Result<(), ProviderError>>>,
     pending: &mut Option<Delivery>,
+    diagnostics_remaining: &mut u8,
 ) -> Result<(), ()> {
     if worker.as_ref().is_some_and(|w| w.is_finished()) {
         let _ = mapped(worker.take().ok_or(())?.join())?;
@@ -34,6 +89,15 @@ fn reap_finished<'scope>(
             .as_ref()
             .is_some_and(|d| d.is_consumed() || d.is_expired())
     {
+        if let Some(delivery) = pending.as_ref().filter(|d| !d.is_consumed()) {
+            emit_rejection(
+                &mut io::stderr(),
+                diagnostics_remaining,
+                RejectionPhase::Cleanup,
+                None,
+                Some(delivery.diagnostic_snapshot()),
+            );
+        }
         pending.take();
     }
     Ok(())
@@ -58,11 +122,13 @@ pub(super) fn run<'scope, 'env>(
     let mut worker: Option<thread::ScopedJoinHandle<'_, std::result::Result<(), ProviderError>>> =
         None;
     let mut pending: Option<Delivery> = None;
+    let mut diagnostics_remaining =
+        diagnostic_budget(std::env::var_os("FACTION_PROVIDER_DIAGNOSTICS").as_deref());
     let result = (|| {
         mapped(writeln!(io::stdout(), "ready {port}"))?;
         mapped(io::stdout().flush())?;
         while !cancel.load(Ordering::SeqCst) {
-            reap_finished(&mut worker, &mut pending)?;
+            reap_finished(&mut worker, &mut pending, &mut diagnostics_remaining)?;
             #[cfg(test)]
             if let Some(hooks) = hooks {
                 hooks.after_cleanup(&worker, pending.as_ref());
@@ -70,7 +136,7 @@ pub(super) fn run<'scope, 'env>(
             if let Ok(incoming) = server.accept_composed(&listener, runtime, cancel.clone()) {
                 // Admission may outlast a real worker. Join it before releasing
                 // its consumed/expired reservation and dispatching this caller.
-                reap_finished(&mut worker, &mut pending)?;
+                reap_finished(&mut worker, &mut pending, &mut diagnostics_remaining)?;
                 match incoming.serve(pending.as_mut(), store, home, profile) {
                     Ok(Event::Submitted(delivery, work)) => {
                         // Incoming already dropped the actual submitted TLS
@@ -88,6 +154,10 @@ pub(super) fn run<'scope, 'env>(
                         };
                         pending = Some(delivery);
                         worker = Some(scope.spawn(move || {
+                            #[cfg(test)]
+                            if let Some(hooks) = hooks {
+                                hooks.before_work();
+                            }
                             let result = work.execute(routes, store);
                             #[cfg(test)]
                             if let Some(hooks) = hooks {
@@ -96,7 +166,14 @@ pub(super) fn run<'scope, 'env>(
                             result
                         }));
                     }
-                    Ok(Event::Collected(_)) | Ok(Event::Served) | Err(_) => (),
+                    Ok(Event::Collected(_)) | Ok(Event::Served) => (),
+                    Err(error) => emit_rejection(
+                        &mut io::stderr(),
+                        &mut diagnostics_remaining,
+                        RejectionPhase::Serve,
+                        Some(error),
+                        pending.as_ref().map(Delivery::diagnostic_snapshot),
+                    ),
                 }
             }
         }
@@ -121,9 +198,15 @@ pub(super) type AttachmentHook = Box<dyn Fn(&mut Delivery) + Send + Sync>;
 pub(super) struct Hooks {
     pub(super) lifecycle: Option<LifecycleHooks>,
     pub(super) attach: Option<AttachmentHook>,
+    pub(super) before_work: Option<Box<dyn Fn() + Send + Sync>>,
 }
 #[cfg(test)]
 impl Hooks {
+    pub(super) fn before_work(&self) {
+        if let Some(before_work) = &self.before_work {
+            before_work();
+        }
+    }
     fn submitted(&self, delivery: &mut Delivery) {
         if let Some(attach) = &self.attach {
             attach(delivery);

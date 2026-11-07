@@ -307,7 +307,13 @@ impl Transport {
                     // One submit and bounded fresh collects on this SAME operation.
                     // Busy neither renews the parent clock nor changes the route.
                     for _ in 0..6 {
-                        match operation.collect_paced().map_err(Error::Transport)? {
+                        let collected = match route {
+                            DeviceRoute::OwnHomeRetrieval => operation.collect_own_home_paced(),
+                            DeviceRoute::Publication => operation.collect_paced(),
+                            DeviceRoute::Ordinary => return Err(Error::Configuration),
+                        }
+                        .map_err(Error::Transport)?;
+                        match collected {
                             Collection::Complete(response) => return Ok(response),
                             Collection::Busy => (),
                         }
@@ -398,6 +404,10 @@ async fn spawn_worker(
                                     faction_provider::delivery::DiagnosticPhase::Unobserved;
                                 diagnostic.phase_us = 0;
                                 diagnostic.transport = None;
+                                diagnostic.terminal_carrier_attempts = 0;
+                                diagnostic.terminal_busy = 0;
+                                diagnostic.exchange_origin =
+                                    faction_provider::delivery::ExchangeOrigin::Unobserved;
                                 diagnostic.attempted = diagnostic.attempted.saturating_add(1);
                             }
                             let result = transport.request(
@@ -517,6 +527,9 @@ pub struct WorkerSnapshot {
     pub carrier_attempts: u8,
     pub busy: u8,
     pub connections: u8,
+    pub terminal_carrier_attempts: u8,
+    pub terminal_busy: u8,
+    pub exchange_origin: faction_provider::delivery::ExchangeOrigin,
     pub timings: faction_provider::delivery::DiagnosticTimings,
     pub phase_us: u64,
 }
@@ -536,6 +549,9 @@ impl WorkerSnapshot {
         self.state = SnapshotState::Observed;
         self.phase = operation.phase;
         self.phase_us = operation.phase_us;
+        self.terminal_carrier_attempts = operation.attempted;
+        self.terminal_busy = operation.busy;
+        self.exchange_origin = operation.exchange_origin;
         self.carrier_attempts = self.carrier_attempts.saturating_add(operation.attempted);
         self.busy = self.busy.saturating_add(operation.busy);
         self.connections = self.connections.saturating_add(operation.connections);
@@ -644,6 +660,200 @@ thread_local! { static WORKER_STARTS: std::cell::Cell<usize> = const { std::cell
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(feature = "own-home-provider")]
+    async fn collection_route_waiting_control(own_home: bool) {
+        use std::io::BufRead;
+        let (fixture, mut provider) = provider();
+        let script = r#"import pathlib, socket, ssl, sys
+root = pathlib.Path(sys.argv[1])
+purpose, kind = map(int, sys.argv[2:])
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+context.minimum_version = context.maximum_version = ssl.TLSVersion.TLSv1_3
+context.options |= ssl.OP_NO_TICKET
+context.num_tickets = 0
+context.load_cert_chain(root/'cert.pem', root/'key.pem')
+context.load_verify_locations(root/'cert.pem')
+context.verify_mode = ssl.CERT_REQUIRED
+listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+listener.bind(('127.0.0.1',0)); listener.listen(1); listener.settimeout(5)
+print('PORT',listener.getsockname()[1],flush=True)
+def receive(connection):
+    def exact(size):
+        data=b''
+        while len(data)<size:
+            part=connection.recv(size-len(data)); assert part
+            data+=part
+        return data
+    size=int.from_bytes(exact(4),'big'); assert 0<size<=8192
+    return exact(size)
+def reply(connection, data):
+    connection.sendall(len(data).to_bytes(4,'big')+data)
+correlation=bytes([47])*32
+for index in range(3):
+    raw,address=listener.accept(); assert address[0]=='127.0.0.1'; raw.settimeout(5)
+    with context.wrap_socket(raw,server_side=True) as connection:
+        frame=receive(connection)
+        assert frame[:6]==b'FDEL01' and frame[7]==purpose
+        if index==0:
+            assert frame[6]==0 and frame[8:40]==bytes(32)
+            submitted=frame
+            reply(connection,b'FDEL01'+bytes([2])+correlation)
+        else:
+            assert frame[6]==kind, 'wrong explicit collection route'
+            assert frame[8:40]==correlation and frame[40:]==submitted[40:]
+            reply(connection,b'FDEL01'+(bytes([3]) if index==1 else bytes([4])+(root/'response').read_bytes()))
+listener.close()
+print('EXACT_ROUTE_AND_BUSY',flush=True)
+"#;
+        let purpose = if own_home { 3 } else { 1 };
+        let kind = if own_home { 6 } else { 1 };
+        let path = fixture.0.join("collection-route.py");
+        fs::write(&path, script).unwrap();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
+        let own = provider.config.expected.clone();
+        let foreign = Principal {
+            account: "bob@away.test".into(),
+            device: 202,
+            identity: [2; 32],
+        };
+        let binding = Binding {
+            sender: if own_home {
+                foreign.clone()
+            } else {
+                own.clone()
+            },
+            recipient: if own_home { own } else { foreign },
+            id: [3; 32],
+            size: 17,
+            created: 1,
+            expires: 100,
+        };
+        let expected = Response::Progress {
+            binding: binding.clone(),
+            offset: 17,
+            committed: true,
+        };
+        fs::write(
+            fixture.0.join("response"),
+            faction_files::private_blobs::encode_response(&expected).unwrap(),
+        )
+        .unwrap();
+        fs::set_permissions(
+            fixture.0.join("response"),
+            fs::Permissions::from_mode(0o600),
+        )
+        .unwrap();
+        let mut child = std::process::Command::new("python3")
+            .arg("-I")
+            .arg(&path)
+            .arg(&fixture.0)
+            .arg(purpose.to_string())
+            .arg(kind.to_string())
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::piped())
+            .spawn()
+            .unwrap();
+        let output = std::io::BufReader::new(child.stdout.take().unwrap());
+        let mut peer = FaultPeer {
+            address: "127.0.0.1:1".parse().unwrap(),
+            child,
+            output,
+        };
+        let mut line = String::new();
+        peer.output.read_line(&mut line).unwrap();
+        peer.address
+            .set_port(line.trim().strip_prefix("PORT ").unwrap().parse().unwrap());
+        provider.config.address = peer.address;
+        provider.config.own_home = true;
+        let direction = if own_home {
+            TransferDirection::Fetch
+        } else {
+            TransferDirection::Upload
+        };
+        let sink = Arc::new(std::sync::OnceLock::new());
+        let mut worker = provider.open(&binding, direction).await.unwrap();
+        worker.observe_final(sink.clone());
+        let response = worker
+            .request_bound(&binding, direction, Request::Status { id: binding.id })
+            .await;
+        drop(worker);
+        let status = peer.child.wait().unwrap();
+        assert!(
+            status.success(),
+            "actual SDK emitted wrong collection wire kind"
+        );
+        assert_eq!(response, Ok(expected));
+        line.clear();
+        peer.output.read_line(&mut line).unwrap();
+        assert_eq!(line, "EXACT_ROUTE_AND_BUSY\n");
+        let snapshot = sink.get().unwrap();
+        assert_eq!(
+            (
+                snapshot.carrier_attempts,
+                snapshot.busy,
+                snapshot.connections
+            ),
+            (3, 1, 3)
+        );
+        assert!(
+            snapshot.timings.planned_wait_us > 0 && snapshot.timings.actual_wait_us > 0,
+            "route skipped measured submit/Busy pacing"
+        );
+        assert!(std::net::TcpStream::connect(peer.address).is_err());
+    }
+    #[cfg(feature = "own-home-provider")]
+    #[tokio::test(flavor = "current_thread")]
+    async fn collection_route_own_home_wait_keeps_submit_and_busy_pacing() {
+        collection_route_waiting_control(true).await;
+    }
+    #[cfg(feature = "own-home-provider")]
+    #[tokio::test(flavor = "current_thread")]
+    async fn collection_route_publication_keeps_ordinary_paced_collect() {
+        collection_route_waiting_control(false).await;
+    }
+
+    #[cfg(feature = "own-home-provider")]
+    #[test]
+    fn diagnostic_terminal_operation_counters_replace_while_totals_accumulate() {
+        use faction_provider::delivery::{ExchangeOrigin, OperationSnapshot};
+        let mut worker = WorkerSnapshot::default();
+        worker.operation(OperationSnapshot {
+            attempted: 2,
+            busy: 1,
+            exchange_origin: ExchangeOrigin::ReadError,
+            ..Default::default()
+        });
+        worker.operation(OperationSnapshot {
+            attempted: 5,
+            busy: 3,
+            exchange_origin: ExchangeOrigin::Refused,
+            ..Default::default()
+        });
+        assert_eq!((worker.carrier_attempts, worker.busy), (7, 4));
+        assert_eq!(
+            (
+                worker.terminal_carrier_attempts,
+                worker.terminal_busy,
+                worker.exchange_origin
+            ),
+            (5, 3, ExchangeOrigin::Refused)
+        );
+        worker.operation(OperationSnapshot {
+            attempted: 1,
+            ..Default::default()
+        });
+        assert_eq!(
+            (
+                worker.terminal_carrier_attempts,
+                worker.terminal_busy,
+                worker.exchange_origin
+            ),
+            (1, 0, ExchangeOrigin::Unobserved)
+        );
+        assert_eq!((worker.carrier_attempts, worker.busy), (8, 4));
+    }
     use std::{
         fs,
         os::unix::fs::{DirBuilderExt, PermissionsExt},
@@ -682,9 +892,13 @@ mod tests {
         } else {
             "/usr/bin/openssl"
         };
+        let openssl_config = fixture.0.join("openssl.cnf");
+        fs::write(&openssl_config, b"[req]\ndistinguished_name=dn\n[dn]\n").unwrap();
+        fs::set_permissions(&openssl_config, fs::Permissions::from_mode(0o600)).unwrap();
         let output = std::process::Command::new(openssl)
+            .args(["req", "-config"])
+            .arg(&openssl_config)
             .args([
-                "req",
                 "-x509",
                 "-newkey",
                 "ec",

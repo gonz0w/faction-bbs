@@ -258,7 +258,7 @@ class SuccessorSchedulingCI(unittest.TestCase):
     def test_aggregate_requires_both_successors_even_after_skipped_or_cancelled_jobs(self):
         source = (ROOT / '.github/workflows/documentation.yml').read_text()
         job = provider._job(source, 'documentation')
-        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', job.splitlines())
+        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]', job.splitlines())
         self.assertIn('    if: ${{ always() }}', job.splitlines())
         gate = provider._step(job, 'Require optional native tests')
         for name in ['provider_composed', 'own_home_client']:

@@ -48,18 +48,18 @@ def validate_ci(text):
         'cargo fmt --manifest-path '+REL+'/Cargo.toml -- --check',
         'cargo clippy --manifest-path '+REL+'/Cargo.toml --all-targets --release --locked -- -D warnings',
         'cargo test --manifest-path '+REL+'/Cargo.toml --release --locked -- --test-threads=1']
-    # Recognize this repository's straight-line native run step, not arbitrary
+    # Recognize this repository's straight-line provider research step, not arbitrary
     # YAML/shell semantics or a malicious workflow. Final source review remains required.
-    job=re.search(r'(?ms)^  native_mail:\n(.*?)(?=^  [A-Za-z_][A-Za-z_0-9]*:\n|\Z)',text)
-    require(job is not None,'native CI job missing')
-    native=job.group(1)
-    require(not re.search(r'^    (?:if|continue-on-error|shell):',native,re.M),'conditional native CI job refused')
-    step=re.search(r'(?ms)^      - name: Validate the optional member-device checkpoint path\n(.*?)(?=^      - |\Z)',native)
-    require(step is not None,'native checkpoint run step missing')
+    job=re.search(r'(?ms)^  provider:\n(.*?)(?=^  [A-Za-z_][A-Za-z_0-9]*:\n|\Z)',text)
+    require(job is not None,'provider CI job missing')
+    provider=job.group(1)
+    require(not re.search(r'^    (?:if|continue-on-error|shell):',provider,re.M),'conditional provider CI job refused')
+    step=re.search(r'(?ms)^      - name: Validate the isolated transport and provider authority research\n(.*?)(?=^      - |\Z)',provider)
+    require(step is not None,'provider research run step missing')
     body=step.group(1)
-    require(not re.search(r'^        (?:if|continue-on-error|shell):',body,re.M),'conditional native CI step refused')
+    require(not re.search(r'^        (?:if|continue-on-error|shell):',body,re.M),'conditional provider CI step refused')
     run=re.search(r'(?m)^        run: \|\n((?:          [^\n]*\n|\n)*)',body)
-    require(run is not None,'literal native run block missing')
+    require(run is not None,'literal provider run block missing')
     lines=[line.strip() for line in run.group(1).splitlines()]
     for line in lines:
         if not line or line.startswith('#'):continue
@@ -67,7 +67,7 @@ def validate_ci(text):
         lexer=shlex.shlex(line,posix=True,punctuation_chars=';&|<>')
         lexer.whitespace_split=True
         words=list(lexer)
-        require(words and words[0] in {'cargo','python3','rustup','mkdir','printf'},'non-straight-line native command refused')
+        require(words and words[0] in {'cargo','python3','rustup','mkdir','printf'},'non-straight-line provider command refused')
         require(not any(w in {';','&','&&','|','||','<','<<','<<<'} for w in words),'shell control or inert heredoc refused')
     require(all(lines.count(c)==1 for c in commands),'CI must qualify and test isolated provider experiment with locked inputs')
     require([lines.index(c) for c in commands]==sorted(lines.index(c) for c in commands),'provider source qualification must precede tests')

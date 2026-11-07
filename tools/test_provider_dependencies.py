@@ -100,7 +100,7 @@ class ProviderDependencies(unittest.TestCase):
             for target in policy.TARGETS:
                 self.assertIn('cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform '+target+' --features '+feature+' > /dev/null',policy.provider_warm_commands())
         workflow=(policy.ROOT/'.github/workflows/documentation.yml').read_text()
-        for feature,job in [('delegation-verifier','provider_composed'),('delegation-verifier,durable-policy','provider_operator')]:
+        for feature,job in [('delegation-verifier','provider_composed'),('delegation-verifier,durable-policy','provider_verifier_durable')]:
             section=policy._job(workflow,job)
             for command in ['cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features '+feature+' -- -D warnings','cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features '+feature+' -- --test-threads=1']:
                 self.assertEqual(sum(line.strip()==command for line in workflow.splitlines()),1)
@@ -119,7 +119,7 @@ class ProviderDependencies(unittest.TestCase):
                 self.assertIn(command, policy.provider_warm_commands())
             for command in ['cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                             'cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']:
-                self.assertIn(command, policy.operator_commands())
+                self.assertIn(command, policy.operator_commands() + policy.durable_verifier_commands())
         policy.validate_ci((policy.ROOT / '.github/workflows/documentation.yml').read_text())
 
     def test_actual_services_selection_is_empty_default_off_and_qualified(self):
@@ -634,7 +634,7 @@ def operator_proof_tail():
     return commands[commands.index(build):]
 
 
-def ci_fixture():
+def unsplit_ci_fixture():
     source = client_split_ci_fixture()
     tail = ''.join('          ' + command + '\n' for command in operator_proof_tail())
     assert source.count(tail) == 1
@@ -890,6 +890,162 @@ def ci_fixture():
     return bbs_fixture(source)
 
 
+def durable_verifier_split_fixture(source):
+    """Move only the final accepted pair; keep the old fixture resolvable."""
+    pair = ''.join('          ' + command + '\n' for command in [
+        'cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-verifier,durable-policy -- -D warnings',
+        'cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-verifier,durable-policy -- --test-threads=1',
+    ])
+    operator = policy._job(source, 'provider_operator')
+    assert operator.endswith(pair) and source.count(pair) == 1
+    old_step = policy._step(operator, 'Validate durable provider policy and operator')
+    warm = old_step.split('        run: |\n', 1)[1].split('          python3 tools/check_provider_dependencies.py\n', 1)[0]
+    fetch = ('      - name: Fetch the public repository revision\n' +
+             policy._step(operator, 'Fetch the public repository revision'))
+    job = ('  provider_verifier_durable:\n'
+           '    name: Optional durable retrieval verifier\n'
+           '    needs: [provider_operator]\n'
+           '    runs-on: ubuntu-24.04\n'
+           '    timeout-minutes: 15\n'
+           '    steps:\n' + fetch +
+           '      - name: Validate durable retrieval verifier\n'
+           '        env:\n'
+           '          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider-verifier-durable\n'
+           '          CARGO_BUILD_JOBS: 2\n'
+           '          RUSTUP_TOOLCHAIN: 1.96.0\n'
+           '        run: |\n' + warm +
+           '          python3 tools/check_provider_dependencies.py\n' + pair)
+    source = source.replace(pair, '', 1).replace('  provider_composed:\n', job + '  provider_composed:\n', 1)
+    source = source.replace('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]',
+                            'needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]')
+    source = source.replace('          PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}\n',
+                            '          PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}\n'
+                            '          PROVIDER_VERIFIER_DURABLE_RESULT: ${{ needs.provider_verifier_durable.result }}\n')
+    return source.replace('          test "$PROVIDER_OPERATOR_RESULT" = success\n',
+                          '          test "$PROVIDER_OPERATOR_RESULT" = success\n'
+                          '          test "$PROVIDER_VERIFIER_DURABLE_RESULT" = success\n')
+
+
+def ci_fixture():
+    return durable_verifier_split_fixture(unsplit_ci_fixture())
+
+
+class DurableVerifierSchedulingCI(unittest.TestCase):
+    def test_actual_final_pair_runs_only_in_the_required_sequential_job(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        job = policy._job(source, 'provider_verifier_durable')
+        self.assertIn('    needs: [provider_operator]', job.splitlines())
+        self.assertIn('    timeout-minutes: 15', job.splitlines())
+        operator = policy._job(source, 'provider_operator')
+        for operation in ['clippy', 'test']:
+            command = ('cargo ' + operation + ' --manifest-path crates/faction-provider/Cargo.toml' +
+                       (' --all-targets' if operation == 'clippy' else '') +
+                       ' --release --locked --features delegation-verifier,durable-policy' +
+                       (' -- -D warnings' if operation == 'clippy' else ' -- --test-threads=1'))
+            self.assertEqual(source.splitlines().count('          ' + command), 1)
+            self.assertIn('          ' + command, job.splitlines())
+            self.assertNotIn('          ' + command, operator.splitlines())
+        old_commands = [line for line in policy._job(unsplit_ci_fixture(), 'provider_operator').splitlines()
+                        if line.strip().startswith(('cargo clippy ', 'cargo test '))]
+        current_commands = [line for line in operator.splitlines() + job.splitlines()
+                            if line.strip().startswith(('cargo clippy ', 'cargo test '))]
+        self.assertEqual(current_commands, old_commands)
+        self.assertEqual(len(old_commands), 20)
+        self.assertEqual(sum(line.strip().startswith('cargo test ') for line in operator.splitlines()), 9)
+        policy.validate_ci(source)
+
+    def test_guard_accepts_only_the_complete_dedicated_pair_fixture(self):
+        policy.validate_ci(ci_fixture())
+
+    def test_durable_job_refuses_trailing_job_override(self):
+        source = ci_fixture()
+        job = policy._job(source, 'provider_verifier_durable')
+        for override in ['    timeout-minutes: 30\n', '    continue-on-error: true\n', '    if: false\n']:
+            with self.subTest(override=override), self.assertRaises(ValueError):
+                policy.validate_ci(source.replace(job, job + override, 1))
+
+    def test_only_the_final_pair_moves_and_all_other_job_bodies_are_unchanged(self):
+        old = unsplit_ci_fixture()
+        new = ci_fixture()
+        commands = ['          ' + command + '\n' for command in policy.durable_verifier_commands()]
+        self.assertEqual(policy._job(old, 'provider_operator').replace(''.join(commands), '', 1),
+                         policy._job(new, 'provider_operator'))
+        for name in ['native_mail', 'provider', 'provider_client', 'provider_composed', 'own_home_client', 'bbs_regressions']:
+            self.assertEqual(policy._job(old, name), policy._job(new, name), name)
+        with self.assertRaises(ValueError):
+            policy.validate_ci(old)
+
+    def test_durable_job_dependency_limits_checkout_and_environments_cannot_drift(self):
+        source = ci_fixture()
+        job = policy._job(source, 'provider_verifier_durable')
+        for old, new in [('needs: [provider_operator]', 'needs: []'),
+                         ('needs: [provider_operator]', 'needs: [provider]'),
+                         ('timeout-minutes: 15', 'timeout-minutes: 30'),
+                         ('runs-on: ubuntu-24.04', 'runs-on: windows-latest'),
+                         ('    steps:', '    if: ${{ always() }}\n    steps:'),
+                         ('    steps:', '    continue-on-error: true\n    steps:'),
+                         ('    steps:', '    permissions: write-all\n    steps:'),
+                         ('CHECKOUT_SHA: ${{ github.sha }}', 'CHECKOUT_SHA: main'),
+                         ('CARGO_BUILD_JOBS: 2', 'CARGO_BUILD_JOBS: 3'),
+                         ('RUSTUP_TOOLCHAIN: 1.96.0', 'RUSTUP_TOOLCHAIN: stable'),
+                         ('faction-provider-verifier-durable', 'shared-other-target'),
+                         ('      - name: Validate durable retrieval verifier\n',
+                          '      - name: Validate durable retrieval verifier\n        if: false\n')]:
+            self.assertIn(old, job)
+            with self.subTest(change=new), self.assertRaises(ValueError):
+                policy.validate_ci(source.replace(job, job.replace(old, new, 1), 1))
+
+    def test_durable_job_must_warm_all_checked_graphs_before_its_offline_guard(self):
+        source = ci_fixture()
+        job = policy._job(source, 'provider_verifier_durable')
+        first = job.index('          python3 tools/check_provider_dependencies.py\n')
+        metadata = [line + '\n' for line in job[:first].splitlines() if line.strip().startswith('cargo metadata ')]
+        self.assertEqual(len(metadata), 66)
+        for line in metadata:
+            for replacement in ['', line + line, line.replace(' --locked', ''), line.replace(' --locked', ' --locked --offline')]:
+                with self.subTest(graph=line, replacement=replacement), self.assertRaises(ValueError):
+                    policy.validate_ci(source.replace(job, job.replace(line, replacement, 1), 1))
+        line = metadata[0]
+        late = job.replace(line, '', 1).replace('          python3 tools/check_provider_dependencies.py\n',
+                                              '          python3 tools/check_provider_dependencies.py\n' + line, 1)
+        with self.assertRaises(ValueError):
+            policy.validate_ci(source.replace(job, late, 1))
+        early_build = job.replace('          python3 tools/check_provider_dependencies.py\n',
+                                  '          cargo build --release --locked\n          python3 tools/check_provider_dependencies.py\n', 1)
+        with self.assertRaises(ValueError):
+            policy.validate_ci(source.replace(job, early_build, 1))
+
+    def test_durable_pair_commands_stay_exact_once_and_serial_without_extra_steps(self):
+        source = ci_fixture()
+        for command in policy.durable_verifier_commands():
+            line = '          ' + command + '\n'
+            changes = ['', line + line, '          # ' + command + '\n',
+                       line.replace(' --locked', ''), line.replace(' --release', ''),
+                       line.rstrip('\n') + ' || true\n', line.rstrip('\n') + ' &\n']
+            changes += ([line.replace('--test-threads=1', '--test-threads=2')]
+                        if command.startswith('cargo test ') else [line.replace(' -- -D warnings', '')])
+            for replacement in changes:
+                with self.subTest(command=command, replacement=replacement), self.assertRaises(ValueError):
+                    policy.validate_ci(source.replace(line, replacement, 1))
+            duplicate = '      - name: Duplicate durable verifier\n        run: |\n' + line
+            with self.assertRaises(ValueError):
+                policy.validate_ci(source.replace('  documentation:\n', duplicate + '  documentation:\n', 1))
+
+    def test_both_operator_and_durable_verifier_results_are_mandatory_and_fail_closed(self):
+        source = ci_fixture()
+        for name in ['provider_operator', 'provider_verifier_durable']:
+            variable = name.upper() + '_RESULT'
+            env = '          ' + variable + ': ${{ needs.' + name + '.result }}\n'
+            command = '          test "$' + variable + '" = success\n'
+            self.assertIn(env, source)
+            self.assertIn(command, source)
+            for changed in [source.replace(', ' + name, '', 1),
+                            source.replace(env, '', 1), source.replace(env, '          ' + variable + ': success\n', 1),
+                            source.replace(command, '', 1), source.replace(command, command.rstrip('\n') + ' || true\n', 1)]:
+                with self.subTest(result=name), self.assertRaises(ValueError):
+                    policy.validate_ci(changed)
+
+
 class PreparedOperatorProofCI(unittest.TestCase):
     def test_complete_client_operator_proof_layout_is_accepted(self):
         policy.validate_ci(ci_fixture())
@@ -961,7 +1117,7 @@ class ProviderClientCI(unittest.TestCase):
         self.assertEqual(source.count(native_ci_step()), 1)
         policy.validate_warm_order(client)
         documentation = policy._job(source, 'documentation')
-        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', documentation.splitlines())
+        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]', documentation.splitlines())
         self.assertIn('          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}', documentation.splitlines())
         self.assertIn('          test "$PROVIDER_CLIENT_RESULT" = success', documentation.splitlines())
         policy.validate_ci(source)
@@ -1004,7 +1160,7 @@ class ProviderClientCI(unittest.TestCase):
             policy.validate_ci(source + '  provider_client:\n' + client)
         with self.assertRaises(ValueError):
             policy.validate_ci(source.replace('  provider_operator:\n', native_ci_step() + '  provider_operator:\n', 1))
-        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: [native_mail, provider, provider_operator]'),
+        for old, new in [('needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: [native_mail, provider, provider_operator]'),
                          ('          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}\n', ''),
                          ('PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}', 'PROVIDER_CLIENT_RESULT: success'),
                          ('          test "$PROVIDER_CLIENT_RESULT" = success\n', ''),
@@ -1123,7 +1279,7 @@ class ProviderCI(unittest.TestCase):
 
     def test_documentation_fails_closed_on_both_native_and_provider(self):
         good = ci_fixture()
-        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: native_mail'),
+        for old, new in [('needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: native_mail'),
                          ('          test "$PROVIDER_RESULT" = success\n', ''),
                          ('          test "$NATIVE_MAIL_RESULT" = success\n', ''),
                          ('test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_RESULT" = success || true'),
@@ -1178,7 +1334,7 @@ class DurableProviderProfiles(unittest.TestCase):
         for feature in ['durable-policy', 'operator']:
             self.assertIn('--features ' + feature + ' -- -D warnings', job)
             self.assertIn('--features ' + feature + ' -- --test-threads=1', job)
-        self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', source)
+        self.assertIn('needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]', source)
 
 
 class DurableProviderRefusals(unittest.TestCase):
@@ -1227,7 +1383,7 @@ class DurableProviderRefusals(unittest.TestCase):
             if line.strip().startswith(('cargo ', 'python3 ')):
                 with self.subTest(line=line), self.assertRaises(ValueError):
                     policy.validate_ci(good.replace(job, job.replace(line + '\n', '', 1)))
-        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: [native_mail, provider]'),
+        for old, new in [('needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: [native_mail, provider]'),
                          ('test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success || true'),
                          ('PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}', 'PROVIDER_OPERATOR_RESULT: success'),
                          ('  provider_operator:\n', '  provider_operator:\n    if: false\n')]:
@@ -1468,7 +1624,7 @@ class ServicesProfiles(unittest.TestCase):
                     with self.assertRaises(ValueError):policy.validate_ci(text.replace('          '+command+'\n','',1))
             for operation in ['clippy','test']:
                 command='cargo '+operation+' --manifest-path crates/faction-provider/Cargo.toml'+(' --all-targets' if operation=='clippy' else '')+' --release --locked --features '+profile+(' -- -D warnings' if operation=='clippy' else ' -- --test-threads=1')
-                self.assertIn(command,policy._job(text,'provider_composed' if profile=='delegation-verifier' else 'provider_operator'))
+                self.assertIn(command,policy._job(text,'provider_composed' if profile=='delegation-verifier' else 'provider_verifier_durable' if profile=='delegation-verifier,durable-policy' else 'provider_operator'))
                 with self.assertRaises(ValueError):policy.validate_ci(text.replace('          '+command+'\n','',1))
 
 
@@ -1477,7 +1633,7 @@ class ServiceProfileSchedulingCI(unittest.TestCase):
     def service_commands():
         commands = []
         for profile in ['delegation-services', 'delegation-services,durable-policy',
-                        'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier,durable-policy']:
+                        'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy']:
             commands += [
                 'cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features ' + profile + ' -- -D warnings',
                 'cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features ' + profile + ' -- --test-threads=1',
@@ -1630,10 +1786,15 @@ class SmallGetCIIntegrationMutations(unittest.TestCase):
 
     def test_every_old_profile_command_is_still_required_exactly_once(self):
         source=(policy.ROOT/'.github/workflows/documentation.yml').read_text()
-        jobs=['provider','provider_operator','provider_client','provider_composed','own_home_client']
+        jobs=['provider','provider_operator','provider_verifier_durable','provider_client','provider_composed','own_home_client']
         commands=[]
         for job in jobs:
-            for line in policy._job(source,job).splitlines():
+            body=policy._job(source,job)
+            if job=='provider':
+                # Research now shares this executor; its exact commands and
+                # source-qualification negatives have their own routing tests.
+                body=policy._step(body,'Validate the opt-in attachment provider')
+            for line in body.splitlines():
                 if line.strip().startswith(('cargo clippy ','cargo test ')) or (line.strip().startswith('env ') and ' cargo test ' in line):
                     commands.append(line+'\n')
         self.assertTrue(commands)

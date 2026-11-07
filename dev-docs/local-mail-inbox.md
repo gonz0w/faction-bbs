@@ -130,3 +130,99 @@ acknowledgement still target the original record. Online reply retains its
 existing authority checks; offline has no Reply. Control interruption,
 inactivity and I/O failure retain the existing lock/drop behavior. No persistent
 query, plaintext index, schema, dependency, crypto or wire change is introduced.
+
+## Local conversation preview
+
+Issue [#339](https://github.com/gonz0w/faction-bbs/issues/339) adds a deliberate
+T action within an unlocked correspondent inbox in the offline and manual
+home-mail consoles. The eligible records are the intersection of the exact
+account/device group, current All/Unread filter and literal search. Original
+canonical indices identify selections; local append order presents oldest first,
+independent of sender UTC values. Empty results cannot escape the group.
+
+Each page contains at most two previews with direction, status, UTC, subject and
+at most three body rows per message. Each preview indicates continuation when
+needed and offers the existing full-record route. Output fits 39 terminal cells per row
+and a classic 24-row page, using inert classic/Unicode scalar rendering and
+bounded zeroized text scratch. Navigation metadata contains no copied body or
+key. Arrows/J/K select and N/P page with clamped boundaries. Enter/O opens the
+selected original index in the existing reader; B returns to the scoped inbox.
+After record return, refresh the same group, filter and query, preserving the
+original selection where eligible and clamping otherwise.
+
+Preview and navigation do not acknowledge, queue, send or perform network work,
+or change archive/read state, ciphertext or trust. They add no schema, persisted
+index, credential lease or background polling. Existing post-output typed read
+decisions and current online peer/reply checks remain authoritative; offline has
+no Reply. Existing lock/drop and parked-SSH return behavior remains in force,
+and private text stays out of board streams, logs and diagnostics. Existing N
+notice consent is unchanged. This retained-device presentation is not live chat,
+protocol threading, current presence, a complete home inbox or key continuity.
+
+## Multiline writing and paged bodies
+
+Issues [#341](https://github.com/gonz0w/faction-bbs/issues/341) and
+[#342](https://github.com/gonz0w/faction-bbs/issues/342) add a foreground private
+writer and a bounded selected-record body view. W in manual home mail starts a
+new message; W after an eligible received record starts a reply. Existing C/R
+one-line paths remain available. The offline inbox supports selected-record
+body paging but gains no compose or reply action.
+
+The transient device-local body holds at most 1024 UTF-8 bytes, including LF
+separators, and 32 logical lines. Both modes accept UTF-8 input; classic echo uses inert
+escapes. Accepted text and discarded edits use bounded zeroized storage. Enter adds a line; .done, .preview, .undo, .clear, .cancel and
+.help control the writer, and two leading dots enter one literal dot. Unknown
+commands and oversized input do not append a partial body. Empty or whitespace-only
+completion cannot queue. No plaintext draft is persisted.
+
+Selected I-record bodies and W preview/review use body rows of at most 39 cells
+including the trusted prefix, and pages of at most ten body rows. Short-line
+payload fits 33 cells after the six-cell Body label; paged payload fits 37 cells
+after the two-cell bar prefix. These bounds do not cover the complete metadata
+layout. LF becomes a logical line break; other unsafe
+scalars are escaped under the existing classic or explicit Unicode rules. Bounded
+zeroized scratch and offsets support paging without copying bodies into navigation
+metadata. A short single-line record keeps its direct post-output prompts. While
+more pages remain, Enter advances and B returns without acknowledgement. In
+.preview, B returns to the writer; during final review, B or a non-queue response
+cancels the intent and discards the unsaved body. Only
+complete body output permits the existing fresh typed read decision, bound to the
+original index and authenticated frame. The H history loop retains its escaped
+view. Group, filter, query and eligible original selection survive record return.
+
+The current prepared verified peer and, for replies, the original received frame
+remain authoritative before editing and at queue. Complete inert recipient,
+subject and body review precedes fresh typed queue confirmation. Preview, paging,
+cancellation and rejected input do not acknowledge or queue; neither writing nor
+review connects to home or acquires credentials. Explicit send remains separate.
+Control interruption, EOF, output failure and inactivity retain lock/drop and TTY
+restoration behavior. This adds no persistent draft, schema, dependency, crypto,
+protocol, notice, background lease or attachment action. Private text stays out
+of board streams and logs; terminal scrollback is not erased.
+
+## Foreground home exchange and scoped return
+
+Issue [#344](https://github.com/gonz0w/faction-bbs/issues/344) adds an explicit
+online-only X choice in the global/group inbox and conversation. Navigation
+retains no password. The selected local entry carries the existing home settings;
+no remote board frame or retained record grants that capability. The submenu
+flushes queued navigation input before accepting N/A/B. Opening or canceling
+has no network or checkpoint effect. Offline/native-mail views carry no exchange
+capability and expose no exchange action.
+
+N reuses Sync with its actual home-wide pending-send behavior; archive-enabled
+Sync does not receive. A reuses a single CatchUp page when already enabled;
+otherwise it explains the existing G prerequisite without upgrading or connecting.
+The choice discloses those differences and does not chain actions, upgrade the
+schema or enroll a recipient. The existing hidden password-per-cycle, deadline,
+cancel/poison/drop and result paths stay authoritative. No new dependency,
+transport behavior, background task or credential lease is introduced.
+
+After a completed or recoverably failed action, recompute eligible canonical
+indices and literal search matches from the actual vault, retaining the exact
+account/device group, filter and query. Keep the original selected index when
+eligible and otherwise clamp within the same scope. Rebuild even on recoverable
+archive failure because earlier entries may already be saved. Conversation and
+list navigation never acknowledge these new entries or retire sent operations.
+The home-wide report is not a scoped conversation delivery receipt. Private
+content and local controls remain outside the parked board stream.

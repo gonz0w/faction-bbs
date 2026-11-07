@@ -122,7 +122,86 @@ def zero_busy_logs():
     return stdout,'\n'.join(lines)+'\n'
 
 
+def shared_setup_logs(later_outcome=1):
+    # Current synthetic shared-context contract; no transport is executed here.
+    stdout, stderr = valid_logs()
+    lines = [line for line in stderr.splitlines() if not line.startswith('small_get_setup')]
+    rows = []
+    def connection(role, kind, ordinal, start, outcome):
+        phases = [(2, 0, 0)] if kind == 0 else []
+        phases += [(6, 0, 1 if outcome == 1 else 0)]
+        if outcome != 1:
+            phases += [(0, 0, 0), (1, 0, 0)]
+        if kind == 1:
+            phases += [(2, 0, 0)]
+        if outcome != 1:
+            phases += [(1, 1, 0), (7, 0, outcome)]
+        phases += [(3, 0, 0), (4, 0, 0)]
+        for index, (phase, part, observed) in enumerate(phases):
+            rows.append((role, kind, ordinal, phase, part, start+index*2, start+index*2+1, observed))
+    connection(0, 0, 0, 2, 2)
+    connection(0, 0, 1, 27000, later_outcome)
+    connection(0, 0, 2, 70000, later_outcome)
+    connection(1, 1, 0, 6000, 2)
+    connection(1, 0, 0, 14000, 1)
+    connection(1, 0, 1, 25000, later_outcome)
+    connection(2, 1, 0, 20000, 3)
+    rows.extend([(0,2,0,5,0,5033,26000,0), (0,2,1,5,0,32794,69000,0)])
+    lines += [f'small_get_setup schema=2 sequence={sequence} role={role} kind={kind} ordinal={ordinal} phase={phase} part={part} start_us={start} end_us={end} complete=1 outcome={outcome}'
+              for sequence, (role,kind,ordinal,phase,part,start,end,outcome) in enumerate(rows, 1)]
+    lines.append(f'small_get_setup_summary schema=2 points={len(rows)} conclusive=1 scope_clean=1')
+    return stdout, '\n'.join(lines)+'\n'
+
+
 class SmallGetSetupOutput(unittest.TestCase):
+    def test_current_shared_setup_cold_hit_and_unpublished_are_qualified(self):
+        for outcome in [1, 2, 3]:
+            stdout, stderr = shared_setup_logs(outcome)
+            with self.subTest(outcome=outcome):
+                self.assertTrue(check.validate(stdout, stderr, 0).ok)
+
+    def test_current_shared_setup_rejects_missing_contradictory_and_incomplete_work(self):
+        stdout, stderr = shared_setup_logs()
+        lines = stderr.splitlines()
+        selected = next(line for line in lines if 'role=0 kind=0 ordinal=1 phase=6 ' in line)
+        cold_build = next(line for line in lines if 'role=0 kind=0 ordinal=0 phase=1 part=1 ' in line)
+        publication = next(line for line in lines if 'role=0 kind=0 ordinal=0 phase=7 ' in line)
+        cases = {
+            'mixed_header':stderr.replace('small_get_setup_summary schema=2', 'small_get_setup_summary schema=1'),
+            'mixed_point':stderr.replace(selected, selected.replace('schema=2', 'schema=1').replace(' outcome=1', '')),
+            'missing_lookup':stderr.replace(selected+'\n', ''),
+            'contradictory_lookup':stderr.replace(selected, selected.replace('outcome=1', 'outcome=2')),
+            'missing_outcome':stderr.replace(selected, selected.replace(' outcome=1', '')),
+            'missing_publication':stderr.replace(publication+'\n', ''),
+            'contradictory_publication':stderr.replace(publication, publication.replace('outcome=2', 'outcome=1')),
+            'missing_cold_build':stderr.replace(cold_build+'\n', ''),
+            'hit_with_constructor':stderr.replace(selected, selected+'\n'+selected.replace('phase=6', 'phase=0').replace('outcome=1','outcome=0')),
+            'hit_with_configuration':stderr.replace(selected, selected+'\n'+selected.replace('phase=6', 'phase=1').replace('outcome=1','outcome=0')),
+            'cold_claims_hit':stderr.replace('phase=6 part=0 start_us=4 end_us=5 complete=1 outcome=0', 'phase=6 part=0 start_us=4 end_us=5 complete=1 outcome=1'),
+            'wrong_role':stderr.replace('role=0 kind=0 ordinal=1', 'role=2 kind=0 ordinal=1'),
+            'wrong_ordinal':stderr.replace('role=0 kind=0 ordinal=1', 'role=0 kind=0 ordinal=8'),
+            'wrong_order':stderr.replace(cold_build, cold_build.replace('phase=1 part=1', 'phase=1 part=0')),
+            'incomplete':stderr.replace(selected, selected.replace('complete=1', 'complete=0')),
+            'unknown_outcome':stderr.replace(selected, selected.replace('outcome=1', 'outcome=4')),
+        }
+        for name, value in cases.items():
+            self.assertNotEqual(value, stderr, name)
+            with self.subTest(case=name):
+                self.assertFalse(check.validate(stdout, value, 0).ok)
+
+    def test_current_shared_setup_retains_causal_status_and_numeric_privacy_guards(self):
+        stdout, stderr = shared_setup_logs()
+        for status in [1, 101, 124, 137]:
+            self.assertFalse(check.validate(stdout, stderr, status).ok)
+        for value in [stderr.replace('role=1 kind=1 ordinal=0 phase=6 part=0 start_us=6000', 'role=1 kind=1 ordinal=0 phase=6 part=0 start_us=0'),
+                      stderr.replace('scope_clean=1','scope_clean=0'), stderr.replace('conclusive=1','conclusive=0'),
+                      stderr.replace('outcome=3','outcome=PRIVATE_SENTINEL',1), stderr+'\n'+stderr]:
+            self.assertFalse(check.validate(stdout, value, 0).ok)
+        result = check.validate(stdout, stderr, 0)
+        self.assertTrue(result.ok)
+        self.assertTrue(any('small_get_setup schema=2 ' in line and 'outcome=1' in line for line in result.lines))
+        self.assertTrue(all(all(value.isascii() and value.isdecimal() for value in (part.split('=',1)[1] for part in line.split()[1:])) for line in result.lines))
+
     def test_complete_setup_roles_phases_and_waits_pass(self):
         stdout,stderr=valid_logs()
         self.assertTrue(check.validate(stdout,stderr,0).ok)

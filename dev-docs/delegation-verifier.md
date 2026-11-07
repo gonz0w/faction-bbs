@@ -121,10 +121,11 @@ proof that the peer sent a TLS close notification. The OpenSSL read adapter can
 report zero for more than one TLS outcome. A read error, partial frame header or
 incomplete body still fails framing, without dispatching a partial request.
 Legacy `COLLECT` requests return Busy immediately for unfinished work. Updated
-homes can explicitly request `WAIT_COLLECT` (kind 6 under `FDEL01`) for a
-service retrieval (purpose 2). It checks the same authenticated peer, Runtime,
-correlation, binding and request, and spends one collection attempt from the
-original budget. It cannot authorize another operation or serve a device request.
+homes can explicitly request `WAIT_COLLECT` (kind 6 under `FDEL01`) for service
+retrieval (purpose 2) or the independently authenticated device's own-home
+retrieval (purpose 3). It checks the same authenticated peer, Runtime, correlation,
+binding and request, and spends one collection attempt from the original budget.
+It cannot authorize another operation or serve publication requests.
 
 The added condition wait lasts at most 100 ms. It uses the earlier original
 session and source deadlines, any tighter deadline, and the known token expiry.
@@ -139,15 +140,31 @@ current authority still returns an error or refusal. No worker, queue, Runtime o
 authority cache is added. Reciprocal homes can regain
 admission after the bounded wait, without a fairness or completion guarantee.
 
-Own-home retrieval requests the first resource collection without an initial
-wait on the client. After Busy it retains the existing measured backoff and release
-gap. Device and publication collection keep their existing pacing and immediate
-wire semantics. Opt-in affects one call only. Old clients work against updated
-homes; a waiting request to an older resource provider fails closed, without
-fallback, resubmission or an automatic retry. Both homes need the updated preview
-for this path. A lost result still requires a freshly authorized exact retry.
+The existing `collect_waiting()` remains service-purpose-2-only. The separate
+`collect_own_home_waiting()` admits purpose 3, and `collect_own_home_paced()`
+retains the existing client pacing before that bounded wait. The device SDK selects
+the paced waiting call only for explicit `OwnHomeRetrieval`; same-home, service
+and publication routes retain their existing selection, and ordinary `COLLECT`
+is unchanged. Opt-in affects one call only. Matching updated operator and SDK
+are required for device own-home waiting; an older peer's refusal fails closed,
+without fallback, resubmission or an automatic retry. A lost result still requires
+a freshly authorized exact retry.
 The [software record](evidence/bounded-resource-collection/README.md) separates the
 frozen latency workload, host profile tests and actual console observations.
+
+For the purpose-3 extension, controlled host checks observed Busy release the
+synchronous admission, actual issuance and introspection progress, and the exact
+17-byte result complete at shared attempt seven and client attempt three.
+Full Repository CI at `61f569d` passed, including maximum-file console checks.
+Separate NetBSD software controls passed 11 provider and two SDK compatibility
+cases at 1 GiB runtime. The corrected SDK tests used a test-only private OpenSSL
+configuration repair and a private `python3` alias to the existing versioned
+interpreter; production code, assertions and limits were unchanged. These controls
+do not establish a new native maximum-file result or the cause of historical
+[#326](https://github.com/gonz0w/faction-bbs/issues/326) deadline failures. No
+additional worker, ninth attempt, new dependency, crypto,
+schema or configuration key is introduced. See
+[#358](https://github.com/gonz0w/faction-bbs/issues/358).
 
 For own-home retrieval, the device connection closes before the actual registered
 Relay establishes its own mutual-TLS issuance connection. The configured peer
@@ -158,6 +175,31 @@ aggregate slots. The original eight attempts, ten-second cycle, admission and
 drain limits remain. No result registry, worker pool or additional Runtime is
 introduced. See the [operator guide](../docs/provider-operator.md) for explicit
 configuration.
+
+### Credential-family TLS setup
+
+Mandatory-identity binary and HTTP clients lazily retain one successful TLS
+connector per `ClientCredentials` family. Clones share that immutable setup;
+separate `from_pem` calls create separate families. Every connection still creates
+a fresh SSL object and handshake and applies its current name, pin, certificate,
+policy, cancellation and deadline checks. No session, peer decision or operation
+authority is cached. The optional-identity `Client::connect` API is unchanged.
+
+Lookup and publication use nonblocking cache access. Construction happens outside
+the cache lock; a busy slot permits a local cold candidate within the existing
+admission. Binary cold setup stays after TCP. HTTP configuration stays before TCP,
+with build/publication afterward and the local connector handle dropped after
+fresh SSL configuration. Failed setup is not retained. A later handshake refusal
+can leave valid immutable setup cached without retaining its authentication result.
+
+The retained cost is one successful native context per live family, plus any
+temporary cold candidates and active SSL references. Transport-key references
+follow those owners; no context callback retains the cache owner. Native allocation
+and reference counts are not measured. Schema-2 test diagnostics distinguish lookup,
+cold publication and hits; hits omit constructor/configuration phases. Historical
+schema-1 records retain their original meaning. Reusing initialization work does
+not establish a cause or fix for the earlier Linux deadline failures in
+[#326](https://github.com/gonz0w/faction-bbs/issues/326).
 
 These interfaces are a software preview under validation. Full carrier behavior,
 native cross-home delivery, mail release and separate review are not yet established

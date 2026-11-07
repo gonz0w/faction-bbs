@@ -107,3 +107,22 @@ carrier, XMPP stream/server, SASL mechanism or connectivity for the ordinary
 PLAIN-authenticated native session. Interhome delegated identities and direct
 foreign-home requests remain unsupported. The original member-side own-home route,
 private checkpoints and classic defaults remain independent.
+
+For an explicitly selected disposable diagnostic run, set
+`FACTION_PROVIDER_DIAGNOSTICS=1` on the composed operator process. It attempts at
+most eight `carrier_rejection` stderr lines for the entire run; other values keep
+this output off. Each line contains only numeric phase, rejection category,
+pending/shared-attempt count and completion/consumption flags. Phase 1 records a
+discarded serve error; phase 2 records expired-pending cleanup. Categories are
+1 Limit, 2 Deadline, 3 Cancelled, 4 Denied, 5 Frame, 6 Store Busy, 7 other Store
+error, 8 other transport error and 9 unknown expiration. Cleanup never infers
+Limit from a count of eight. Failed diagnostic writes are ignored and still spend
+the diagnostic line budget. Capture stderr privately and preserve failures; this
+output changes no request, deadline, authority or attempt limit.
+
+The member-device failure line also retains the terminal logical operation's
+carrier-attempt/Busy counts separately from cycle totals. Its fixed exchange
+origin distinguishes write, read error, framing-boundary EOF, envelope/response
+decode and explicit refusal. Read error still includes truncated framing and
+other I/O failures; EOF does not identify the remote cause or prove a TLS close
+notification. These observations cannot establish a historical failure's cause.

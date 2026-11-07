@@ -10,7 +10,7 @@ def manifest():
     return {'package':{'name':'faction-provider-auth-research','version':'0.0.0','edition':'2024','rust-version':'1.96','license':'BSD-3-Clause','publish':False}, 'workspace':{}, 'lib':{'path':'src/lib.rs'}, 'dependencies':{'faction-files':{'path':'../../crates/faction-files'},'openssl':'=0.10.81'}}
 
 def ci_script(script,step_extra=''):
-    return 'jobs:\n  native_mail:\n    steps:\n      - name: Validate the optional member-device checkpoint path\n'+step_extra+'        run: |\n'+''.join('          '+line+'\n' for line in script.splitlines())+'  documentation:\n    needs: native_mail\n'
+    return 'jobs:\n  provider:\n    steps:\n      - name: Validate the isolated transport and provider authority research\n'+step_extra+'        run: |\n'+''.join('          '+line+'\n' for line in script.splitlines())+'  documentation:\n    needs: provider\n'
 
 class ProfileTests(unittest.TestCase):
     def test_exact_isolated_profile(self):
@@ -42,6 +42,17 @@ class ProfileTests(unittest.TestCase):
         with self.assertRaises(ValueError):policy.existing_checks({'package':[p]},{'package':[p,p]})
     def test_required_ci_checks_sources_before_experimental_tests(self):
         policy.validate_ci((ROOT/'.github/workflows/documentation.yml').read_text())
+    def test_actual_receiver_location_is_accepted_and_old_native_location_refused(self):
+        script='\n'.join(['python3 tools/check_provider_auth_dependencies.py',
+          'cargo fmt --manifest-path experiments/270-provider-auth/Cargo.toml -- --check',
+          'cargo clippy --manifest-path experiments/270-provider-auth/Cargo.toml --all-targets --release --locked -- -D warnings',
+          'cargo test --manifest-path experiments/270-provider-auth/Cargo.toml --release --locked -- --test-threads=1'])
+        source=ci_script(script)
+        policy.validate_ci(source)
+        with self.assertRaises(ValueError):
+            policy.validate_ci(source.replace('  provider:\n','  native_mail:\n').replace(
+                'Validate the isolated transport and provider authority research',
+                'Validate the optional member-device checkpoint path'))
     def test_ci_comment_echo_or_failure_waiver_is_not_execution(self):
         commands=['python3 tools/check_provider_auth_dependencies.py',
           'cargo fmt --manifest-path experiments/270-provider-auth/Cargo.toml -- --check',
