@@ -20,7 +20,7 @@ and fonts vary. Explore the [artwork](docs/artwork-nightwire.md) and
 
 ## Status
 
-**Working hobby preview · updated 2026-11-04 · no supported release yet.**
+**Working hobby preview · updated 2026-11-07 · no supported release yet.**
 
 The local BBS core and restricted SSH service work. Optional features are enabled
 by the sysop; experiments and future protocols are separate from normal operation.
@@ -34,9 +34,12 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [manual encrypted home mail](docs/online-mail.md) keep keys and decryption on
   the member's device. The native client offers a local inbox, explicit replies,
   multiline composing, paged bodies, deliberate [inbox home exchanges](docs/local-mail-inbox.md#exchange-home-mail-without-leaving-your-place),
-  bounded archive catch-up and a [private attachment desk](docs/private-attachments.md).
+  bounded archive catch-up, a separate brief foreground exchange and a
+  [private attachment desk](docs/private-attachments.md).
   Compatible home storage is required. Ordinary SSH access does not receive private
-  mail plaintext or keys.
+  mail plaintext or keys. Classic and Unicode two-client host tests with synthetic
+  TLS homes exercised the new exchange and later archive recovery; native and
+  same-SSH qualification remain pending.
 - **Limits:** provider operation and cross-home attachment delivery are software
   previews, not deployed services. An explicitly enabled own-home route completed
   maximum-size classic and Unicode exercises on the host and a NetBSD software
@@ -50,9 +53,11 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [host qualification](dev-docs/evidence/bounded-resource-collection/README.md),
   including maximum-file console checks. Separate
   [NetBSD 1 GiB software checks](https://github.com/gonz0w/faction-bbs/issues/326#issuecomment-6581115822)
-  at `5ca3e7b` passed both classic and Unicode maximum-file journeys. The maintained
-  maximum-file route still
-  fails its original deadline on Linux; see [#326](https://github.com/gonz0w/faction-bbs/issues/326).
+  at `5ca3e7b` passed both classic and Unicode maximum-file journeys. Historical
+  deadline failures and their unresolved cause remain tracked in
+  [#326](https://github.com/gonz0w/faction-bbs/issues/326); the later
+  [rebalance and diagnostics](https://github.com/gonz0w/faction-bbs/pull/353)
+  passed the required checks.
 
 ## What you can do
 
@@ -140,7 +145,10 @@ picker for browsing one retained account/device at a time, local search and a
 deliberately opened conversation preview of unlocked retained mail. The manual
 inbox offers paged body reading and deliberate replies to a selected received
 message. The manual console also offers multiline writing; queueing stays on the
-device and sending is explicit.
+device and sending is explicit. The separate [brief exchange](docs/online-mail.md#exchange-from-an-inbox-or-conversation)
+receives briefly or sends one selected queued text and then receives; it adds no
+presence announcement or background connection. Existing X, N and A actions stay
+unchanged. Native and same-SSH qualification for this new path remain pending.
 
 The default-off [roaming terminal experiment](docs/roaming-authentication.md) adds
 a trusted UID-to-local-member path plus filesystem-owner commands for manual

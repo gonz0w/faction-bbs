@@ -170,13 +170,12 @@ first use, full-store stops and stale-position recovery limits.
 
 ## Exchange from an inbox or conversation
 
-The owner has approved a separate brief foreground exchange for a prepared,
-archive-enabled vault with a saved position and a currently verified peer. Its
-intended choices are receive briefly, or select exactly one retained queued text
-message to send and then receive briefly. Each attempt requires a fresh home
+The separate brief foreground exchange requires a prepared, archive-enabled vault
+with a saved position and a currently verified peer. Choose receive briefly, or
+select exactly one retained queued text message to send and then receive briefly.
+Each attempt requires a fresh home
 password. It does not send the entire outbox, announce presence or keep a
-connection running. The action and its controls remain subject to implementation
-and qualification; the existing N and A instructions below still apply.
+connection running. The existing N and A instructions below still apply.
 
 The tested review presents **E: Brief exchange** in the matching online
 conversation. Review the full home, peer, device and identity over the displayed
@@ -187,12 +186,14 @@ eligible highlighted text. The Unread scope may contain only received messages,
 so it may offer R without S. At the confirmation prompt, type `exchange` to
 connect or press Enter to return to the unchanged view. Each attempt then asks
 for a fresh hidden home password. Ctrl-C/D retains the existing lock-and-exit
-behavior. These review and cancellation controls were tested in classic and
-Unicode modes; dispatch and end-to-end qualification remain in progress under
+behavior. Review, cancellation and dispatch controls were tested in classic and
+Unicode modes. Two-client host tests with synthetic TLS homes exercised selected
+send, live receive and later archive recovery in both modes. Native and same-SSH
+qualification remain in progress under
 [#355](https://github.com/gonz0w/faction-bbs/issues/355) and
 [#356](https://github.com/gonz0w/faction-bbs/issues/356).
 
-Live messages accepted by that future action leave the archive position and read
+Live messages accepted by this action leave the archive position and read
 decisions intact. Later manual catch-up can recover older retained messages and
 deduplicate repeats, within the existing skipped-message limit. A local write is
 not a delivery receipt, and no observed arrival does not prove the peer is offline.

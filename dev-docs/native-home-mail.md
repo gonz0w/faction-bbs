@@ -191,7 +191,7 @@ persisted writes. A is the explicit archive receive path. Schema 2 keeps live
 synchronization. Neither mode promises background notification/reconnect,
 attachments, roaming or multi-device operation. The owner-approved separate
 foreground attempt in [ADR 0081](decisions/0081-durable-mail-archive.md#owner-approved-amendment--2026-11-07)
-does not change those actions and is subject to implementation and qualification.
+does not change those actions. Native and same-SSH qualification remain pending.
 Source checks and the prior qualified primitives do not establish a
 security audit, full protocol conformance, physical hardware support or capacity.
 
@@ -211,8 +211,11 @@ The tested conversation review exposes E, pages the current home, peer, device
 and identity, and offers R or B; S is conditional on the highlighted eligible
 pending text and reviews its retained record, operation and subject. A literal
 `exchange` confirmation precedes the fresh hidden password; blank input returns
-without connecting. Classic and Unicode review/cancellation controls have been
-tested; production dispatch and end-to-end qualification remain in progress.
+without connecting. Classic and Unicode review, cancellation and dispatch controls
+have been tested. Classic and Unicode two-client host tests with synthetic TLS
+homes exercised production selected send, live receive and later MAM
+recovery/deduplication while preserving cursor, read state and pending operations.
+Native and same-SSH qualification remain pending.
 
 Full outer peer routing derives from the verified account and device. The OMEMO
 bare account, operation ID and ciphertext remain immutable. Only this new path may
