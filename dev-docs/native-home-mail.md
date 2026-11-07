@@ -226,13 +226,15 @@ returns without connecting. The original R and S classic and Unicode review, can
 and dispatch controls have been tested. Classic and Unicode two-client host tests
 with synthetic TLS homes exercised production selected send, live receive and later MAM
 recovery/deduplication while preserving cursor, read state and pending operations.
-Corrected classic and Unicode host journeys exercised the new conversation writer
-and queued-text picker, including cancellation, exact selected wire, authenticated
-receipt, retained view and state, outage, privacy and teardown. Separate evidence review passed; native validation for these additions
-remains pending.
+Classic and Unicode host and NetBSD 11 ARM64 software VM journeys exercised the
+conversation writer and queued-text picker, including cancellation, exact selected
+wire, authenticated receipt, retained view and state, privacy and teardown.
+NetBSD checks also covered same-SSH BBS/SFTP outage and return at 1 GiB runtime;
+independent native evidence review accepted source `c3c6371`. The later [#362](https://github.com/gonz0w/faction-bbs/issues/362)
+provider test-only coordinator repair is separate host/CI qualification work and
+was not included in the guest inputs.
 The original product source `81922457`, with the `f01977a` test-only CA fixture
-repair, also completed NetBSD software VM and same-SSH controls. This observation
-does not qualify the later #358 provider code.
+repair, also completed earlier NetBSD software VM and same-SSH controls.
 
 Full outer peer routing derives from the verified account and device. The OMEMO
 bare account, operation ID and ciphertext remain immutable. Only this new path may

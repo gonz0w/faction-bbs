@@ -200,14 +200,12 @@ attempt then asks for a fresh hidden home password. Ctrl-C/D retains the existin
 behavior. The original R and S review, cancellation and dispatch controls were
 tested in classic and Unicode modes. Two-client host tests with synthetic TLS
 homes exercised selected send, live receive and later archive recovery in both
-modes. Corrected classic and Unicode host journeys also exercised fresh
-conversation writing, cancellation, one selected queued-text send, authenticated
-receipt, preserved local state, outage and privacy controls. Separate evidence
-review passed; native validation for these additions remains pending. A separate
-NetBSD software VM exercised the original exchange and same-SSH return in both modes;
-that observation predates the #358 provider change. See
-[#355](https://github.com/gonz0w/faction-bbs/issues/355) and
-[#356](https://github.com/gonz0w/faction-bbs/issues/356).
+modes. Classic and Unicode host and NetBSD 11 ARM64 software VM journeys also
+exercised fresh conversation writing, cancellation, one selected queued-text
+send, authenticated receipt and preserved local state. NetBSD checks also covered
+same-SSH BBS/SFTP outage, privacy and return at 1 GiB runtime. See
+[#359](https://github.com/gonz0w/faction-bbs/issues/359) and
+[#360](https://github.com/gonz0w/faction-bbs/issues/360) for these conversation actions.
 
 The existing full-store refusal also applies to E: a local W can queue the eighth
 pending operation, after which E is unavailable until deliberate maintenance.
