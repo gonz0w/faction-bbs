@@ -222,7 +222,25 @@ impl Shared {
 pub struct Delivery {
     shared: Arc<Shared>,
 }
+/// Content-free state sampled without authority lookups or lifetime changes.
+#[derive(Clone, Copy, Default)]
+pub struct DeliverySnapshot {
+    pub attempted: u8,
+    pub finished: bool,
+    pub consumed: bool,
+}
 impl Delivery {
+    pub fn diagnostic_snapshot(&self) -> DeliverySnapshot {
+        DeliverySnapshot {
+            attempted: self
+                .shared
+                .attempted
+                .load(Ordering::SeqCst)
+                .min(MAX_OPERATIONS) as u8,
+            finished: self.shared.finished.load(Ordering::SeqCst),
+            consumed: self.shared.consumed.load(Ordering::SeqCst),
+        }
+    }
     pub(crate) fn new(source: Source) -> Result<Self, Error> {
         let mut correlation = [0; 32];
         openssl::rand::rand_bytes(&mut correlation).map_err(|_| Error::Transport(Stage::Denied))?;
@@ -767,11 +785,22 @@ pub struct DiagnosticTimings {
     pub actual_wait_us: u64,
 }
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum ExchangeOrigin {
+    #[default]
+    Unobserved,
+    Write,
+    ReadError,
+    ReadEof,
+    Decode,
+    Refused,
+}
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct OperationSnapshot {
     pub phase: DiagnosticPhase,
     pub attempted: u8,
     pub busy: u8,
     pub connections: u8,
+    pub exchange_origin: ExchangeOrigin,
     pub timings: DiagnosticTimings,
     pub phase_us: u64,
 }
@@ -832,6 +861,31 @@ pub enum Collection {
     Complete(Response),
 }
 impl Operation {
+    fn exchange_origin(&mut self, origin: ExchangeOrigin) {
+        if let Some(snapshot) = &mut self.diagnostic {
+            snapshot.exchange_origin = origin;
+        }
+    }
+    fn exchange(
+        &mut self,
+        stream: &mut SslStream<DeadlineIo>,
+        bytes: &[u8],
+    ) -> Result<Vec<u8>, Stage> {
+        write_frame(stream, bytes).inspect_err(|_| {
+            self.exchange_origin(ExchangeOrigin::Write);
+        })?;
+        match read_frame(stream) {
+            Ok(Some(reply)) => Ok(reply),
+            Ok(None) => {
+                self.exchange_origin(ExchangeOrigin::ReadEof);
+                Err(Stage::Frame)
+            }
+            Err(error) => {
+                self.exchange_origin(ExchangeOrigin::ReadError);
+                Err(error)
+            }
+        }
+    }
     /// Local timings are cumulative client observations. Exchange includes all
     /// unobserved server callback, Store and scheduling time; it is not CPU time.
     pub fn diagnostic_snapshot(&self) -> Option<OperationSnapshot> {
@@ -851,6 +905,7 @@ impl Operation {
         self.diagnostic_start = (phase != DiagnosticPhase::Idle).then(Instant::now);
     }
     fn diagnostic_connect(&mut self, phase: DiagnosticPhase) {
+        self.exchange_origin(ExchangeOrigin::Unobserved);
         self.diagnostic_phase(phase);
         let snapshot = self.diagnostic.as_mut().unwrap();
         snapshot.connections = snapshot.connections.saturating_add(1);
@@ -992,18 +1047,20 @@ impl Operation {
             self.current_probe.clone(),
         )?;
         self.diagnostic_phase(DiagnosticPhase::SubmitExchange);
-        write_frame(&mut client.stream, &bytes)?;
-        let reply = read_frame(&mut client.stream)?.ok_or(Stage::Frame)?;
+        let reply = self.exchange(&mut client.stream, &bytes)?;
+        self.exchange_origin(ExchangeOrigin::Decode);
         if reply.len() != 39 || &reply[..6] != MAGIC || reply[6] != SUBMITTED {
             return Err(Stage::Frame);
         }
         message.correlation = reply[7..].try_into().map_err(|_| Stage::Frame)?;
         message.kind = COLLECT;
         message.token = None;
+        self.exchange_origin(ExchangeOrigin::Unobserved);
         check(self.deadline, &self.cancel)?;
         drop(client);
         self.ticket = Some(message);
         self.schedule_collect(roundtrip.elapsed(), false);
+        self.exchange_origin(ExchangeOrigin::Unobserved);
         self.diagnostic_phase(DiagnosticPhase::Idle);
         Ok(())
     }
@@ -1040,10 +1097,10 @@ impl Operation {
             self.current_probe.clone(),
         )?;
         self.diagnostic_phase(DiagnosticPhase::CollectExchange);
-        write_frame(&mut client.stream, &bytes)?;
-        let reply = read_frame(&mut client.stream)?.ok_or(Stage::Frame)?;
+        let reply = self.exchange(&mut client.stream, &bytes)?;
         check(self.deadline, &self.cancel)?;
         drop(client);
+        self.exchange_origin(ExchangeOrigin::Decode);
         if reply.len() < 7 || &reply[..6] != MAGIC {
             return Err(Stage::Frame);
         }
@@ -1053,6 +1110,7 @@ impl Operation {
                 if let Some(snapshot) = &mut self.diagnostic {
                     snapshot.busy = snapshot.busy.saturating_add(1);
                 }
+                self.exchange_origin(ExchangeOrigin::Unobserved);
                 self.diagnostic_phase(DiagnosticPhase::Idle);
                 Ok(Collection::Busy)
             }
@@ -1060,12 +1118,14 @@ impl Operation {
                 let response = decode_response(&reply[7..]).map_err(|_| Stage::Frame)?;
                 self.ticket = None;
                 self.next_collect = None;
+                self.exchange_origin(ExchangeOrigin::Unobserved);
                 self.diagnostic_phase(DiagnosticPhase::Idle);
                 Ok(Collection::Complete(response))
             }
             REFUSED if reply.len() == 7 => {
                 self.ticket = None;
                 self.next_collect = None;
+                self.exchange_origin(ExchangeOrigin::Refused);
                 Err(Stage::Denied)
             }
             _ => Err(Stage::Frame),
@@ -1882,11 +1942,25 @@ impl CarrierEndpoint {
 
 // Test witnesses expose only contention/notification, never fabricated results.
 #[cfg(test)]
+impl Session {
+    // An authenticated test peer deliberately closes or emits invalid framing;
+    // this helper neither dispatches a Store action nor changes normal TLS I/O.
+    pub(crate) fn test_delivery_raw_reply(mut self, bytes: &[u8]) {
+        assert!(read_frame(&mut self.stream).unwrap().is_some());
+        self.stream.write_all(bytes).unwrap();
+        self.stream.flush().unwrap();
+        let _ = self.stream.shutdown();
+    }
+}
+#[cfg(test)]
 pub(crate) struct CompletionWitness {
     shared: Arc<Shared>,
 }
 #[cfg(test)]
 impl CompletionWitness {
+    pub(crate) fn test_original_attempts(&self) -> usize {
+        self.shared.attempted.load(Ordering::SeqCst)
+    }
     pub(crate) fn hold(&self) -> std::sync::MutexGuard<'_, Option<Result<Response, Error>>> {
         self.shared.completion.lock().unwrap()
     }

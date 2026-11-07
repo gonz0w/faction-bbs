@@ -1789,7 +1789,12 @@ class SmallGetCIIntegrationMutations(unittest.TestCase):
         jobs=['provider','provider_operator','provider_verifier_durable','provider_client','provider_composed','own_home_client']
         commands=[]
         for job in jobs:
-            for line in policy._job(source,job).splitlines():
+            body=policy._job(source,job)
+            if job=='provider':
+                # Research now shares this executor; its exact commands and
+                # source-qualification negatives have their own routing tests.
+                body=policy._step(body,'Validate the opt-in attachment provider')
+            for line in body.splitlines():
                 if line.strip().startswith(('cargo clippy ','cargo test ')) or (line.strip().startswith('env ') and ' cargo test ' in line):
                     commands.append(line+'\n')
         self.assertTrue(commands)

@@ -3,8 +3,8 @@ use super::*;
 use crate::Error as ProviderError;
 use crate::{
     Runtime,
-    delivery::{Collection, Delivery, Event, RelayPeer, RelayRoutes},
-    tls::Server,
+    delivery::{Collection, Delivery, DeliverySnapshot, Event, RelayPeer, RelayRoutes},
+    tls::{Server, Stage},
 };
 use faction_files::private_blobs::Store;
 use std::sync::mpsc;
@@ -12,6 +12,382 @@ use std::sync::mpsc;
 mod composed_loop;
 fn mapped<T, E>(result: Result<T, E>) -> Result<T, ()> {
     result.map_err(|_| ())
+}
+
+#[test]
+fn rejection_diagnostic_categories_and_pending_state_are_fixed_and_private() {
+    use crate::delivery::DeliverySnapshot;
+    use composed_loop::{RejectionPhase, rejection_line};
+    let state = Some(DeliverySnapshot {
+        attempted: 8,
+        finished: true,
+        consumed: false,
+    });
+    let limit = rejection_line(
+        RejectionPhase::Serve,
+        Some(ProviderError::Transport(tls::Stage::Limit)),
+        state,
+    );
+    let frame = rejection_line(
+        RejectionPhase::Serve,
+        Some(ProviderError::Transport(tls::Stage::Frame)),
+        state,
+    );
+    let cleanup = rejection_line(RejectionPhase::Cleanup, None, state);
+    assert_eq!(
+        limit,
+        "carrier_rejection schema=1 phase=1 category=1 pending=1 shared_attempts=8 finished=1 consumed=0"
+    );
+    assert_eq!(
+        frame,
+        "carrier_rejection schema=1 phase=1 category=5 pending=1 shared_attempts=8 finished=1 consumed=0"
+    );
+    assert_eq!(
+        cleanup,
+        "carrier_rejection schema=1 phase=2 category=9 pending=1 shared_attempts=8 finished=1 consumed=0"
+    );
+    let absent = rejection_line(
+        RejectionPhase::Serve,
+        Some(ProviderError::Transport(tls::Stage::Denied)),
+        None,
+    );
+    assert_eq!(
+        absent,
+        "carrier_rejection schema=1 phase=1 category=4 pending=0 shared_attempts=0 finished=0 consumed=0"
+    );
+    for line in [limit, frame, cleanup, absent] {
+        assert!(line.len() <= 128);
+        for secret in [
+            "PRIVATE_CONTENT_SENTINEL",
+            "PRIVATE_TOKEN_SENTINEL",
+            "endpoint",
+            "correlation",
+            "key",
+            "account",
+        ] {
+            assert!(!line.contains(secret));
+        }
+        for field in line.split_whitespace().skip(1) {
+            assert!(
+                field
+                    .split_once('=')
+                    .unwrap()
+                    .1
+                    .bytes()
+                    .all(|b| b.is_ascii_digit())
+            );
+        }
+    }
+}
+
+#[test]
+fn rejection_diagnostics_are_opt_in_bounded_and_ignore_writer_failures() {
+    use composed_loop::{RejectionPhase, diagnostic_budget, emit_rejection};
+    use std::{ffi::OsStr, io};
+    for value in [
+        None,
+        Some(OsStr::new("0")),
+        Some(OsStr::new("true")),
+        Some(OsStr::new("PRIVATE_TOKEN_SENTINEL")),
+    ] {
+        assert_eq!(diagnostic_budget(value), 0);
+    }
+    let mut remaining = diagnostic_budget(Some(OsStr::new("1")));
+    assert_eq!(remaining, 8);
+    struct Broken {
+        calls: usize,
+    }
+    impl io::Write for Broken {
+        fn write(&mut self, _: &[u8]) -> io::Result<usize> {
+            self.calls += 1;
+            Err(io::Error::other("PRIVATE_CONTENT_SENTINEL"))
+        }
+        fn flush(&mut self) -> io::Result<()> {
+            unreachable!()
+        }
+    }
+    let mut broken = Broken { calls: 0 };
+    for _ in 0..20 {
+        emit_rejection(
+            &mut broken,
+            &mut remaining,
+            RejectionPhase::Serve,
+            Some(ProviderError::Transport(Stage::Limit)),
+            None,
+        );
+    }
+    assert_eq!(remaining, 0);
+    assert_eq!(broken.calls, 8);
+    let mut output = Vec::new();
+    emit_rejection(
+        &mut output,
+        &mut remaining,
+        RejectionPhase::Cleanup,
+        None,
+        None,
+    );
+    assert!(output.is_empty());
+    let mut remaining = diagnostic_budget(Some(OsStr::new("1")));
+    for _ in 0..20 {
+        emit_rejection(
+            &mut output,
+            &mut remaining,
+            RejectionPhase::Cleanup,
+            None,
+            None,
+        );
+    }
+    assert_eq!(output.iter().filter(|&&b| b == b'\n').count(), 8);
+    assert!(
+        !String::from_utf8(output)
+            .unwrap()
+            .contains("PRIVATE_CONTENT_SENTINEL")
+    );
+}
+
+#[test]
+#[ignore = "one source-qualified matched characterization requires separate runtime release"]
+fn characterize_own_home_shared_limit_after_two_and_three_busy_collects() {
+    use crate::delivery::CompletionWitness;
+    struct Stop<'a> {
+        runtimes: [&'a Runtime; 2],
+        cancel: Arc<AtomicBool>,
+    }
+    impl Drop for Stop<'_> {
+        fn drop(&mut self) {
+            self.cancel.store(true, Ordering::SeqCst);
+            for runtime in self.runtimes {
+                runtime.stop();
+            }
+        }
+    }
+    for busy_count in [2, 3] {
+        let h = Homes::new(true);
+        let root = h.pair.root.clone();
+        let stores = [h.empty(0), h.empty(1)];
+        let ciphertext = [37; 17];
+        let mut binding = h.pair.binding(0);
+        binding.id = sha256(&ciphertext);
+        binding.size = 17;
+        let servers: [_; 2] = std::array::from_fn(|i| {
+            Server::new_composed(
+                &h.pair.homes[i].server.0,
+                &h.pair.homes[i].server.1,
+                &[
+                    h.pair.homes[i].ca.0.clone(),
+                    h.pair.homes[1 - i].ca.0.clone(),
+                ],
+            )
+            .unwrap()
+        });
+        let profiles: [_; 2] = std::array::from_fn(|i| {
+            PublicationWireProfile::new(h.pair.homes[i].name.into(), vec!["observer".into()])
+                .unwrap()
+        });
+        let routes: [_; 2] = std::array::from_fn(|i| {
+            let home = &h.pair.homes[i];
+            let foreign = &h.pair.homes[1 - i];
+            RelayRoutes::new(
+                home.runtime(),
+                carrier_endpoint(home, &home.relay, home.callback.local_addr().unwrap()),
+                vec![RelayPeer {
+                    home: foreign.name.into(),
+                    publication: h.endpoint(i),
+                    introspection: home.endpoint(foreign),
+                    resource: carrier_endpoint(
+                        foreign,
+                        &home.relay,
+                        foreign.callback.local_addr().unwrap(),
+                    ),
+                }],
+            )
+            .unwrap()
+        });
+        let armed = Arc::new(AtomicBool::new(false));
+        let attach_armed = armed.clone();
+        let (witness_tx, witness_rx) = mpsc::sync_channel::<CompletionWitness>(1);
+        let (resume_tx, resume_rx) = mpsc::sync_channel(1);
+        let resume_rx = Mutex::new(resume_rx);
+        let (finish_tx, finish_rx) = mpsc::sync_channel(1);
+        let hooks = composed_loop::Hooks {
+            lifecycle: None,
+            attach: Some(Box::new(move |delivery| {
+                if attach_armed.swap(false, Ordering::SeqCst) {
+                    let witness = delivery.test_completion_witness();
+                    witness.observe_finish(finish_tx.clone());
+                    witness_tx.send(witness).unwrap();
+                    resume_rx
+                        .lock()
+                        .unwrap()
+                        .recv_timeout(Duration::from_secs(2))
+                        .unwrap();
+                }
+            })),
+        };
+        let cancel = Arc::new(AtomicBool::new(false));
+        let (loops_ok, drain) = thread::scope(|scope| {
+            let stop = Stop {
+                runtimes: [h.pair.homes[0].runtime(), h.pair.homes[1].runtime()],
+                cancel: cancel.clone(),
+            };
+            let loops: [_; 2] = std::array::from_fn(|i| {
+                let home = &h.pair.homes[i];
+                let server = &servers[i];
+                let profile = &profiles[i];
+                let routes = &routes[i];
+                let store = &stores[i];
+                let hooks = (i == 1).then_some(&hooks);
+                let cancel = &cancel;
+                let listener = home.callback.try_clone().unwrap();
+                scope.spawn(move || {
+                    thread::scope(|workers| {
+                        composed_loop::run(
+                            workers,
+                            composed_loop::Inputs {
+                                server,
+                                listener,
+                                runtime: home.runtime(),
+                                cancel,
+                                routes,
+                                store,
+                                home: home.name,
+                                profile,
+                                port: 0,
+                            },
+                            hooks,
+                        )
+                    })
+                })
+            });
+            let sender = &h.pair.homes[0];
+            let endpoint = carrier_endpoint(
+                sender,
+                &sender.device,
+                sender.callback.local_addr().unwrap(),
+            );
+            for (index, request) in [
+                Request::Begin(binding.clone()),
+                Request::PutChunk {
+                    id: binding.id,
+                    offset: 0,
+                    bytes: ciphertext.to_vec(),
+                },
+                Request::Commit { id: binding.id },
+            ]
+            .into_iter()
+            .enumerate()
+            {
+                let mut operation = endpoint.operation(cancel.clone());
+                operation
+                    .submit_publication(binding.clone(), request)
+                    .unwrap();
+                let mut response = None;
+                for _ in 0..6 {
+                    match operation.collect_paced().unwrap() {
+                        Collection::Busy => (),
+                        Collection::Complete(value) => {
+                            response = Some(value);
+                            break;
+                        }
+                    }
+                }
+                assert!(
+                    response
+                        == Some(Response::Progress {
+                            binding: binding.clone(),
+                            offset: if index == 0 { 0 } else { 17 },
+                            committed: index == 2,
+                        }),
+                    "legitimate publication setup failed"
+                );
+            }
+            capture_carrier_optional(&h, &format!("shared-limit-{busy_count}-committed"));
+            let recipient = &h.pair.homes[1];
+            let endpoint = carrier_endpoint(
+                recipient,
+                &recipient.device,
+                recipient.callback.local_addr().unwrap(),
+            );
+            let mut operation = endpoint.operation(cancel.clone());
+            armed.store(true, Ordering::SeqCst);
+            operation
+                .submit_own_home(
+                    binding.clone(),
+                    Request::GetChunk {
+                        id: binding.id,
+                        offset: 0,
+                    },
+                )
+                .unwrap();
+            let witness = witness_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+            let held = witness.hold();
+            resume_tx.send(()).unwrap();
+            // Genuine finish entry precedes its completion-slot lock. No outer
+            // collect has run, so this samples actual inner accounting.
+            finish_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+            assert_eq!(
+                witness.test_original_attempts(),
+                5,
+                "different inner accounting: stop characterization"
+            );
+            assert!(held.is_none());
+            for index in 0..busy_count {
+                assert!(matches!(operation.collect(), Ok(Collection::Busy)));
+                assert_eq!(witness.test_original_attempts(), 6 + index);
+            }
+            drop(held);
+            // Reacquire only the existing result slot; no extra carrier request
+            // or sleep. The original operation clock remains authoritative.
+            let deadline = Instant::now() + Duration::from_secs(2);
+            loop {
+                let completed = witness.hold();
+                if completed.is_some() {
+                    assert!(
+                        matches!(completed.as_ref(), Some(Ok(Response::Chunk { offset: 0, bytes, total: 17 })) if bytes == &ciphertext),
+                        "actual completion was not the exact successful chunk"
+                    );
+                    break;
+                }
+                drop(completed);
+                assert!(Instant::now() < deadline, "real finish unavailable");
+                thread::yield_now();
+            }
+            let terminal = operation.collect();
+            if busy_count == 2 {
+                assert!(
+                    matches!(&terminal, Ok(Collection::Complete(Response::Chunk { offset: 0, bytes, total: 17 })) if bytes == &ciphertext)
+                );
+            } else {
+                assert!(
+                    matches!(terminal, Err(tls::Stage::Frame)),
+                    "exhaustion did not map to Frame"
+                );
+            }
+            assert_eq!(witness.test_original_attempts(), 8);
+            eprintln!(
+                "shared_limit_case schema=1 busy={busy_count} inner_attempts=5 terminal_shared_attempts=8 terminal={} client_attempts={}",
+                u8::from(busy_count == 3),
+                operation.test_attempts()
+            );
+            capture_carrier_optional(&h, &format!("shared-limit-{busy_count}-terminal"));
+            drop(witness);
+            drop(stop);
+            let started = Instant::now();
+            let ok = loops
+                .into_iter()
+                .all(|worker| matches!(worker.join(), Ok(Ok(Ok(())))));
+            (ok, started.elapsed())
+        });
+        assert!(loops_ok);
+        assert!(drain < Duration::from_secs(5));
+        for home in &h.pair.homes {
+            assert_eq!(home.charged(), 0);
+            assert!(!home.runtime().state.active.load(Ordering::SeqCst));
+        }
+        drop(stores);
+        drop(h);
+        assert!(!root.exists());
+    }
 }
 
 #[test]

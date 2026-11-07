@@ -1,5 +1,5 @@
 """Explicit two-maintained-home console fixture, never a deployed XMPP service."""
-import json,os
+import json,os,re,sys
 from probe_device_provider_console import fingerprint,_TRANSFER_PROGRESS,_TRANSFER_OUTPUT,_transfer_marker
 
 
@@ -78,12 +78,26 @@ class RemoveAfterProgress:
         return data
 
 
+def diagnostic_lines(raw):
+    """Accept a complete bounded block of fixed numeric server observations."""
+    rows=raw.splitlines(keepends=True)
+    if len(rows)>8:raise ValueError('composed operator diagnostic count exceeded')
+    lines=[]
+    for row in rows:
+        match=re.fullmatch(rb'carrier_rejection schema=1 phase=([12]) category=([1-9]) pending=([01]) shared_attempts=([0-8]) finished=([01]) consumed=([01])\n',row)
+        if match is None:raise ValueError('composed operator diagnostic stderr invalid')
+        phase,category,pending,attempted,finished,consumed=map(int,match.groups())
+        lines.append(f'carrier_rejection schema=1 phase={phase} category={category} pending={pending} shared_attempts={attempted} finished={finished} consumed={consumed}')
+    return tuple(lines)
+
+
 class ComposedOperator:
     """One maintained foreground owner; no synthetic status or control worker."""
     def __init__(self,binary,config,capture_root):
         import select,subprocess,time
         from probe_device_provider_console import parse_ready,retain_capture
         self.root=capture_root;self.closed=False
+        self.diagnostics_enabled=os.environ.get('FACTION_PROVIDER_DIAGNOSTICS')=='1'
         self.process=subprocess.Popen([str(binary),'serve-composed',str(config)],
             stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         deadline=time.monotonic()+5;raw=bytearray()
@@ -103,10 +117,19 @@ class ComposedOperator:
                 self.process.terminate()
                 try:self.process.wait(timeout=1)
                 except subprocess.TimeoutExpired:self.process.kill();self.process.wait(timeout=4)
-                retain_capture(self.root,'composed-startup-failed',bytes(raw)+self.process.stderr.read(4097))
+                error=self.process.stderr.read(4097)
+                retain_capture(self.root,'composed-startup-failed',bytes(raw)+error)
+                if self.diagnostics_enabled:
+                    try:self.publish_diagnostics(error)
+                    except ValueError:pass # The original startup failure remains fatal.
             finally:
                 self.closed=True;self.process.stdout.close();self.process.stderr.close()
             raise
+
+    def publish_diagnostics(self,error):
+        # Validate the whole block before emitting anything. Never copy raw stderr
+        # into the hosted log; private capture retains the original bytes.
+        for line in diagnostic_lines(error):print(line,file=sys.stderr,flush=True)
 
     def close(self,stop_signal=None):
         import signal,subprocess,time
@@ -121,7 +144,8 @@ class ComposedOperator:
                 self.process.wait(timeout=max(.001,5-(time.monotonic()-started)))
             out=self.process.stdout.read(129);error=self.process.stderr.read(4097)
             retain_capture(self.root,'composed-stop',out+error)
-            if killed or self.process.returncode or out!=b'stopped\n' or error:
+            if self.diagnostics_enabled:self.publish_diagnostics(error)
+            if killed or self.process.returncode or out!=b'stopped\n' or (error and not self.diagnostics_enabled):
                 raise ValueError('composed operator orderly drain failed')
             if time.monotonic()-started>=5:raise ValueError('composed operator drain exceeded bound')
         finally:
