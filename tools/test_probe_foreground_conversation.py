@@ -451,3 +451,29 @@ class PairDispatch(unittest.TestCase):
             def expect(self,text):self.buffer=self.buffer.split(text.encode(),1)[1]
         with self.assertRaises(ValueError):proof.arm_brief(Console(),A,B,202,'ab'*32)
         self.assertEqual(events,[b'e'])
+
+
+class CancelConfirmationOracle(unittest.TestCase):
+    def test_unchanged_counters_and_retained_state_are_accepted(self):
+        state=snapshot()
+        proof.require_cancelled_confirmation((3,2),(3,2),state,copy.deepcopy(state))
+
+    def test_new_authentication_is_rejected(self):
+        state=snapshot()
+        with self.assertRaises(ValueError):
+            proof.require_cancelled_confirmation((3,2),(4,3),state,copy.deepcopy(state))
+
+    def test_authentication_counter_is_checked_independently_of_connection_count(self):
+        state=snapshot()
+        with self.assertRaises(ValueError):
+            proof.require_cancelled_confirmation((3,2),(3,3),state,copy.deepcopy(state))
+
+    def test_retained_state_change_is_rejected(self):
+        state=snapshot();changed=copy.deepcopy(state);changed['pending']=[]
+        with self.assertRaises(ValueError):
+            proof.require_cancelled_confirmation((3,2),(3,2),state,changed)
+
+    def test_unauthenticated_connection_is_rejected_after_blank_confirmation(self):
+        state=snapshot()
+        with self.assertRaises(ValueError):
+            proof.require_cancelled_confirmation((3,2),(4,2),state,copy.deepcopy(state))

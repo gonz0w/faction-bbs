@@ -549,6 +549,11 @@ def connect_pair(receiver, sender, relay, confirm):
     return generation
 
 
+def require_cancelled_confirmation(before_counts, after_counts, before_state, after_state):
+    if after_counts != before_counts or after_state != before_state:
+        raise ValueError('cancelled confirmation changed state or connected')
+
+
 def run_journey(arguments):
     """One fresh classic OR Unicode journey; no automatic retry or remote board."""
     from smoke_native_client_ssh import NativeConsole
@@ -656,10 +661,10 @@ def run_journey(arguments):
         require_conversation_screen(a_view,[3,4],4,(2,2),'All',True,202)
         require_conversation_screen(b_view,[1],1,(1,1),'All',True,101)
         # Blank confirmation cannot acquire a credential or start a connection.
-        auth_before=homes[1].authenticated
+        cancel_counts=(homes[1].connections,homes[1].authenticated)
         arm_brief(receiver,ACCOUNTS[1],ACCOUNTS[0],101,identities[0]);receiver.send('')
         require_conversation_screen(screen(receiver),[1],1,(1,1),'All',True,101)
-        if homes[1].authenticated!=auth_before or snapshot(1)!=before:raise ValueError('cancelled confirmation changed state or connected')
+        require_cancelled_confirmation(cancel_counts,(homes[1].connections,homes[1].authenticated),before,snapshot(1))
         controls['blank_confirmation_no_connection']=True
         arm_brief(receiver,ACCOUNTS[1],ACCOUNTS[0],101,identities[0])
         arm_brief(sender,ACCOUNTS[0],ACCOUNTS[1],202,identities[1],selected['operation'])
