@@ -892,9 +892,13 @@ print('EXACT_ROUTE_AND_BUSY',flush=True)
         } else {
             "/usr/bin/openssl"
         };
+        let openssl_config = fixture.0.join("openssl.cnf");
+        fs::write(&openssl_config, b"[req]\ndistinguished_name=dn\n[dn]\n").unwrap();
+        fs::set_permissions(&openssl_config, fs::Permissions::from_mode(0o600)).unwrap();
         let output = std::process::Command::new(openssl)
+            .args(["req", "-config"])
+            .arg(&openssl_config)
             .args([
-                "req",
                 "-x509",
                 "-newkey",
                 "ec",
