@@ -97,11 +97,42 @@ Inspect current source and relevant tests. Establish expected behavior before
 changing it. Use the [verification reference](verification.md) for the change type.
 Implement the smallest complete outcome and update affected documentation.
 
+### Choose the work approach
+
+For a clear, bounded change with known acceptance, proceed directly to the
+affected source and checks. Investigate first when requirements, cause, impact
+or an important design choice are uncertain. Missing authority still stops
+dependent work. A failed attempt needs diagnosis before escalation or retry;
+more reasoning or another agent does not renew the attempt limit.
+
+These are work approaches, not model settings or different quality bars. Follow
+the project's configured models, verification and separate-review requirements.
+Keep tightly coupled implementation with one agent. Add specialist help when its
+independent question or parallel scope justifies briefing, duplicated context
+and integration costs; do not add a planner or router to every small task.
+
+### Prepare relevant context
+
+Read required instructions, applicable policy and the owning work item. Establish
+the outcome, exclusions, acceptance, relevant source and check commands before
+expanding the search. Use paths, symbols and scoped queries to find the needed
+contracts; read surrounding code when a snippet could hide an invariant.
+Load additional reference material to answer a concrete question.
+
+A compact brief or summary may point to canonical sources; it cannot replace
+required reading or override them. Reuse previously inspected material only
+while its relevant source, policy and assumptions remain current. Recheck them
+on resumption and after changed inputs. A context budget never removes an
+applicable obligation. No repository index, memory service or context runtime
+is required.
+
 When orientation is difficult, use a small repository map that links key entry
 points, data flow, invariants, external boundaries, tests, and maintained versus
 generated files. Verify it by tracing one behavior and its affected consumers.
 Link canonical commands and contracts; do not maintain an exhaustive file list or
 live task state in the map. Record unavailable execution as a limit.
+
+### Coordinate work and findings
 
 One lead owns the integrated deliverable. Delegated work has an explicit boundary,
 inputs, expected output, and verification. Inspect shared edits before overwriting
@@ -109,8 +140,14 @@ files. Separate working copies or nonoverlapping ownership can reduce collisions
 the method does not require a particular worktree tool or agent topology.
 
 Batch independent reads when useful; keep dependent changes in order. Where the
-client supports it, expose only tools relevant to the task while retaining needed
-context. Stop owned delegated work when cancelled or complete, and reconcile any
+client supports it, expose relevant tools and process mechanical intermediate
+results before returning them to the agent. Return the facts needed for the
+decision, actual outcomes, useful diagnostics and a source or evidence reference.
+Keep full results available when review or recovery needs them. Make truncation,
+failed reads and missing detail visible; a shortened result is not proof that
+omitted checks passed. Do not add a model call merely to reformat structured data.
+
+Stop owned delegated work when cancelled or complete, and reconcile any
 pending effects. Preserve failures and distinguish assertion failures, timeouts,
 and provider errors before deciding whether an authorized retry can help. This
 adds no retry budget or authority. Use the
