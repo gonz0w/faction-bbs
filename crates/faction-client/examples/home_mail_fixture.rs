@@ -55,8 +55,12 @@ fn run() -> io::Result<()> {
         .duration_since(UNIX_EPOCH)
         .map_err(|_| invalid())?
         .as_secs();
-    if action == "foreground-347" && args.len() == 3 && fields.len() == 4 {
-        return foreground::run(path, &args[2], &fields, now);
+    if matches!(action, "foreground-347" | "foreground-348") {
+        if args.len() != 3 || fields.len() != 4 {
+            return Err(invalid());
+        }
+        let trial = foreground::Trial::parse(action, &args[2])?;
+        return foreground::run(path, trial, &fields, now);
     }
     if action == "init" && args.len() == 4 && fields.len() == 1 {
         let device = args[3].parse().map_err(|_| invalid())?;

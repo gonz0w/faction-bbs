@@ -917,8 +917,16 @@ impl ForegroundDiagnostics {
                 .map(|v| v.to_string())
                 .unwrap_or_else(|| "unavailable".into())
         };
+        let exchange_origin = match snapshot.map(|s| s.exchange_origin) {
+            Some(faction_provider::delivery::ExchangeOrigin::Write) => "write",
+            Some(faction_provider::delivery::ExchangeOrigin::ReadError) => "read_error",
+            Some(faction_provider::delivery::ExchangeOrigin::ReadEof) => "read_eof",
+            Some(faction_provider::delivery::ExchangeOrigin::Decode) => "decode",
+            Some(faction_provider::delivery::ExchangeOrigin::Refused) => "refused",
+            Some(faction_provider::delivery::ExchangeOrigin::Unobserved) | None => "unobserved",
+        };
         format!(
-            "Attachment diagnostic v1 direction={} origin={} error={} state={} request={} last_phase={} transport={} sdk_completed={} sdk_active={} aggregate_valid={} totals_clamped={} observed_logical_completed={} observed_logical_attempted={} observed_carrier_attempts={} observed_busy={} observed_connect_calls={} unavailable_cycles={} cycle_completed={} cycle_logical_attempted={} cycle_carrier_attempts={} cycle_busy={} cycle_connect_calls={} confirmed_offset={} foreground_us={} last_phase_us={} observed_submit_connect_us={} observed_submit_exchange_us={} observed_collect_connect_us={} observed_collect_exchange_us={} observed_planned_wait_us={} observed_actual_wait_us={}\r\n",
+            "Attachment diagnostic v2 direction={} origin={} error={} state={} request={} last_phase={} transport={} sdk_completed={} sdk_active={} aggregate_valid={} totals_clamped={} observed_logical_completed={} observed_logical_attempted={} observed_carrier_attempts={} observed_busy={} observed_connect_calls={} unavailable_cycles={} cycle_completed={} cycle_logical_attempted={} cycle_carrier_attempts={} cycle_busy={} cycle_connect_calls={} confirmed_offset={} foreground_us={} last_phase_us={} observed_submit_connect_us={} observed_submit_exchange_us={} observed_collect_connect_us={} observed_collect_exchange_us={} observed_planned_wait_us={} observed_actual_wait_us={} terminal_carrier_attempts={} terminal_busy={} exchange_origin={}\r\n",
             if fetch { "fetch" } else { "upload" },
             origin,
             error,
@@ -953,7 +961,10 @@ impl ForegroundDiagnostics {
             number((!self.invalid).then_some(self.timings.collect_connect_us)),
             number((!self.invalid).then_some(self.timings.collect_exchange_us)),
             number((!self.invalid).then_some(self.timings.planned_wait_us)),
-            number((!self.invalid).then_some(self.timings.actual_wait_us))
+            number((!self.invalid).then_some(self.timings.actual_wait_us)),
+            number(snapshot.map(|s| u64::from(s.terminal_carrier_attempts))),
+            number(snapshot.map(|s| u64::from(s.terminal_busy))),
+            exchange_origin,
         )
     }
 }
@@ -1517,6 +1528,9 @@ mod tests {
                 state: crate::mail_device_provider::SnapshotState::Observed,
                 timings: max,
                 phase_us: u64::MAX,
+                terminal_carrier_attempts: u8::MAX,
+                terminal_busy: u8::MAX,
+                exchange_origin: faction_provider::delivery::ExchangeOrigin::Unobserved,
                 ..Default::default()
             })
             .unwrap();
@@ -1533,6 +1547,76 @@ mod tests {
         assert!(line.len() <= 1024);
         assert!(!line.contains("inf"));
         assert!(line.contains("18446744073709551615"));
+    }
+
+    #[cfg(feature = "own-home-provider")]
+    #[test]
+    fn diagnostic_terminal_logical_counts_and_exchange_origin_are_reported() {
+        let cycle = CycleDiagnostics::default();
+        cycle
+            .sink
+            .set(crate::mail_device_provider::WorkerSnapshot {
+                state: crate::mail_device_provider::SnapshotState::Observed,
+                ..Default::default()
+            })
+            .unwrap();
+        let foreground = ForegroundDiagnostics::default();
+        let line = foreground.failure_line(
+            Some(&cycle),
+            StopOrigin::SdkError,
+            true,
+            0,
+            0,
+            std::time::Duration::ZERO,
+        );
+        assert!(
+            line.contains("terminal_carrier_attempts=0"),
+            "terminal logical attempt count is absent"
+        );
+        assert!(
+            line.contains("terminal_busy=0"),
+            "terminal logical Busy count is absent"
+        );
+        assert!(
+            line.contains("exchange_origin=unobserved"),
+            "terminal exchange origin is absent"
+        );
+        for secret in [
+            "PRIVATE_CONTENT_SENTINEL",
+            "PRIVATE_TOKEN_SENTINEL",
+            "PRIVATE_ENDPOINT_SENTINEL",
+        ] {
+            assert!(!line.contains(secret));
+        }
+        assert!(line.len() <= 1024);
+        let cycle = CycleDiagnostics::default();
+        cycle
+            .sink
+            .set(crate::mail_device_provider::WorkerSnapshot {
+                state: crate::mail_device_provider::SnapshotState::Observed,
+                carrier_attempts: 14,
+                busy: 6,
+                terminal_carrier_attempts: 5,
+                terminal_busy: 3,
+                exchange_origin: faction_provider::delivery::ExchangeOrigin::ReadEof,
+                ..Default::default()
+            })
+            .unwrap();
+        let line = foreground.failure_line(
+            Some(&cycle),
+            StopOrigin::SdkError,
+            true,
+            0,
+            0,
+            std::time::Duration::ZERO,
+        );
+        assert!(line.contains("cycle_carrier_attempts=14"));
+        assert!(line.contains("cycle_busy=6"));
+        assert!(line.contains("terminal_carrier_attempts=5"));
+        assert!(line.contains("terminal_busy=3"));
+        assert!(line.contains("exchange_origin=read_eof"));
+        println!("\n{line}");
+        assert!(line.starts_with("Attachment diagnostic v2 "));
     }
 
     #[cfg(feature = "own-home-provider")]

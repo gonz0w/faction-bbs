@@ -8,12 +8,12 @@ use faction_provider::Error as ProviderError;
 use faction_provider::{
     Runtime,
     authority::Registry,
-    delivery::{CarrierEndpoint, Delivery, Event, RelayPeer, RelayRoutes},
+    delivery::{CarrierEndpoint, Delivery, DeliverySnapshot, Event, RelayPeer, RelayRoutes},
     services::{
         IssuerRoute, PublicationAssociation, PublicationWireProfile, ResourceAssociation,
         ServicePolicy, ServiceRegistration, ServiceUse,
     },
-    tls::{ClientCredentials, HttpEndpoint, Server},
+    tls::{ClientCredentials, HttpEndpoint, Server, Stage},
 };
 use input::{boolean, digest, number, string};
 use openssl::{pkey::PKey, x509::X509};

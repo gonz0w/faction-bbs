@@ -4150,6 +4150,141 @@ fn diagnostic_interface_starts_explicitly_unobserved() {
 }
 
 #[test]
+fn diagnostic_exchange_origin_distinguishes_eof_truncation_decode_and_refusal() {
+    use crate::delivery::{DiagnosticPhase, ExchangeOrigin};
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    for (case, bytes, expected) in [
+        (0, vec![], ExchangeOrigin::ReadEof),
+        (1, vec![0, 0], ExchangeOrigin::ReadError),
+        (
+            2,
+            b"\0\0\0\x40PRIVATE_CONTENT_SENTINEL".to_vec(),
+            ExchangeOrigin::ReadError,
+        ),
+        (3, b"\0\0\0\x04BAD!".to_vec(), ExchangeOrigin::Decode),
+    ] {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+        let operation = thread::scope(|scope| {
+            let client = scope.spawn(|| {
+                let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+                assert_eq!(
+                    operation.submit_publication(binding.clone(), Request::Begin(binding.clone())),
+                    Err(tls::Stage::Frame)
+                );
+                operation
+            });
+            let session = local
+                .server(&local.ca.0)
+                .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            session.test_delivery_raw_reply(&bytes);
+            client.join().unwrap()
+        });
+        let observed = operation.diagnostic_snapshot().unwrap();
+        assert_eq!(observed.exchange_origin, expected, "case {case}");
+        assert!(!format!("{observed:?}").contains("PRIVATE_CONTENT_SENTINEL"));
+        assert_eq!(observed.phase, DiagnosticPhase::SubmitExchange);
+        assert_eq!(
+            (observed.attempted, observed.busy, observed.connections),
+            (1, 0, 1)
+        );
+        assert_eq!(local.charged(), 0);
+    }
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+    thread::scope(|scope| {
+        let client = scope.spawn(|| {
+            let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            operation
+                .submit_publication(binding.clone(), Request::Begin(binding.clone()))
+                .unwrap();
+            assert_eq!(operation.collect().err(), Some(tls::Stage::Denied));
+            operation
+        });
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (delivery, work) = session.submit_publication().unwrap();
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        session.test_delivery_raw_reply(b"\0\0\0\x07FDEL01\x05");
+        let observed = client.join().unwrap().diagnostic_snapshot().unwrap();
+        assert_eq!(observed.exchange_origin, ExchangeOrigin::Refused);
+        assert_eq!(observed.phase, DiagnosticPhase::CollectExchange);
+        assert_eq!(
+            (observed.attempted, observed.busy, observed.connections),
+            (2, 0, 2)
+        );
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    });
+}
+
+#[cfg(feature = "operator")]
+#[test]
+fn diagnostic_actual_shared_limit_preserves_rejection_and_empty_wire() {
+    use crate::delivery::Collection;
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+    thread::scope(|scope| {
+        let caller = scope.spawn(|| {
+            let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            operation
+                .submit_publication(binding.clone(), Request::Begin(binding.clone()))
+                .unwrap();
+            operation
+        });
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (mut delivery, work) = session.submit_publication().unwrap();
+        let mut operation = caller.join().unwrap();
+        for _ in 0..7 {
+            thread::scope(|scope| {
+                let caller = scope.spawn(|| operation.collect());
+                let session = local
+                    .server(&local.ca.0)
+                    .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                assert!(!session.collect_delivery(&mut delivery).unwrap());
+                assert!(matches!(caller.join().unwrap(), Ok(Collection::Busy)));
+            });
+        }
+        let frame = operation.test_collect_frame();
+        let endpoint = &endpoint;
+        let caller = scope.spawn(move || endpoint.test_exchange(&frame));
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        assert_eq!(
+            session.collect_delivery(&mut delivery),
+            Err(Error::Transport(tls::Stage::Limit))
+        );
+        assert!(caller.join().unwrap().is_empty());
+        let observed = delivery.diagnostic_snapshot();
+        assert_eq!(observed.attempted, 8);
+        assert!(!observed.finished && !observed.consumed);
+        let observed = operation.diagnostic_snapshot().unwrap();
+        assert_eq!((observed.attempted, observed.busy), (8, 7));
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    });
+}
+
+#[test]
 fn diagnostic_actual_submit_exchange_survives_cancellation() {
     use crate::delivery::DiagnosticPhase;
     let h = Homes::new(false);

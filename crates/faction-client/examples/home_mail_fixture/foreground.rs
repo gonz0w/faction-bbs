@@ -1,4 +1,4 @@
-//! Issue #347 only. A single foreground attempt on fresh, owned synthetic state.
+//! A single foreground attempt on owned synthetic state.
 //!
 //! Run `home_mail_fixture foreground-347 <private-fixture-dir> <bare|full|missing>`.
 //! The mode-0700 directory contains mode-0600 OWNERSHIP with the exact text
@@ -9,10 +9,15 @@
 //! Stdin lines: sender vault passphrase, receiver vault passphrase, sender home
 //! password, receiver home password. The example keeps the report private in
 //! foreground-347.txt and uses the receiver vault only as a disposable probe.
+//!
+//! Issue #348 uses `foreground-348 <private-fixture-dir> <32-lowercase-hex-operation>`
+//! with its own OWNERSHIP text below. Prepare a warmed receiver with a saved
+//! archive cursor. The attempt sends only the requested ordinary queued message
+//! to its full destination and writes the private foreground-348.txt report.
 
 use faction_client::{
-    mail_checkpoint::{CheckpointVault, Delivery},
-    mail_data::invalid,
+    mail_checkpoint::{ArchiveCheckpoint, CheckpointVault, Delivery, Direction},
+    mail_data::{hex, invalid},
     mail_network::Settings,
     mail_vault::Store,
     mail_wire::{self, Binding},
@@ -27,7 +32,9 @@ use std::{
 };
 
 const CLIENT: &str = "jabber:client";
-const MARKER: &[u8] = b"faction issue 347 disposable synthetic foreground fixture\n";
+const FRESH_MARKER: &[u8] = b"faction issue 347 disposable synthetic foreground fixture\n";
+const RECOVERY_MARKER: &[u8] =
+    b"faction issue 348 disposable synthetic foreground archive recovery fixture\n";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(super) enum Route {
@@ -218,7 +225,7 @@ pub(super) async fn attempt(
     Ok(Outcome::NoMessage)
 }
 
-fn owned(root: &Path) -> io::Result<()> {
+fn owned(root: &Path, expected_marker: &[u8]) -> io::Result<()> {
     let uid = rustix::process::geteuid().as_raw();
     if !root.is_absolute() || root.canonicalize()? != root {
         return Err(invalid());
@@ -242,9 +249,9 @@ fn owned(root: &Path) -> io::Result<()> {
     }
     let mut value = Vec::new();
     marker
-        .take(MARKER.len() as u64 + 1)
+        .take(expected_marker.len() as u64 + 1)
         .read_to_end(&mut value)?;
-    if value != MARKER {
+    if value != expected_marker {
         return Err(invalid());
     }
     Ok(())
@@ -270,46 +277,140 @@ pub(super) fn record_outcome(report: &mut impl Write, outcome: Option<Outcome>) 
     Ok(())
 }
 
-pub(super) fn run(root: &Path, mode: &str, fields: &[&str], now: u64) -> io::Result<()> {
-    let route = match mode {
-        "bare" => Route::Bare,
-        "full" => Route::Full,
-        "missing" => Route::Missing,
-        _ => return Err(invalid()),
-    };
+#[derive(Clone, Copy)]
+pub(super) enum Trial {
+    Fresh(Route),
+    Recovery([u8; 16]),
+}
+
+pub(super) struct Prepared {
+    sender: CheckpointVault,
+    pub(super) receiver: CheckpointVault,
+    send_archive: ArchiveCheckpoint,
+    receive_archive: ArchiveCheckpoint,
+    pub(super) pending: Vec<Delivery>,
+    pub(super) selected: usize,
+}
+
+impl Trial {
+    pub(super) fn parse(action: &str, selector: &str) -> io::Result<Self> {
+        match (action, selector) {
+            ("foreground-347", "bare") => Ok(Self::Fresh(Route::Bare)),
+            ("foreground-347", "full") => Ok(Self::Fresh(Route::Full)),
+            ("foreground-347", "missing") => Ok(Self::Fresh(Route::Missing)),
+            ("foreground-348", id) if id.len() == 32 => {
+                let operation = u128::from_str_radix(id, 16)
+                    .map_err(|_| invalid())?
+                    .to_be_bytes();
+                if operation == [0; 16] || hex(&operation) != id {
+                    return Err(invalid());
+                }
+                Ok(Self::Recovery(operation))
+            }
+            _ => Err(invalid()),
+        }
+    }
+
+    pub(super) fn route(self) -> Route {
+        match self {
+            Self::Fresh(route) => route,
+            Self::Recovery(_) => Route::Full,
+        }
+    }
+
+    pub(super) fn prepare(
+        self,
+        root: &Path,
+        send_pass: &[u8],
+        receive_pass: &[u8],
+        now: u64,
+    ) -> io::Result<Prepared> {
+        let marker = match self {
+            Self::Fresh(_) => FRESH_MARKER,
+            Self::Recovery(_) => RECOVERY_MARKER,
+        };
+        owned(root, marker)?;
+        let sender =
+            CheckpointVault::unlock(Store::at(&root.join("sender"), false)?, send_pass, false)?;
+        let receiver = CheckpointVault::unlock(
+            Store::at(&root.join("receiver"), false)?,
+            receive_pass,
+            false,
+        )?;
+        let send_archive = sender.archive_checkpoint(now)?;
+        let receive_archive = receiver.archive_checkpoint(now)?;
+        let pending = sender.pending_deliveries(now)?;
+        let selected = match self {
+            Self::Fresh(_) => {
+                let [_] = pending.as_slice() else {
+                    return Err(invalid());
+                };
+                let [record] = sender.history()? else {
+                    return Err(invalid());
+                };
+                if send_archive.after.is_some()
+                    || receive_archive.after.is_some()
+                    || !receiver.history()?.is_empty()
+                    || record.attachment().is_some()
+                {
+                    return Err(invalid());
+                }
+                0
+            }
+            Self::Recovery(operation) => {
+                if receive_archive.after.is_none()
+                    || !receiver.inspection()?.started
+                    || !receiver
+                        .history()?
+                        .iter()
+                        .any(|row| row.direction == Direction::Received)
+                    || !sender.history()?.iter().any(|row| {
+                        row.direction == Direction::Sent
+                            && row.operation() == operation
+                            && row.attachment().is_none()
+                    })
+                {
+                    return Err(invalid());
+                }
+                pending
+                    .iter()
+                    .position(|item| {
+                        item.operation == operation
+                            && !item.wire.prekey
+                            && item.wire.to == receive_archive.home
+                            && item.wire.to_device == receive_archive.local_device
+                    })
+                    .ok_or_else(invalid)?
+            }
+        };
+        Ok(Prepared {
+            sender,
+            receiver,
+            send_archive,
+            receive_archive,
+            pending,
+            selected,
+        })
+    }
+}
+
+pub(super) fn run(root: &Path, trial: Trial, fields: &[&str], now: u64) -> io::Result<()> {
     let [send_pass, receive_pass, send_password, receive_password] = fields else {
         return Err(invalid());
     };
     if !(12..=128).contains(&receive_pass.len()) {
         return Err(invalid());
     }
-    owned(root)?;
-    let sender = CheckpointVault::unlock(
-        Store::at(&root.join("sender"), false)?,
-        send_pass.as_bytes(),
-        false,
-    )?;
-    let mut receiver = CheckpointVault::unlock(
-        Store::at(&root.join("receiver"), false)?,
-        receive_pass.as_bytes(),
-        false,
-    )?;
-    let send_archive = sender.archive_checkpoint(now)?;
-    let receive_archive = receiver.archive_checkpoint(now)?;
-    let pending = sender.pending_deliveries(now)?;
-    let [delivery] = pending.as_slice() else {
-        return Err(invalid());
-    };
-    let [record] = sender.history()? else {
-        return Err(invalid());
-    };
-    if send_archive.after.is_some()
-        || receive_archive.after.is_some()
-        || !receiver.history()?.is_empty()
-        || record.attachment().is_some()
-    {
-        return Err(invalid());
-    }
+    let Prepared {
+        sender,
+        mut receiver,
+        send_archive,
+        receive_archive,
+        pending,
+        selected,
+    } = trial.prepare(root, send_pass.as_bytes(), receive_pass.as_bytes(), now)?;
+    let delivery = &pending[selected];
+    let route = trial.route();
     let send_settings = Settings::load(&root.join("sender.toml"))?;
     let receive_settings = Settings::load(&root.join("receiver.toml"))?;
     let send_home = send_settings
@@ -331,7 +432,10 @@ pub(super) fn run(root: &Path, mode: &str, fields: &[&str], now: u64) -> io::Res
         .write(true)
         .create_new(true)
         .mode(0o600)
-        .open(root.join("foreground-347.txt"))?;
+        .open(root.join(match trial {
+            Trial::Fresh(_) => "foreground-347.txt",
+            Trial::Recovery(_) => "foreground-348.txt",
+        }))?;
     writeln!(report, "route={route:?}")?;
     stanza(
         &mut report,
@@ -372,11 +476,11 @@ pub(super) fn run(root: &Path, mode: &str, fields: &[&str], now: u64) -> io::Res
         record_outcome(&mut report, Some(outcome))
     })?;
     let retained = sender.pending_deliveries(now)?;
-    let [retained] = retained.as_slice() else {
-        return Err(invalid());
-    };
-    if retained.operation != delivery.operation
-        || retained.wire != delivery.wire
+    if retained.len() != pending.len()
+        || retained
+            .iter()
+            .zip(&pending)
+            .any(|(after, before)| after.operation != before.operation || after.wire != before.wire)
         || receiver.archive_checkpoint(now)? != receive_archive
     {
         return Err(invalid());

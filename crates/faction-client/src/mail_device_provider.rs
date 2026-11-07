@@ -398,6 +398,10 @@ async fn spawn_worker(
                                     faction_provider::delivery::DiagnosticPhase::Unobserved;
                                 diagnostic.phase_us = 0;
                                 diagnostic.transport = None;
+                                diagnostic.terminal_carrier_attempts = 0;
+                                diagnostic.terminal_busy = 0;
+                                diagnostic.exchange_origin =
+                                    faction_provider::delivery::ExchangeOrigin::Unobserved;
                                 diagnostic.attempted = diagnostic.attempted.saturating_add(1);
                             }
                             let result = transport.request(
@@ -517,6 +521,9 @@ pub struct WorkerSnapshot {
     pub carrier_attempts: u8,
     pub busy: u8,
     pub connections: u8,
+    pub terminal_carrier_attempts: u8,
+    pub terminal_busy: u8,
+    pub exchange_origin: faction_provider::delivery::ExchangeOrigin,
     pub timings: faction_provider::delivery::DiagnosticTimings,
     pub phase_us: u64,
 }
@@ -536,6 +543,9 @@ impl WorkerSnapshot {
         self.state = SnapshotState::Observed;
         self.phase = operation.phase;
         self.phase_us = operation.phase_us;
+        self.terminal_carrier_attempts = operation.attempted;
+        self.terminal_busy = operation.busy;
+        self.exchange_origin = operation.exchange_origin;
         self.carrier_attempts = self.carrier_attempts.saturating_add(operation.attempted);
         self.busy = self.busy.saturating_add(operation.busy);
         self.connections = self.connections.saturating_add(operation.connections);
@@ -644,6 +654,47 @@ thread_local! { static WORKER_STARTS: std::cell::Cell<usize> = const { std::cell
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(feature = "own-home-provider")]
+    #[test]
+    fn diagnostic_terminal_operation_counters_replace_while_totals_accumulate() {
+        use faction_provider::delivery::{ExchangeOrigin, OperationSnapshot};
+        let mut worker = WorkerSnapshot::default();
+        worker.operation(OperationSnapshot {
+            attempted: 2,
+            busy: 1,
+            exchange_origin: ExchangeOrigin::ReadError,
+            ..Default::default()
+        });
+        worker.operation(OperationSnapshot {
+            attempted: 5,
+            busy: 3,
+            exchange_origin: ExchangeOrigin::Refused,
+            ..Default::default()
+        });
+        assert_eq!((worker.carrier_attempts, worker.busy), (7, 4));
+        assert_eq!(
+            (
+                worker.terminal_carrier_attempts,
+                worker.terminal_busy,
+                worker.exchange_origin
+            ),
+            (5, 3, ExchangeOrigin::Refused)
+        );
+        worker.operation(OperationSnapshot {
+            attempted: 1,
+            ..Default::default()
+        });
+        assert_eq!(
+            (
+                worker.terminal_carrier_attempts,
+                worker.terminal_busy,
+                worker.exchange_origin
+            ),
+            (1, 0, ExchangeOrigin::Unobserved)
+        );
+        assert_eq!((worker.carrier_attempts, worker.busy), (8, 4));
+    }
     use std::{
         fs,
         os::unix::fs::{DirBuilderExt, PermissionsExt},
