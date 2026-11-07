@@ -154,6 +154,10 @@ pub(super) fn run<'scope, 'env>(
                         };
                         pending = Some(delivery);
                         worker = Some(scope.spawn(move || {
+                            #[cfg(test)]
+                            if let Some(hooks) = hooks {
+                                hooks.before_work();
+                            }
                             let result = work.execute(routes, store);
                             #[cfg(test)]
                             if let Some(hooks) = hooks {
@@ -194,9 +198,15 @@ pub(super) type AttachmentHook = Box<dyn Fn(&mut Delivery) + Send + Sync>;
 pub(super) struct Hooks {
     pub(super) lifecycle: Option<LifecycleHooks>,
     pub(super) attach: Option<AttachmentHook>,
+    pub(super) before_work: Option<Box<dyn Fn() + Send + Sync>>,
 }
 #[cfg(test)]
 impl Hooks {
+    pub(super) fn before_work(&self) {
+        if let Some(before_work) = &self.before_work {
+            before_work();
+        }
+    }
     fn submitted(&self, delivery: &mut Delivery) {
         if let Some(attach) = &self.attach {
             attach(delivery);

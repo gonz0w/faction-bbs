@@ -333,7 +333,10 @@ impl Delivery {
             return Err(Error::Transport(Stage::Denied));
         }
         if message.kind == WAIT_COLLECT
-            && (message.purpose != 2 || !matches!(peer, Peer::Service(..)))
+            && !matches!(
+                (&peer, message.purpose),
+                (Peer::Service(..), 2) | (Peer::Device(_), 3)
+            )
         {
             return Err(Error::Transport(Stage::Denied));
         }
@@ -474,7 +477,7 @@ impl Message {
         let purpose = bytes[7];
         if ![SUBMIT, COLLECT, WAIT_COLLECT].contains(&kind)
             || ![1, 2, 3].contains(&purpose)
-            || (kind == WAIT_COLLECT && purpose != 2)
+            || (kind == WAIT_COLLECT && ![2, 3].contains(&purpose))
         {
             return Err(frame());
         }
@@ -1076,6 +1079,30 @@ impl Operation {
             return Err(Stage::Denied);
         }
         self.collect_kind(WAIT_COLLECT)
+    }
+    /// Opt in to bounded waiting only for this device's own-home retrieval.
+    /// The original operation window and shared attempt budget remain binding.
+    pub fn collect_own_home_waiting(&mut self) -> Result<Collection, Stage> {
+        if self
+            .ticket
+            .as_ref()
+            .is_none_or(|ticket| ticket.purpose != 3)
+        {
+            return Err(Stage::Denied);
+        }
+        self.collect_kind(WAIT_COLLECT)
+    }
+    /// Preserve local round-trip/Busy pacing before one own-home waiting collect.
+    pub fn collect_own_home_paced(&mut self) -> Result<Collection, Stage> {
+        if self
+            .ticket
+            .as_ref()
+            .is_none_or(|ticket| ticket.purpose != 3)
+        {
+            return Err(Stage::Denied);
+        }
+        self.wait_for_collect()?;
+        self.collect_own_home_waiting()
     }
     pub fn collect(&mut self) -> Result<Collection, Stage> {
         self.collect_kind(COLLECT)
@@ -1769,16 +1796,21 @@ impl Session {
             }
         }
         let message = Message::decode(&bytes)?;
-        if message.kind == WAIT_COLLECT {
-            return Err(Error::Transport(Stage::Denied));
-        }
-        if message.kind == COLLECT {
+        if [COLLECT, WAIT_COLLECT].contains(&message.kind) {
             let delivery = pending.ok_or(Error::Transport(Stage::Denied))?;
             if !charged {
                 delivery.begin_collect(&peer, &self.state)?;
             }
             let guard = delivery.shared.clone();
-            let reply = delivery.collect(&bytes, peer, &self.state, None, || Ok(()))?;
+            let source_state = self.state.clone();
+            let deadline = self.deadline;
+            let reply = delivery.collect(&bytes, peer, &source_state, Some(deadline), || {
+                check(deadline, &self.cancel).map_err(Error::Transport)?;
+                if state.stopped.load(Ordering::SeqCst) || !leaf_current(&self.leaf, wall_now()) {
+                    return Err(Error::Transport(Stage::Denied));
+                }
+                Ok(())
+            })?;
             let result = self.write_delivery(reply, guard.clone());
             drop(self);
             drop(guard);
