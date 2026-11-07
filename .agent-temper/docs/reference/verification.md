@@ -120,6 +120,24 @@ where relevant, and allowed review corrections. Use separately checked expected
 results; record gaps in that reference. Decide what improvement would justify a
 change while preserving required quality, checks, and review.
 
+Before model execution, have a reviewer independent of the evaluated worker
+examine its complete visible inputs for answers: instructions, policy overlays,
+examples, tests and later source can expose an expected result. Record the input
+identities, permitted reference material and separation limits. Preserve required
+policy reading. If necessary material exposes the answer, choose another case or
+classify the case as development or feasibility work. This review can find
+leakage; it does not guarantee independence.
+
+If exposure is discovered after execution, retain the runs and their costs and
+exclude them from held-out evaluation support. Do not silently replace them or
+renew the trial budget. New inputs need a reviewed scope and budget decision
+under the project's authority.
+
+**Fictional example:** A policy overlay includes the corrected document used in a
+historical repair task. Before spending the trial budget, a separate reviewer
+classifies that task as development evidence. The lead selects a different
+evaluation case under the recorded scope and budget.
+
 Compare matched inputs under recorded conditions. Identify task and source
 revisions, requested and observed model/effort, client, tools, environment, and
 resource bounds. Keep tuning examples separate from evaluation where practical.
@@ -135,6 +153,13 @@ work, divided by accepted outcomes. With no accepted outcomes, that ratio is
 undefined. Unavailable usage or prices are not zero: report the gap and avoid a
 monetary savings claim that depends on it. Keep elapsed time separate from summed
 agent effort, particularly when work overlaps.
+
+Preserve each provider's usage definitions. Cached input is often a subset of
+input, and reasoning usage may be included in output; do not count a subset twice.
+Separate measured API charges, subscription usage limits and local operating
+costs. Fewer tokens or a higher cache-hit rate does not by itself establish a
+lower bill. Include setup and maintenance when comparing an optional local model
+or harness. Record unavailable measures instead of estimating them as observations.
 
 Check validated findings, missed known defects, false positives, severity accuracy,
 and review corrections alongside acceptance. More findings can mean more noise;
