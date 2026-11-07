@@ -1958,6 +1958,7 @@ pub(crate) struct CompletionWitness {
 }
 #[cfg(test)]
 impl CompletionWitness {
+    #[cfg(feature = "operator")]
     pub(crate) fn test_original_attempts(&self) -> usize {
         self.shared.attempted.load(Ordering::SeqCst)
     }
