@@ -936,8 +936,13 @@ fn foreground_ui_active_cancel_helper() {
     listener.set_nonblocking(true).unwrap();
     let ca = f.root.join("cancel-ca.pem");
     let key = f.root.join("cancel-key.pem");
+    let openssl_config = f.root.join("cancel-openssl.cnf");
+    std::fs::write(&openssl_config, b"[req]\ndistinguished_name=dn\n[dn]\n").unwrap();
+    std::fs::set_permissions(&openssl_config, std::fs::Permissions::from_mode(0o600)).unwrap();
     let output = std::process::Command::new("openssl")
-        .args(["req", "-x509", "-newkey", "rsa:2048", "-nodes", "-keyout"])
+        .args(["req", "-config"])
+        .arg(&openssl_config)
+        .args(["-x509", "-newkey", "rsa:2048", "-nodes", "-keyout"])
         .arg(&key)
         .arg("-out")
         .arg(&ca)
