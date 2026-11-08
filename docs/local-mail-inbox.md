@@ -166,9 +166,21 @@ The offline console has no Home exchange action.
 
 In an eligible online conversation, **E: Brief exchange** also offers a separate
 receive or one-text send. Its **Q** choice selects queued ordinary text even when
-Unread or search hides sent records; see the
+Unread or search hides sent records. S and Q both review the complete selected
+subject, then page the complete body before fresh confirmation. B in the queued
+picker returns to the exchange menu; B during body review cancels the send and
+returns to the conversation. After E, **R: Review newly received
+text** appears when actual new ordinary text from the current verified peer,
+device and identity was retained, including text hidden by search. The local
+list and full reader do not acknowledge mail; a fresh read confirmation is offered
+only after the complete body. Returning keeps the original filter, search and
+eligible selection. X results are unchanged. See the
 [brief exchange guide](online-mail.md#exchange-from-an-inbox-or-conversation) for
 selection, confirmation and limits.
+Classic and Unicode production host TLS/PTY checks pass for these newer reviews;
+source-matched NetBSD and same-SSH/SFTP checks remain pending. See
+[#363](https://github.com/gonz0w/faction-bbs/issues/363) and
+[#364](https://github.com/gonz0w/faction-bbs/issues/364).
 
 Choose **N** for the existing home-wide Send pending / Connect-sync action.
 It may send **all pending ciphertext**, regardless of the correspondent or search
@@ -185,8 +197,9 @@ from the actual vault, so newly saved messages appear where they match. A failed
 archive cycle may have saved earlier entries; it does not imply an unchanged vault.
 An unavailable selected record clamps within the same view.
 
-These actions do not acknowledge messages or retire pending ciphertext. A send
-write is not proof of delivery or reading. The result covers the home exchange,
+The exchange actions do not themselves acknowledge messages or retire pending
+ciphertext. A send write is not proof of delivery or reading. The result covers
+the home exchange,
 not only the displayed correspondent. Ctrl-C/D and terminal or store failures
 retain the existing locking rules. No background polling or password retention
 is added; the board receives no private mail or local counts.

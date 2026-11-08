@@ -149,10 +149,17 @@ inbox offers paged body reading and deliberate replies to a selected received
 message. A verified online conversation also offers fresh multiline writing and
 an explicit queued-text picker; queueing stays on the device and sending is
 explicit. The separate [brief exchange](docs/online-mail.md#exchange-from-an-inbox-or-conversation)
-receives briefly or sends one selected queued text and then receives; it adds no
+receives briefly or sends one selected queued text and then receives. It reviews
+the complete selected subject and pages the body before confirmation. It offers
+a local review of actual new arrivals even when search hides them; it adds no
 presence announcement or background connection. Existing X, N and A actions stay
-unchanged. Host and NetBSD software VM controls cover conversation writing and
-selected exchange; NetBSD checks also cover same-SSH return.
+unchanged. Earlier host and NetBSD software VM controls covered conversation
+writing and selected exchange, including same-SSH return on NetBSD. Classic and
+Unicode production host TLS/PTY checks now pass for the newer selected-text and
+arrival reviews; source-matched NetBSD and same-SSH/SFTP qualification remain
+pending for
+[#363](https://github.com/gonz0w/faction-bbs/issues/363) and
+[#364](https://github.com/gonz0w/faction-bbs/issues/364).
 
 The default-off [roaming terminal experiment](docs/roaming-authentication.md) adds
 a trusted UID-to-local-member path plus filesystem-owner commands for manual
