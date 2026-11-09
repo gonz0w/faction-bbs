@@ -16,6 +16,54 @@ pub(super) struct Target {
     pub device: u32,
     pub identity: [u8; 32],
 }
+
+/// One attempt's bounded canonical metadata; never bodies or report counters.
+pub(super) struct Arrivals {
+    retained: usize,
+    frames: Zeroizing<Vec<[u8; 32]>>,
+}
+impl Arrivals {
+    pub fn capture(v: &CheckpointVault) -> io::Result<Self> {
+        let records = v.history()?;
+        Ok(Self {
+            retained: records.len(),
+            frames: Zeroizing::new(
+                records
+                    .iter()
+                    .filter_map(|record| record.received_id())
+                    .collect(),
+            ),
+        })
+    }
+    pub fn new_text(
+        &self,
+        v: &CheckpointVault,
+        target: &Target,
+    ) -> io::Result<Vec<(usize, [u8; 32])>> {
+        let state = v.inspection()?;
+        if !state.peer.is_some_and(|peer| {
+            peer.address == target.address.as_str()
+                && peer.device == target.device
+                && *peer.identity == target.identity
+        }) {
+            return Ok(Vec::new());
+        }
+        Ok(v.history()?
+            .iter()
+            .enumerate()
+            .skip(self.retained)
+            .filter_map(|(index, record)| {
+                let frame = record.received_id()?;
+                (record.attachment().is_none()
+                    && record.address == target.address.as_str()
+                    && record.device == target.device
+                    && record.identity == target.identity
+                    && !self.frames.contains(&frame))
+                .then_some((index, frame))
+            })
+            .collect())
+    }
+}
 impl Target {
     pub fn pending(&self, v: &CheckpointVault) -> io::Result<Vec<usize>> {
         let records = v.history()?.iter().collect::<Vec<_>>();
@@ -108,7 +156,11 @@ impl Target {
     }
 }
 
+#[cfg(test)]
 pub(super) fn report(report: &ForegroundReport) -> String {
+    report_observation(report, false)
+}
+fn report_observation(report: &ForegroundReport, canonical_arrivals: bool) -> String {
     let mut text = String::from(match report.write {
         ForegroundWrite::NotAttempted => "No selected text write attempted.\r\n",
         ForegroundWrite::Unconfirmed => "Selected text write is unconfirmed.\r\n",
@@ -118,7 +170,7 @@ pub(super) fn report(report: &ForegroundReport) -> String {
         "Accepted on this device: {}.\r\nDuplicates: {}.\r\n",
         report.accepted, report.duplicates
     ));
-    if report.accepted == 0 {
+    if report.accepted == 0 && !canonical_arrivals {
         text.push_str("No new arrival observed.\r\nThis does not prove offline,\r\nnondelivery or a complete home inbox.\r\n");
     }
     if report.error.is_some() {
@@ -129,6 +181,117 @@ pub(super) fn report(report: &ForegroundReport) -> String {
 }
 
 impl Screen<'_> {
+    fn arrival_entries(
+        v: &CheckpointVault,
+        target: &Target,
+        arrivals: &[(usize, [u8; 32])],
+    ) -> io::Result<Vec<inbox::Entry>> {
+        let records = v.history()?;
+        Ok(Self::inbox_entries(v)?
+            .into_iter()
+            .filter(|entry| {
+                let record = &records[entry.index];
+                arrivals.iter().any(|&(index, frame)| {
+                    index == entry.index && record.received_id() == Some(frame)
+                }) && record.attachment().is_none()
+                    && record.address == target.address.as_str()
+                    && record.device == target.device
+                    && record.identity == target.identity
+            })
+            .collect())
+    }
+    fn newly_received_text(
+        &mut self,
+        v: &mut CheckpointVault,
+        target: &Target,
+        arrivals: &[(usize, [u8; 32])],
+    ) -> io::Result<()> {
+        let mut list = inbox::Inbox::new(Self::arrival_entries(v, target, arrivals)?);
+        if let Some(index) = list.eligible().iter().map(|entry| entry.index).min() {
+            list.select_index(index);
+        }
+        let mut model = conversation::Conversation::new(&list);
+        let mut decoder = Decoder::new();
+        rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
+        loop {
+            self.print("\r\n[LOCAL NEWLY RECEIVED TEXT]\r\n")?;
+            let (page, pages) = model.page();
+            self.print(&format!(
+                "Page {page}/{pages}; selection {}/{}\r\n",
+                if model.len() == 0 {
+                    0
+                } else {
+                    model.position() + 1
+                },
+                model.len()
+            ))?;
+            for entry in model.visible() {
+                let record = &v.history()?[entry.index];
+                self.print(&format!(
+                    "{} {:02} {}\r\n",
+                    if model.selected() == Some(*entry) {
+                        '>'
+                    } else {
+                        ' '
+                    },
+                    entry.index + 1,
+                    entry.status.label()
+                ))?;
+                self.print(&inbox::compact(&record.subject, self.unicode, 39))?;
+                self.print("\r\n")?;
+            }
+            self.print(
+                "[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open full record\r\n[B] Return\r\n",
+            )?;
+            loop {
+                match decoder.feed(self.byte()?, Instant::now()) {
+                    Some(Key::Up | Key::Hotkey(b'K')) => model.up(),
+                    Some(Key::Down | Key::Hotkey(b'J')) => model.down(),
+                    Some(Key::Hotkey(b'N')) => model.next(),
+                    Some(Key::Hotkey(b'P')) => model.previous(),
+                    Some(Key::Hotkey(b'B')) => return Ok(()),
+                    Some(Key::Enter | Key::Hotkey(b'O')) => {
+                        if let Some(entry) = model.selected()
+                            && Self::arrival_entries(v, target, arrivals)?.contains(&entry)
+                        {
+                            self.inbox_record_mode(v, entry, false)?;
+                            list.refresh(Self::arrival_entries(v, target, arrivals)?);
+                            model.refresh(&list);
+                            decoder = Decoder::new();
+                        }
+                    }
+                    _ => continue,
+                }
+                break;
+            }
+        }
+    }
+    fn brief_result(
+        &mut self,
+        v: &mut CheckpointVault,
+        target: &Target,
+        arrivals: &[(usize, [u8; 32])],
+    ) -> io::Result<()> {
+        if arrivals.is_empty() {
+            return self.pause();
+        }
+        rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
+        let mut decoder = Decoder::new();
+        loop {
+            self.print("[R] Review newly received text\r\n[B] Return\r\nEnter to return: ")?;
+            loop {
+                match decoder.feed(self.byte()?, Instant::now()) {
+                    Some(Key::Enter | Key::Hotkey(b'B')) => return Ok(()),
+                    Some(Key::Hotkey(b'R')) => {
+                        self.newly_received_text(v, target, arrivals)?;
+                        decoder = Decoder::new();
+                        break;
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
     fn queued_text(&mut self, v: &CheckpointVault, target: &Target) -> io::Result<Option<usize>> {
         let entries = target
             .pending(v)?
@@ -288,6 +451,10 @@ impl Screen<'_> {
             if !self.brief_review(&review)? {
                 return Ok(());
             }
+            self.print("[DEVICE-LOCAL SELECTED TEXT]\r\n")?;
+            if !self.body(&record.body)? {
+                return Ok(());
+            }
         } else {
             self.print("Receive briefly; no text release.\r\n")?;
         }
@@ -335,6 +502,7 @@ impl Screen<'_> {
         } else {
             faction_client::mail_network::ForegroundAction::ReceiveOnly
         };
+        let before = Arrivals::capture(v)?;
         #[cfg(test)]
         let controlled = exchange
             .foreground
@@ -363,7 +531,8 @@ impl Screen<'_> {
             )?;
             return Err(invalid());
         }
-        self.print(&report(&result))?;
-        self.pause()
+        let arrivals = before.new_text(v, &target)?;
+        self.print(&report_observation(&result, !arrivals.is_empty()))?;
+        self.brief_result(v, &target, &arrivals)
     }
 }

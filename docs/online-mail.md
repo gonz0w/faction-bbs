@@ -191,29 +191,55 @@ eligible highlighted text. Alternatively, choose **Q** to select one eligible
 queued ordinary text independently of the displayed Unread filter or search.
 The picker lists eligible texts in retained append order, two per page.
 Use Up/Down or J/K to move, N/P to page, and Enter/O to review the selected
-row. Review the recipient, record, operation and subject; an empty or stale choice
-sends nothing. B returns to the exchange menu, and B there returns to the
-conversation. The picker does not connect or change read, archive or pending
-state. Returning preserves the conversation view. At the confirmation prompt,
+row. Both S and Q review the recipient, record, operation and complete subject
+in `[LOCAL BRIEF REVIEW]`, followed by `[DEVICE-LOCAL SELECTED TEXT]` and the
+complete selected body in `[LOCAL BODY]` pages. Finish all pages before the fresh
+confirmation and password prompts. Back,
+cancellation or failed output during review sends nothing and opens no home
+connection; an empty or stale choice also sends nothing. B in the queued picker
+returns to the exchange menu; B during body review cancels the send and returns
+to the conversation. B in the exchange menu returns to the conversation. The
+picker does not connect or change read, archive or pending state. Returning preserves the conversation view. At the confirmation prompt,
 type `exchange` to connect or press Enter to return to the unchanged view. Each
-attempt then asks for a fresh hidden home password. Ctrl-C/D retains the existing lock-and-exit
-behavior. The original R and S review, cancellation and dispatch controls were
-tested in classic and Unicode modes. Two-client host tests with synthetic TLS
+attempt then asks for a fresh hidden home password. Ctrl-C/D retains the existing
+lock-and-exit behavior. The original R and S review, cancellation and dispatch
+controls were tested in classic and Unicode modes. Two-client host tests with synthetic TLS
 homes exercised selected send, live receive and later archive recovery in both
 modes. Classic and Unicode host and NetBSD 11 ARM64 software VM journeys also
 exercised fresh conversation writing, cancellation, one selected queued-text
 send, authenticated receipt and preserved local state. NetBSD checks also covered
 same-SSH BBS/SFTP outage, privacy and return at 1 GiB runtime. See
 [#359](https://github.com/gonz0w/faction-bbs/issues/359) and
-[#360](https://github.com/gonz0w/faction-bbs/issues/360) for these conversation actions.
+[#360](https://github.com/gonz0w/faction-bbs/issues/360) for these earlier
+conversation actions. Classic and Unicode production host TLS/PTY checks pass
+for the full queued-body and new-arrival reviews in
+[#363](https://github.com/gonz0w/faction-bbs/issues/363) and
+[#364](https://github.com/gonz0w/faction-bbs/issues/364). They exercised exact
+selected ciphertext among same-subject texts, cancellation without connection,
+authenticated search-hidden arrival, fresh read confirmation, preserved view,
+counts, cursor and pending state, privacy and teardown. Source-matched NetBSD
+software VM evidence also covers these reviews and same-SSH/SFTP return at 1 GiB
+runtime. The [technical contract](../dev-docs/native-home-mail.md#bounded-foreground-contract)
+describes the classic evidence qualification.
 
 The existing full-store refusal also applies to E: a local W can queue the eighth
 pending operation, after which E is unavailable until deliberate maintenance.
 Pending ciphertext is never automatically retired.
 
+After E, **R: Review newly received text** appears only when the exchange retained
+new ordinary text from the current verified peer, device and identity. It opens
+`[LOCAL NEWLY RECEIVED TEXT]`, even when the original search hides those messages.
+Use Up/Down or J/K to select, N/P to page, Enter/O to open the full record, and B
+to return. Listing and reading do not acknowledge mail. After the complete body is
+shown, the existing fresh read confirmation can mark the selected message read;
+unknown read-tracking state is not acknowledged. Reply and composing remain in
+the original conversation. Enter or B at the result returns to the original
+filter, search and eligible selection, without clearing the search or connecting
+again. X results do not offer this review.
+
 Live messages accepted by this action leave the archive position and read
-decisions intact. Later manual catch-up can recover older retained messages and
-deduplicate repeats, within the existing skipped-message limit. A local write is
+decisions intact until a separate read confirmation. Later manual catch-up can
+recover older retained messages and deduplicate repeats, within the existing skipped-message limit. A local write is
 not a delivery receipt, and no observed arrival does not prove the peer is offline.
 The attempt has a ten-second overall connection/session deadline, a two-second
 receive idle wait and a 32-stanza limit; pending operations remain pending.

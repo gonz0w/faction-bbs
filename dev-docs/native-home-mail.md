@@ -218,9 +218,15 @@ and identity, and offers R or B; S is conditional on the highlighted eligible
 pending text and reviews its retained record, operation and subject. Q opens a
 bounded picker of eligible canonical pending ordinary texts for the exact current
 peer independently of the conversation filter and query. Explicit selection
-uses the same review and confirmation path for one operation; an empty or stale
-selection sends nothing. Returning preserves the conversation view. The existing
-full-store refusal applies to E even after W queues the eighth pending operation.
+uses the same review and confirmation path for one operation. Both S and Q show
+the complete subject in `[LOCAL BRIEF REVIEW]`, then show
+`[DEVICE-LOCAL SELECTED TEXT]` and page the complete selected body with the
+existing `[LOCAL BODY]` reader before fresh confirmation and password. B in the
+queued picker returns to the exchange menu; B during body review cancels the send
+and returns to the conversation. Cancellation or failed output during review opens no home connection; an empty
+or stale selection sends nothing. Returning preserves the conversation view. The
+existing full-store refusal applies to E even after W queues the eighth pending
+operation.
 A literal `exchange` confirmation precedes the fresh hidden password; blank input
 returns without connecting. The original R and S classic and Unicode review, cancellation
 and dispatch controls have been tested. Classic and Unicode two-client host tests
@@ -235,6 +241,31 @@ provider test-only coordinator repair is separate host/CI qualification work and
 was not included in the guest inputs.
 The original product source `81922457`, with the `f01977a` test-only CA fixture
 repair, also completed earlier NetBSD software VM and same-SSH controls.
+
+The E result offers **R: Review newly received text** only for actual newly
+retained canonical ordinary-text records matching the current peer account, device
+and identity. The transient `[LOCAL NEWLY RECEIVED TEXT]` list can expose arrivals
+hidden by the original search; it has no reply or compose action. Listing and
+opening do not acknowledge. The existing fresh read confirmation follows complete
+body output; unknown read-tracking state is not acknowledged. Returning preserves
+the original filter, query and eligible selection. X results remain unchanged.
+Classic and Unicode production host TLS/PTY checks pass for
+[#363](https://github.com/gonz0w/faction-bbs/issues/363) and
+[#364](https://github.com/gonz0w/faction-bbs/issues/364). These exercised exact
+selected ciphertext among same-subject texts, cancellation without connection,
+authenticated search-hidden arrival, fresh read confirmation, preserved view,
+counts, cursor and pending state, privacy and teardown. Source `98db560` was also
+exercised in a NetBSD 11 ARM64 software VM at two CPUs and 1 GiB runtime. The
+Unicode run passed with both normal finishes, numeric same-client/SSH PID maps and
+canonical store reopens. Classic criteria were accepted from the retained failed
+run captures, a separately reviewed corrected per-route observer, and read-only
+reopens of the actual canonical stores and stopped privacy diagnostics. The
+original classic run failed on a late fixture assertion, had no normal finishes
+and produced no numeric PID map; it is not an end-to-end pass. Same-SSH BBS and
+SFTP return and stopped privacy were covered; the final combined 244-marker scan
+found no matches. Cleanup included a clean unmount, offline COW check and 18
+unchanged stable-asset seals. The earlier `c3c6371` observations above do not
+qualify these changes.
 
 Full outer peer routing derives from the verified account and device. The OMEMO
 bare account, operation ID and ciphertext remain immutable. Only this new path may
