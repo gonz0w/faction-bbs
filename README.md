@@ -155,9 +155,10 @@ a local review of actual new arrivals even when search hides them; it adds no
 presence announcement or background connection. Existing X, N and A actions stay
 unchanged. Earlier host and NetBSD software VM controls covered conversation
 writing and selected exchange, including same-SSH return on NetBSD. Classic and
-Unicode production host TLS/PTY checks now pass for the newer selected-text and
-arrival reviews; source-matched NetBSD and same-SSH/SFTP qualification remain
-pending for
+Unicode production host TLS/PTY checks also cover the newer selected-text and
+arrival reviews. A source-matched NetBSD software VM exercised these reviews and
+same-SSH/SFTP return at 1 GiB runtime. The [technical contract](dev-docs/native-home-mail.md#bounded-foreground-contract)
+describes how classic mode was verified. See
 [#363](https://github.com/gonz0w/faction-bbs/issues/363) and
 [#364](https://github.com/gonz0w/faction-bbs/issues/364).
 

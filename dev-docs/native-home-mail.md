@@ -254,9 +254,18 @@ Classic and Unicode production host TLS/PTY checks pass for
 [#364](https://github.com/gonz0w/faction-bbs/issues/364). These exercised exact
 selected ciphertext among same-subject texts, cancellation without connection,
 authenticated search-hidden arrival, fresh read confirmation, preserved view,
-counts, cursor and pending state, privacy and teardown. Source-matched NetBSD and
-same-SSH/SFTP qualification remain pending. The earlier `c3c6371` observations
-above do not qualify these changes.
+counts, cursor and pending state, privacy and teardown. Source `98db560` was also
+exercised in a NetBSD 11 ARM64 software VM at two CPUs and 1 GiB runtime. The
+Unicode run passed with both normal finishes, numeric same-client/SSH PID maps and
+canonical store reopens. Classic criteria were accepted from the retained failed
+run captures, a separately reviewed corrected per-route observer, and read-only
+reopens of the actual canonical stores and stopped privacy diagnostics. The
+original classic run failed on a late fixture assertion, had no normal finishes
+and produced no numeric PID map; it is not an end-to-end pass. Same-SSH BBS and
+SFTP return and stopped privacy were covered; the final combined 244-marker scan
+found no matches. Cleanup included a clean unmount, offline COW check and 18
+unchanged stable-asset seals. The earlier `c3c6371` observations above do not
+qualify these changes.
 
 Full outer peer routing derives from the verified account and device. The OMEMO
 bare account, operation ID and ciphertext remain immutable. Only this new path may

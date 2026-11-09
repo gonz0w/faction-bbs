@@ -217,8 +217,10 @@ for the full queued-body and new-arrival reviews in
 [#364](https://github.com/gonz0w/faction-bbs/issues/364). They exercised exact
 selected ciphertext among same-subject texts, cancellation without connection,
 authenticated search-hidden arrival, fresh read confirmation, preserved view,
-counts, cursor and pending state, privacy and teardown. Source-matched NetBSD and
-same-SSH/SFTP qualification of these changes remain pending.
+counts, cursor and pending state, privacy and teardown. Source-matched NetBSD
+software VM evidence also covers these reviews and same-SSH/SFTP return at 1 GiB
+runtime. The [technical contract](../dev-docs/native-home-mail.md#bounded-foreground-contract)
+describes the classic evidence qualification.
 
 The existing full-store refusal also applies to E: a local W can queue the eighth
 pending operation, after which E is unavailable until deliberate maintenance.

@@ -177,8 +177,11 @@ only after the complete body. Returning keeps the original filter, search and
 eligible selection. X results are unchanged. See the
 [brief exchange guide](online-mail.md#exchange-from-an-inbox-or-conversation) for
 selection, confirmation and limits.
-Classic and Unicode production host TLS/PTY checks pass for these newer reviews;
-source-matched NetBSD and same-SSH/SFTP checks remain pending. See
+Classic and Unicode production host TLS/PTY checks cover these newer reviews.
+Source-matched NetBSD software VM evidence also covers these reviews and
+same-SSH/SFTP return at 1 GiB runtime. The
+[technical contract](../dev-docs/native-home-mail.md#bounded-foreground-contract)
+describes the classic evidence qualification. See
 [#363](https://github.com/gonz0w/faction-bbs/issues/363) and
 [#364](https://github.com/gonz0w/faction-bbs/issues/364).
 
