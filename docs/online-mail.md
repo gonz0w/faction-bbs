@@ -235,7 +235,7 @@ shown, the existing fresh read confirmation can mark the selected message read;
 unknown read-tracking state is not acknowledged. Reply and composing remain in
 the original conversation. Enter or B at the result returns to the original
 filter, search and eligible selection, without clearing the search or connecting
-again. X results do not offer this review.
+again.
 
 Live messages accepted by this action leave the archive position and read
 decisions intact until a separate read confirmation. Later manual catch-up can
@@ -246,8 +246,9 @@ receive idle wait and a 32-stanza limit; pending operations remain pending.
 
 Use **X: Home exchange** in an online inbox or conversation to run the same
 explicit N or A action and return to your current local view. N may send all
-pending ciphertext; A fetches one enabled archive page. Each action prompts for
-its own home password. Opening the choice does not connect. See
+pending ciphertext. A fetches one enabled archive page and offers the same local
+review if it saves new ordinary text. Each action prompts for its own home
+password. Opening the choice does not connect. See
 [the inbox guide](local-mail-inbox.md#exchange-home-mail-without-leaving-your-place)
 for view restoration, mode differences and failure behavior.
 

@@ -1,6 +1,9 @@
 //! Reviewed member-device foreground authority; no persisted UI state.
 use super::*;
-use faction_client::mail_network::{ForegroundReport, ForegroundWrite, Settings};
+use faction_client::{
+    mail_checkpoint::PeerInspection,
+    mail_network::{ForegroundReport, ForegroundWrite, Settings},
+};
 
 #[cfg(test)]
 pub(super) type ControlledForeground<'a> = dyn Fn(
@@ -65,6 +68,13 @@ impl Arrivals {
     }
 }
 impl Target {
+    pub(super) fn from_peer(peer: PeerInspection<'_>) -> Self {
+        Self {
+            address: Zeroizing::new(peer.address.into()),
+            device: peer.device,
+            identity: *peer.identity,
+        }
+    }
     pub fn pending(&self, v: &CheckpointVault) -> io::Result<Vec<usize>> {
         let records = v.history()?.iter().collect::<Vec<_>>();
         Ok(self.pending_records(&records, &v.inspect_outbox()?))
@@ -122,11 +132,7 @@ impl Target {
         {
             return Err(invalid());
         }
-        Ok(Self {
-            address: Zeroizing::new(peer.address.into()),
-            device: peer.device,
-            identity: *peer.identity,
-        })
+        Ok(Self::from_peer(peer))
     }
     pub fn selected(
         &self,
@@ -266,7 +272,7 @@ impl Screen<'_> {
             }
         }
     }
-    fn brief_result(
+    pub(super) fn arrival_result(
         &mut self,
         v: &mut CheckpointVault,
         target: &Target,
@@ -533,6 +539,6 @@ impl Screen<'_> {
         }
         let arrivals = before.new_text(v, &target)?;
         self.print(&report_observation(&result, !arrivals.is_empty()))?;
-        self.brief_result(v, &target, &arrivals)
+        self.arrival_result(v, &target, &arrivals)
     }
 }

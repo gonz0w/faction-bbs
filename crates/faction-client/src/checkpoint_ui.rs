@@ -1635,6 +1635,15 @@ impl Screen<'_> {
             true,
         )?;
         self.print("Connecting directly to your home. Ctrl-C locks and cancels.\r\n")?;
+        let archive_review = if mode == Mode::CatchUp && v.legacy()?.home == settings.account {
+            let peer = v.inspection()?.peer.ok_or_else(invalid)?;
+            Some((
+                foreground::Target::from_peer(peer),
+                foreground::Arrivals::capture(v)?,
+            ))
+        } else {
+            None
+        };
         #[cfg(test)]
         let controlled = cycle.map(|cycle| cycle(v, &password, mode));
         #[cfg(not(test))]
@@ -1655,6 +1664,10 @@ impl Screen<'_> {
         };
         drop(password);
         self.activity = Instant::now();
+        if mode == Mode::CatchUp && v.inspection().is_err() {
+            self.print("Local checkpoint unavailable. Lock and reopen the canonical store before further work.\r\n")?;
+            return Err(invalid());
+        }
         match result {
             Ok(report) => {
                 if let Some(page) = report.archive {
@@ -1670,10 +1683,6 @@ impl Screen<'_> {
                 }
             }
             Err(error) => {
-                if mode == Mode::CatchUp && v.inspection().is_err() {
-                    self.print("Local checkpoint unavailable. Lock and reopen the canonical store before further work.\r\n")?;
-                    return Err(invalid());
-                }
                 v.inspection()?;
                 self.print(if matches!(error, mail_network::Error::ArchiveCursorUnavailable) {
                     "Home no longer recognizes the saved archive position.\r\nRetained history is intact. Automatic reset or skip is unavailable.\r\nAsk your home operator about archive retention; the saved cursor is kept.\r\n"
@@ -1683,6 +1692,10 @@ impl Screen<'_> {
                     "Home cycle stopped; pending ciphertext retained.\r\nCheck local configuration, account or peer; history remains available.\r\n"
                 })?;
             }
+        }
+        if let Some((target, before)) = archive_review {
+            let arrivals = before.new_text(v, &target)?;
+            return self.arrival_result(v, &target, &arrivals);
         }
         self.pause()
     }
