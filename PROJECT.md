@@ -126,3 +126,9 @@ It is outside the retained method bundle and is not wired into CI, hooks or gate
 Mechanical success leaves policy meaning, source trust, approval, check applicability
 and execution/integration authority unverified. Use only an already authorized executor;
 missing required checks remain unavailable and block their dependent acceptance.
+
+## Artifact retention
+
+Follow the adopted [artifact lifecycle](.agent-temper/docs/reference/artifact-lifecycle.md) and the project's
+existing output, evidence, recovery and approval rules. Record a bounded
+retention decision in the owning issue before substantial generated output.

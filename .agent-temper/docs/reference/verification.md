@@ -41,10 +41,24 @@ stricter test-first policy for particular changes.
 
 ## Keep feedback fast and sufficient
 
-Run focused checks during iteration, then the required checks for changed contracts
-and their consumers before integration. Use broader platform, security, recovery,
-and release checks when the change or project policy requires them. Unknown impact
-is a reason to investigate or broaden checks, not to assume no impact.
+Choose checkpoints by coherent behavior and consequence. A development window can
+cover several related files or ready member issues before its focused checks.
+Do not automatically run the full suite after every save, commit or issue. A
+project's stricter test-first or earlier-check requirement still applies.
+
+| Boundary | Default check cadence |
+| --- | --- |
+| Before a behavior change | Specify expected results and run the required reproduction or test-first RED. |
+| During a coherent implementation slice | Develop the related change; check immediately if policy, uncertainty or new risk requires it. |
+| At its development checkpoint | Run focused changed-contract checks; inspect failures before further work. |
+| At the assembled delivery boundary | Run all applicable required integration gates and obtain separate final review. |
+| After a correction or changed input | Refresh affected checks and review; reuse unaffected evidence only within its valid scope and required CI policy. |
+| At milestone reconciliation | Assess delivered capability and outstanding findings; select later work instead of accumulating optional checks. |
+
+Use broader platform, security, recovery and release checks when the changed
+contracts or project policy require them. Unknown impact is a reason to investigate
+or broaden checks, not to assume no impact. A successful focused checkpoint alone
+does not establish integration or operational acceptance.
 
 Document a stable local check entry point. CI should call the same maintained
 commands where practical. Optional hooks are convenience checks; a bypassable hook
@@ -52,10 +66,26 @@ is not integration enforcement. Formatting, static analysis, linting, secrets,
 dependency provenance, and license checks are selected for the project's actual
 stack and risk. Avoid importing a large tool suite without a demonstrated need.
 
-Do not rerun unchanged expensive checks merely because a new review record exists.
-Evidence reuse needs the same relevant inputs, environment assumptions, and valid
-scope. Changes to contracts, validation policy, fixtures, or relevant dependencies
-can invalidate it. Required CI policies still apply to the current proposed change.
+### Reuse evidence after a change
+
+1. Compare the current candidate with the one checked. For each result you plan to
+   carry forward, use the check contract to confirm its relevant inputs,
+   environment assumptions, and scope still match. Include shared contracts,
+   fixtures, dependencies, and verification policy. If impact is uncertain,
+   investigate or refresh the check.
+2. Refresh affected checks and send material changes in scope or evidence back to
+   the reviewer. In the existing batch record, link each retained result and
+   explain why it still applies. Identify the results from fresh execution.
+3. Read the required gates for the current candidate in the integration system.
+   Where it records command results and job conclusions separately, record both.
+   Passing commands can coexist with a failed or unavailable required job.
+
+If a required job is interrupted, reconcile the previous attempt's effects before
+retrying within its recorded allowance. Rerun that job alone when project policy
+permits it and the integration system still accepts the other successful gates
+for the current candidate. Confirm the new required result and retain the
+original failure. Use the project's required check set when partial execution
+is insufficient.
 
 ## Bound attempts and stop
 
@@ -105,10 +135,18 @@ Zero discovered tests are not a passing test suite. A timeout or infrastructure
 error is not an assertion result. Source hashes establish identity; they do not
 prove correctness. A check of a saved report does not rerun the product test.
 
+For ordinary work, a compact acceptance-to-result record is sufficient. Link the
+standing command contract and retained output; do not copy the full policy, log
+or previous review into every checkpoint. Stronger traceability can be required by
+the project's risk and evidence policy. This changes reporting cost, not truth.
+
 Historical evidence remains tied to the bytes and conditions actually measured.
 Keep those inputs resolvable through retained source revisions or artifacts before
 changing them. Do not rewrite old results to describe current code. Do not require
 duplicate source archives when existing retention already preserves the inputs.
+Keep retained evidence separate from rebuildable output and apply the project's
+[artifact lifecycle](artifact-lifecycle.md). Retention limits never remove an unmet
+review, reproduction, incident or recovery need without its authorized disposition.
 
 ## Compare agent workflows
 
