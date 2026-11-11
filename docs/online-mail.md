@@ -112,7 +112,9 @@ sessions; the client does not silently replace them.
    with **C** and run another coordinated **N** cycle. It does not need **K** after
    accepting the first message.
 
-**O** lists durable pending operation IDs. A successful socket write leaves them
+**O** lists durable pending operation IDs. It shows a local subject preview
+when one retained sent record matches the operation ID, recipient and device.
+Long previews end in `~`. A successful socket write leaves the operations
 pending. Retry with **N** to send the same persisted ciphertext and operation ID;
 repeated accepted frames do not add another received-history record.
 

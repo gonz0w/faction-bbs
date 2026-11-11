@@ -45,7 +45,7 @@ trust a remote terminal-capability claim.
 | V | Enroll one peer after independently comparing the full typed `ed25519:` identity and device ID. |
 | H | Read authenticated local history and retained outbound operation IDs; upgraded received records offer explicit local acknowledgement. |
 | E | Deliberately enable encrypted local read tracking after confirmation. |
-| O | Inspect durable pending ciphertext IDs and bounded metadata. |
+| O | Inspect durable pending ciphertext IDs, metadata and matching local subject previews. |
 | T | Explicitly retire one pending operation or all pending ciphertext. |
 | R | Revoke the enrolled peer locally. This does not revoke their remote device or copies. |
 | F | Generate a fresh local device after explicit pending retirement; verify the peer again. |
@@ -56,6 +56,8 @@ trust a remote terminal-capability claim.
 
 A pending item means ciphertext remains available to the trusted backend caller.
 It does **not** prove that another caller never delivered it before a crash.
+**O** shows a subject preview when one retained sent record matches the operation
+ID, recipient and device. Long previews end in `~`.
 This UI attempts no network delivery. Retirement records only a local decision;
 it is not a delivery, read or exactly-once receipt. History and operation IDs
 survive retirement. No message content is sent to presence, chat or sysop statistics.
