@@ -5,7 +5,9 @@
 #[cfg(feature = "network-mail")]
 use faction_client::mail_checkpoint::ReadSummary;
 use faction_client::{
-    mail_checkpoint::{CheckpointVault, Direction, MAX_HISTORY, MAX_OUTBOX},
+    mail_checkpoint::{
+        CheckpointVault, Direction, MAX_HISTORY, MAX_OUTBOX, OutboxInspection, Record,
+    },
     mail_data::{Data, hex, invalid, unhex},
     mail_vault::{Store, Vault},
 };
@@ -101,6 +103,19 @@ fn inert(s: &str, unicode: bool) -> Zeroizing<String> {
     }
     out
 }
+fn outbox_subject<'a>(
+    pending: &OutboxInspection<'_>,
+    history: impl IntoIterator<Item = &'a Record>,
+) -> Option<&'a str> {
+    let mut matches = history.into_iter().filter(|record| {
+        record.direction == Direction::Sent
+            && record.operation() == pending.operation
+            && record.address == pending.address
+            && record.device == pending.device
+    });
+    let record = matches.next()?;
+    matches.next().is_none().then_some(record.subject.as_str())
+}
 fn now() -> io::Result<u64> {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -173,6 +188,19 @@ impl Screen<'_> {
         self.print(label)?;
         self.print(&inert(s, self.unicode))?;
         self.print("\r\n")
+    }
+    fn show_outbox_subject(
+        &mut self,
+        pending: &OutboxInspection<'_>,
+        history: &[Record],
+    ) -> io::Result<()> {
+        if let Some(subject) = outbox_subject(pending, history) {
+            const LABEL: &str = "Subject: ";
+            self.print(LABEL)?;
+            self.print(&inbox::compact(subject, self.unicode, 39 - LABEL.len()))?;
+            self.print("\r\n")?;
+        }
+        Ok(())
     }
     /// True only after every page has reached output. This view has no state authority.
     fn body(&mut self, text: &str) -> io::Result<bool> {
@@ -1056,6 +1084,7 @@ impl Screen<'_> {
             }
             b'O' => {
                 let pending = v.inspect_outbox()?;
+                let history = v.history()?;
                 self.print(&format!("Durable outbox: {}/8\r\nOFFLINE: no delivery attempted by this UI. Remote delivery is unknown.\r\n", pending.len()))?;
                 for p in pending {
                     self.print(&format!(
@@ -1065,6 +1094,7 @@ impl Screen<'_> {
                         p.device,
                         p.sent_at
                     ))?;
+                    self.show_outbox_subject(&p, history)?;
                 }
                 self.print("Expiry/revocation/recovery may block retry; retirement is a LOCAL decision.\r\n")?;
             }
@@ -1501,6 +1531,7 @@ impl Screen<'_> {
             return self.pause();
         }
         if key == b'O' {
+            let history = v.history()?;
             self.print("Durable pending ciphertext; delivery remains unproven.\r\nA socket write never retires these IDs. Use Retire only as a deliberate local decision.\r\n")?;
             for item in v.inspect_outbox()? {
                 self.print(&format!(
@@ -1509,6 +1540,7 @@ impl Screen<'_> {
                     item.address,
                     item.sent_at
                 ))?;
+                self.show_outbox_subject(&item, history)?;
             }
             return self.pause();
         }

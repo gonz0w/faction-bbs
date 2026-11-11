@@ -336,6 +336,139 @@ fn foreground_ui_selection_helper() {
 }
 
 #[test]
+fn outbox_shows_matching_local_subject() {
+    child("checkpoint_ui::foreground_tests::outbox_subject_helper");
+}
+
+#[test]
+#[ignore = "owned subprocess helper"]
+fn outbox_subject_helper() {
+    let mut f = Fixture::new();
+    f.vault.acknowledge([1; 16]).unwrap();
+    let hostile = format!("λ\n\u{202e} {} HIDDEN", "wide".repeat(20));
+    f.vault
+        .queue([3; 16], &hostile, "private hostile body", f.time, f.time)
+        .unwrap();
+    {
+        let history = f.vault.history().unwrap();
+        let pending = f.vault.inspect_outbox().unwrap();
+        let sent = &history[3];
+        assert_eq!(sent.operation(), [2; 16]);
+        assert_eq!(outbox_subject(&pending[0], [sent, sent]), None);
+        for (operation, address, device) in [
+            ([9; 16], "bob@away.test", 202),
+            ([2; 16], "carol@away.test", 202),
+            ([2; 16], "bob@away.test", 203),
+            ([0; 16], "bob@away.test", 202),
+        ] {
+            let item = OutboxInspection {
+                operation,
+                address,
+                device,
+                sent_at: f.time,
+            };
+            assert_eq!(outbox_subject(&item, history), None);
+        }
+    }
+    let checkpoint = f.root.join("vault/mail.fkv");
+    let before = std::fs::read(&checkpoint).unwrap();
+    for online in [false, true] {
+        for unicode in [false, true] {
+            let (master, slave) = faction_client_pty::open(24, 40).unwrap();
+            let saved = rustix::termios::tcgetattr(&slave).unwrap();
+            let mut raw = saved.clone();
+            raw.make_raw();
+            rustix::termios::tcsetattr(&slave, rustix::termios::OptionalActions::Now, &raw)
+                .unwrap();
+            let capture = f.root.join("outbox-output");
+            let mut term = LocalTerminal {
+                input: slave.into(),
+                output: std::fs::File::create(&capture).unwrap(),
+                saved,
+            };
+            let mut driver = Driver {
+                input: master.into(),
+                capture: capture.clone(),
+                offset: 0,
+            };
+            std::thread::scope(|scope| {
+                let driver = scope.spawn(move || {
+                    driver.wait("Enter to return: ");
+                    driver.send(b"\r");
+                    driver
+                });
+                let mut screen = Screen {
+                    term: &mut term,
+                    activity: Instant::now(),
+                    unicode,
+                };
+                let result = if online {
+                    screen.online_action(&mut f.vault, &f.settings, &f.root, b'O', None)
+                } else {
+                    screen.action(&mut f.vault, b'O')
+                };
+                driver.join().unwrap();
+                result.unwrap();
+            });
+            drop(term);
+            let output = std::fs::read_to_string(capture).unwrap();
+            assert_eq!(std::fs::read(&checkpoint).unwrap(), before);
+            let details = |id| {
+                let operation = hex(&[id; 16]);
+                if online {
+                    format!(
+                        "Operation: {operation} / bob@away.test / UTC {}\r\n",
+                        f.time
+                    )
+                } else {
+                    format!(
+                        "Operation: {operation}\r\nTo: bob@away.test / device 202 / UTC {}\r\n",
+                        f.time
+                    )
+                }
+            };
+            if online {
+                assert!(output.contains("Durable pending ciphertext; delivery remains unproven."));
+                assert!(output.contains("A socket write never retires these IDs."));
+            } else {
+                assert!(output.contains("Durable outbox: 2/8"));
+                assert!(output.contains("Remote delivery is unknown."));
+                assert!(output.contains("retirement is a LOCAL decision."));
+            }
+            assert!(!output.contains(&hex(&[1; 16])));
+            for private in [
+                "keep selected",
+                "keep original",
+                "keep archived",
+                "private",
+                "HIDDEN",
+            ] {
+                assert!(!output.contains(private), "{private} appeared in O");
+            }
+            assert_eq!(output.matches("Operation: ").count(), 2);
+            assert!(output.contains(&details(2)) && output.contains(&details(3)));
+            assert!(
+                output.contains(&format!("{}Subject: keep other pending\r\n", details(2))),
+                "pending ID lost its local subject (online={online}, unicode={unicode}): {output}"
+            );
+            let prefix = if unicode { "λ" } else { "\\u{3bb}" };
+            let expected = format!("{}Subject: {prefix}\\u{{a}}\\u{{202e}} wide", details(3));
+            assert!(
+                output.contains(&expected),
+                "wrong hostile subject: {output}"
+            );
+            let row = output
+                .lines()
+                .find(|row| row.starts_with(&format!("Subject: {prefix}")))
+                .unwrap();
+            assert!(row.ends_with('~'));
+            assert!(faction_terminal::text::width(row) <= 39);
+            assert!(!output.contains('\u{202e}'));
+        }
+    }
+}
+
+#[test]
 fn foreground_ui_no_arrival_report_is_honest() {
     let text = foreground::report(&ForegroundReport {
         write: ForegroundWrite::NotAttempted,
