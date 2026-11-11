@@ -242,13 +242,17 @@ was not included in the guest inputs.
 The original product source `81922457`, with the `f01977a` test-only CA fixture
 repair, also completed earlier NetBSD software VM and same-SSH controls.
 
-The E result offers **R: Review newly received text** only for actual newly
+The E and archive A results offer **R: Review newly received text** only for newly
 retained canonical ordinary-text records matching the current peer account, device
 and identity. The transient `[LOCAL NEWLY RECEIVED TEXT]` list can expose arrivals
-hidden by the original search; it has no reply or compose action. Listing and
-opening do not acknowledge. The existing fresh read confirmation follows complete
-body output; unknown read-tracking state is not acknowledged. Returning preserves
-the original filter, query and eligible selection. X results remain unchanged.
+hidden by the original search. Enter/O opens the full record with the existing
+fresh read confirmation after complete body output if read tracking is enabled.
+W rechecks the selected record's exact canonical index and received frame against
+the arrival set and checks the current peer account, device and identity. It
+invokes the existing multiline reply writer, which revalidates the target before
+queueing. This local reply preserves the saved cursor, read decisions and earlier
+pending operations. Returning preserves the original filter, query and eligible
+selection.
 Classic and Unicode production host TLS/PTY checks pass for
 [#363](https://github.com/gonz0w/faction-bbs/issues/363) and
 [#364](https://github.com/gonz0w/faction-bbs/issues/364). These exercised exact

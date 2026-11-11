@@ -60,9 +60,12 @@ If the page saves new ordinary text from your verified peer, choose
 **R: Review newly received text** at the result. Use Up/Down or J/K to select,
 N/P to page and Enter/O to open a record. If local read tracking is enabled,
 type `read` at the prompt after the complete body to mark the message read on
-this device. Press **B** in the list, then **B** or Enter at the result to return.
-This review stays on your device and preserves the saved archive position and
-pending ciphertext.
+this device. Press **W** in the list to write a multiline reply to the selected
+text. Review the verified recipient and suggested subject, then type `queue`
+after reviewing the draft to save one encrypted pending reply on your device.
+Queueing or cancelling returns to the selected arrival and preserves the saved
+archive position, read decisions and earlier pending ciphertext. Use a separate
+exchange to send. Press **B** in the list, then **B** or Enter at the result to return.
 Use **H** to open retained history from the mail menu.
 
 A prepared conversation with a saved archive position can also use the

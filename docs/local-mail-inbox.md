@@ -171,15 +171,16 @@ subject, then page the complete body before fresh confirmation. B in the queued
 picker returns to the exchange menu; B during body review cancels the send and
 returns to the conversation. After E, **R: Review newly received
 text** appears when actual new ordinary text from the current verified peer,
-device and identity was retained, including text hidden by search. The local
-list and full reader do not acknowledge mail; a fresh read confirmation is offered
-only after the complete body. Returning keeps the original filter, search and
+device and identity was retained, including text hidden by search. Enter/O opens
+the full record, which offers a fresh read confirmation after the complete body
+if local read tracking is enabled. Press **W** in the arrivals list to open the
+local multiline reply writer. Returning keeps the original filter, search and
 eligible selection. See the
 [brief exchange guide](online-mail.md#exchange-from-an-inbox-or-conversation) for
 selection, confirmation and limits.
-Classic and Unicode production host TLS/PTY checks cover these newer reviews.
-Source-matched NetBSD software VM evidence also covers these reviews and
-same-SSH/SFTP return at 1 GiB runtime. The
+Classic and Unicode production host TLS/PTY checks cover the queued-body and
+arrival-reader reviews from #363 and #364. Source-matched NetBSD software VM
+evidence covers those reviews and same-SSH/SFTP return at 1 GiB runtime. The
 [technical contract](../dev-docs/native-home-mail.md#bounded-foreground-contract)
 describes the classic evidence qualification. See
 [#363](https://github.com/gonz0w/faction-bbs/issues/363) and
@@ -194,8 +195,10 @@ be enabled with G at the mail menu; it does not upgrade or connect. A does not
 send pending mail. Neither choice automatically runs the other.
 
 If **A** saves new ordinary text, **R: Review newly received text** opens the
-local reader, including messages hidden by your search. Press **B** in the
-list, then **B** or Enter at the result to return to your view.
+arrivals list, including messages hidden by your search. Press **W** to reply to
+the selected text. Confirming queues an encrypted reply locally and returns to
+the list. Press **B** in the list, then **B** or Enter at the result to return to
+your view.
 
 Each connection asks for a fresh hidden home account password. On completion or
 a recoverable failure, the same local view returns with its correspondent,
