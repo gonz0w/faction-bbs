@@ -5,7 +5,9 @@
 #[cfg(feature = "network-mail")]
 use faction_client::mail_checkpoint::ReadSummary;
 use faction_client::{
-    mail_checkpoint::{CheckpointVault, Direction, MAX_HISTORY, MAX_OUTBOX},
+    mail_checkpoint::{
+        CheckpointVault, Direction, MAX_HISTORY, MAX_OUTBOX, OutboxInspection, Record,
+    },
     mail_data::{Data, hex, invalid, unhex},
     mail_vault::{Store, Vault},
 };
@@ -101,6 +103,32 @@ fn inert(s: &str, unicode: bool) -> Zeroizing<String> {
     }
     out
 }
+fn outbox_record<'a>(
+    pending: &OutboxInspection<'_>,
+    history: impl IntoIterator<Item = &'a Record>,
+) -> Option<&'a Record> {
+    let mut matches = history.into_iter().filter(|record| {
+        record.direction == Direction::Sent
+            && record.operation() == pending.operation
+            && record.address == pending.address
+            && record.device == pending.device
+    });
+    let record = matches.next()?;
+    matches.next().is_none().then_some(record)
+}
+fn outbox_subject<'a>(
+    pending: &OutboxInspection<'_>,
+    history: impl IntoIterator<Item = &'a Record>,
+) -> Option<&'a str> {
+    outbox_record(pending, history).map(|record| record.subject.as_str())
+}
+fn parse_operation_id(typed: &str) -> io::Result<[u8; 16]> {
+    if typed.len() != 32 {
+        return Err(invalid());
+    }
+    let full = unhex(&format!("{typed}{}", "0".repeat(32)))?;
+    full[..16].try_into().map_err(|_| invalid())
+}
 fn now() -> io::Result<u64> {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -173,6 +201,90 @@ impl Screen<'_> {
         self.print(label)?;
         self.print(&inert(s, self.unicode))?;
         self.print("\r\n")
+    }
+    fn show_outbox_subject(&mut self, subject: Option<&str>) -> io::Result<()> {
+        if let Some(subject) = subject {
+            const LABEL: &str = "Subject: ";
+            self.print(LABEL)?;
+            self.print(&inbox::compact(subject, self.unicode, 39 - LABEL.len()))?;
+            self.print("\r\n")?;
+        }
+        Ok(())
+    }
+    fn show_pending_target(
+        &mut self,
+        pending: &OutboxInspection<'_>,
+        subject: Option<&str>,
+    ) -> io::Result<()> {
+        self.print(&format!("Operation: {}\r\nTo: ", hex(&pending.operation)))?;
+        self.print(&inert(pending.address, self.unicode))?;
+        self.print(&format!(" / device {}\r\n", pending.device))?;
+        self.show_outbox_subject(subject)
+    }
+    fn outbox(&mut self, v: &CheckpointVault, online: bool) -> io::Result<()> {
+        let pending = v.inspect_outbox()?;
+        let history = v.history()?;
+        loop {
+            if online {
+                self.print("Durable pending ciphertext; delivery remains unproven.\r\nA socket write never retires these IDs. Use Retire only as a deliberate local decision.\r\n")?;
+            } else {
+                self.print(&format!("Durable outbox: {}/8\r\nOFFLINE: no delivery attempted by this UI. Remote delivery is unknown.\r\n", pending.len()))?;
+            }
+            for item in &pending {
+                let operation = hex(&item.operation);
+                let address = inert(item.address, self.unicode);
+                if online {
+                    self.print(&format!(
+                        "Operation: {operation} / {} / UTC {}\r\n",
+                        address.as_str(),
+                        item.sent_at
+                    ))?;
+                } else {
+                    self.print(&format!(
+                        "Operation: {operation}\r\nTo: {} / device {} / UTC {}\r\n",
+                        address.as_str(),
+                        item.device,
+                        item.sent_at
+                    ))?;
+                }
+                self.show_outbox_subject(outbox_subject(item, history))?;
+            }
+            if !online {
+                self.print("Expiry/revocation/recovery may block retry; retirement is a LOCAL decision.\r\n")?;
+            }
+            let typed = self.line(
+                "Operation ID to open (32 lowercase hex), or Enter to return: ",
+                32,
+                false,
+            )?;
+            if typed.is_empty() {
+                return Ok(());
+            }
+            let item = parse_operation_id(&typed)
+                .ok()
+                .and_then(|id| pending.iter().find(|item| item.operation == id));
+            if let Some(item) = item
+                && let Some(record) = outbox_record(item, history)
+                && record.attachment().is_none()
+            {
+                self.print("\r\n[LOCAL PENDING TEXT]\r\nPending; delivery remains unproven.\r\n")?;
+                self.show_pending_target(item, Some(&record.subject))?;
+                if self.body(&record.body)? {
+                    self.print("[Enter] Return to outbox  [B] Return\r\n")?;
+                    let mut decoder = Decoder::new();
+                    loop {
+                        if let Some(Key::Enter | Key::Hotkey(b'B')) =
+                            decoder.feed(self.byte()?, Instant::now())
+                        {
+                            break;
+                        }
+                    }
+                }
+                self.clear()?;
+            } else {
+                self.print("Pending text unavailable.\r\n\r\n")?;
+            }
+        }
     }
     /// True only after every page has reached output. This view has no state authority.
     fn body(&mut self, text: &str) -> io::Result<bool> {
@@ -1054,20 +1166,7 @@ impl Screen<'_> {
                     self.clear()?;
                 }
             }
-            b'O' => {
-                let pending = v.inspect_outbox()?;
-                self.print(&format!("Durable outbox: {}/8\r\nOFFLINE: no delivery attempted by this UI. Remote delivery is unknown.\r\n", pending.len()))?;
-                for p in pending {
-                    self.print(&format!(
-                        "Operation: {}\r\nTo: {} / device {} / UTC {}\r\n",
-                        hex(&p.operation),
-                        p.address,
-                        p.device,
-                        p.sent_at
-                    ))?;
-                }
-                self.print("Expiry/revocation/recovery may block retry; retirement is a LOCAL decision.\r\n")?;
-            }
+            b'O' => return self.outbox(v, false),
             b'T' => {
                 self.print("Retirement removes pending ciphertext. History and IDs survive.\r\nIt proves neither delivery nor reading; old copies may remain.\r\n")?;
                 let typed = self.line(
@@ -1075,20 +1174,22 @@ impl Screen<'_> {
                     32,
                     false,
                 )?;
+                let pending = v.inspect_outbox()?;
                 let id = if typed.as_str() == "all" {
+                    self.print(&format!(
+                        "Retire all pending ciphertext ({} operations).\r\n",
+                        pending.len()
+                    ))?;
                     None
                 } else {
-                    if typed.len() != 32 {
-                        return Err(invalid());
-                    }
-                    let full = unhex(&format!("{}{}", typed.as_str(), "0".repeat(32)))?;
-                    Some(<[u8; 16]>::try_from(&full[..16]).map_err(|_| invalid())?)
+                    let id = parse_operation_id(&typed)?;
+                    let item = pending
+                        .iter()
+                        .find(|item| item.operation == id)
+                        .ok_or_else(|| io::Error::other("operation is not pending"))?;
+                    self.show_pending_target(item, outbox_subject(item, v.history()?))?;
+                    Some(id)
                 };
-                if let Some(id) = id
-                    && !v.inspect_outbox()?.iter().any(|p| p.operation == id)
-                {
-                    return Err(io::Error::other("operation is not pending"));
-                }
                 self.confirm("Type retire to record this LOCAL decision: ", "retire")?;
                 if let Some(id) = id {
                     v.acknowledge(id)?;
@@ -1501,16 +1602,7 @@ impl Screen<'_> {
             return self.pause();
         }
         if key == b'O' {
-            self.print("Durable pending ciphertext; delivery remains unproven.\r\nA socket write never retires these IDs. Use Retire only as a deliberate local decision.\r\n")?;
-            for item in v.inspect_outbox()? {
-                self.print(&format!(
-                    "Operation: {} / {} / UTC {}\r\n",
-                    hex(&item.operation),
-                    item.address,
-                    item.sent_at
-                ))?;
-            }
-            return self.pause();
+            return self.outbox(v, true);
         }
         if key == b'C' {
             let state = v.inspection()?;
