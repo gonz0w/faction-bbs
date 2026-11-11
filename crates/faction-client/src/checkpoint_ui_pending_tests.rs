@@ -5,6 +5,7 @@ const OUTBOX_RETURN: &str = "Enter to return: ";
 const OUTBOX_SELECT: &str = "Operation ID to open (32 lowercase hex), or Enter to return: ";
 const RETIRE_SELECT: &str = "Operation ID to retire (32 lowercase hex, or all): ";
 const RETIRE_CONFIRM: &str = "Type retire to record this LOCAL decision: ";
+const NUMBER_HINT: &str = "You can also enter a listed number.\r\n";
 
 fn menu_action(
     f: &mut Fixture,
@@ -31,9 +32,11 @@ fn menu_action(
         offset: 0,
     };
     let result = std::thread::scope(|scope| {
+        let (finished, wait_for_finish) = std::sync::mpsc::channel();
         let handle = scope.spawn(move || {
             drive(&mut driver);
-            driver
+            // Keep the PTY open for the final keystroke, but release it if the screen stalls.
+            let _ = wait_for_finish.recv_timeout(Duration::from_secs(15));
         });
         let mut screen = Screen {
             term: &mut term,
@@ -45,6 +48,7 @@ fn menu_action(
         } else {
             screen.action(&mut f.vault, key)
         };
+        finished.send(()).ok();
         handle.join().unwrap();
         result
     });
@@ -93,22 +97,37 @@ fn review_helper() {
     let before = std::fs::read(&checkpoint).unwrap();
     for online in [false, true] {
         for unicode in [false, true] {
+            let second = format!("[2] Operation: {}", hex(&[3; 16]));
             let (result, output) = menu_action(&mut f, online, unicode, b'O', "review", |d| {
                 d.wait(OUTBOX_RETURN);
-                if !std::fs::read_to_string(&d.capture)
-                    .unwrap()
-                    .contains(OUTBOX_SELECT)
-                {
+                let listing = std::fs::read_to_string(&d.capture).unwrap();
+                if !listing.contains(OUTBOX_SELECT) {
                     d.send(b"\r");
                     return;
                 }
-                for invalid in ["bad".into(), hex(&[9; 16]), hex(&[1; 16]), hex(&[4; 16])] {
+                for invalid in [
+                    "bad".into(),
+                    "0".into(),
+                    "9".into(),
+                    "3".into(),
+                    hex(&[9; 16]),
+                    hex(&[1; 16]),
+                    hex(&[4; 16]),
+                ] {
                     d.send(format!("{invalid}\r").as_bytes());
                     d.wait("Pending text unavailable.");
                     d.wait(OUTBOX_SELECT);
                 }
-                d.send(format!("{}\r", hex(&[3; 16])).as_bytes());
+                d.send(b"2\r");
+                if !listing.contains(&second) {
+                    // Observe the old response, then let its prompt return normally.
+                    d.wait("Pending text unavailable.");
+                    d.wait(OUTBOX_SELECT);
+                    d.send(b"\r");
+                    return;
+                }
                 d.wait("[LOCAL PENDING TEXT]");
+                d.wait(&format!("Operation: {}", hex(&[3; 16])));
                 d.wait("To: bob@away.test / device 202");
                 d.wait(if unicode {
                     "Subject: review this λ"
@@ -139,6 +158,14 @@ fn review_helper() {
             assert!(
                 output.contains(OUTBOX_SELECT),
                 "O offered no local text review: {output}"
+            );
+            let listing = output.split_once(OUTBOX_SELECT).unwrap().0;
+            assert!(
+                listing.contains(&format!("[1] Operation: {}", hex(&[2; 16])))
+                    && listing.contains(&second)
+                    && listing.contains(&format!("[3] Operation: {}", hex(&[4; 16])))
+                    && listing.contains(NUMBER_HINT),
+                "O did not show numbered pending operations (online={online}, unicode={unicode}): {listing}"
             );
             assert_eq!(output.matches("[LOCAL PENDING TEXT]").count(), 2);
             assert_eq!(output.matches("[LOCAL BODY] Page 2/2").count(), 1);
@@ -171,14 +198,24 @@ fn retirement_helper() {
         let checkpoint = f.root.join("vault/mail.fkv");
         let before = std::fs::read(&checkpoint).unwrap();
         let selected = hex(&[2; 16]);
+        let second = format!("[2] Operation: {selected}");
         for (name, choice, answer) in [
+            ("reject-zero", "0", ""),
+            ("reject-range", "9", ""),
+            ("reject-malformed", "2x", ""),
+            ("cancel-number", "2", ""),
             ("cancel-all", "all", ""),
             ("cancel-one", selected.as_str(), ""),
-            ("retire-one", selected.as_str(), "retire"),
+            ("retire-one", "2", "retire"),
         ] {
+            let invalid = matches!(choice, "0" | "9" | "2x");
             let (result, output) = menu_action(&mut f, online, unicode, b'T', name, |d| {
                 d.wait(RETIRE_SELECT);
+                let listing = std::fs::read_to_string(&d.capture).unwrap();
                 d.send(format!("{choice}\r").as_bytes());
+                if invalid || (choice == "2" && !listing.contains(&second)) {
+                    return;
+                }
                 d.wait(RETIRE_CONFIRM);
                 d.send(format!("{answer}\r").as_bytes());
                 if answer == "retire" {
@@ -186,6 +223,21 @@ fn retirement_helper() {
                     d.send(b"\r");
                 }
             });
+            if invalid {
+                assert!(result.is_err());
+                assert!(!output.contains(RETIRE_CONFIRM), "invalid target: {output}");
+                assert_eq!(std::fs::read(&checkpoint).unwrap(), before);
+                continue;
+            }
+            let (listing, confirmation) = output.split_once(RETIRE_SELECT).unwrap();
+            assert!(
+                listing.contains(&format!("[1] Operation: {}", hex(&[1; 16])))
+                    && listing.contains(&second)
+                    && listing.contains("To: bob@away.test / device 202")
+                    && listing.contains("Subject: keep other pending")
+                    && listing.contains(NUMBER_HINT),
+                "T did not show numbered pending operations (online={online}, unicode={unicode}): {listing}; response: {result:?}"
+            );
             if answer.is_empty() {
                 assert_eq!(result.unwrap_err().to_string(), "confirmation cancelled");
                 assert_eq!(std::fs::read(&checkpoint).unwrap(), before);
@@ -193,7 +245,6 @@ fn retirement_helper() {
                 result.unwrap();
                 assert!(output.contains("Retired locally. Delivery remains unproven"));
             }
-            let (_, confirmation) = output.split_once(RETIRE_SELECT).unwrap();
             let (_, review) = confirmation.split_once("\r\n").unwrap();
             let (review, _) = review.split_once(RETIRE_CONFIRM).unwrap();
             if choice == "all" {

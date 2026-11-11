@@ -129,6 +129,18 @@ fn parse_operation_id(typed: &str) -> io::Result<[u8; 16]> {
     let full = unhex(&format!("{typed}{}", "0".repeat(32)))?;
     full[..16].try_into().map_err(|_| invalid())
 }
+fn select_pending<'list, 'vault>(
+    pending: &'list [OutboxInspection<'vault>],
+    typed: &str,
+) -> io::Result<Option<&'list OutboxInspection<'vault>>> {
+    // A full operation ID can consist entirely of decimal digits.
+    if typed.len() < 32 && typed.bytes().all(|byte| byte.is_ascii_digit()) {
+        let number: usize = typed.parse().map_err(|_| invalid())?;
+        return Ok(number.checked_sub(1).and_then(|index| pending.get(index)));
+    }
+    let id = parse_operation_id(typed)?;
+    Ok(pending.iter().find(|item| item.operation == id))
+}
 fn now() -> io::Result<u64> {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -221,6 +233,34 @@ impl Screen<'_> {
         self.print(&format!(" / device {}\r\n", pending.device))?;
         self.show_outbox_subject(subject)
     }
+    fn show_pending_list(
+        &mut self,
+        pending: &[OutboxInspection<'_>],
+        history: &[Record],
+        online: bool,
+    ) -> io::Result<()> {
+        for (index, item) in pending.iter().enumerate() {
+            let number = index + 1;
+            let operation = hex(&item.operation);
+            let address = inert(item.address, self.unicode);
+            if online {
+                self.print(&format!(
+                    "[{number}] Operation: {operation} / {} / UTC {}\r\n",
+                    address.as_str(),
+                    item.sent_at
+                ))?;
+            } else {
+                self.print(&format!(
+                    "[{number}] Operation: {operation}\r\nTo: {} / device {} / UTC {}\r\n",
+                    address.as_str(),
+                    item.device,
+                    item.sent_at
+                ))?;
+            }
+            self.show_outbox_subject(outbox_subject(item, history))?;
+        }
+        Ok(())
+    }
     fn outbox(&mut self, v: &CheckpointVault, online: bool) -> io::Result<()> {
         let pending = v.inspect_outbox()?;
         let history = v.history()?;
@@ -230,28 +270,11 @@ impl Screen<'_> {
             } else {
                 self.print(&format!("Durable outbox: {}/8\r\nOFFLINE: no delivery attempted by this UI. Remote delivery is unknown.\r\n", pending.len()))?;
             }
-            for item in &pending {
-                let operation = hex(&item.operation);
-                let address = inert(item.address, self.unicode);
-                if online {
-                    self.print(&format!(
-                        "Operation: {operation} / {} / UTC {}\r\n",
-                        address.as_str(),
-                        item.sent_at
-                    ))?;
-                } else {
-                    self.print(&format!(
-                        "Operation: {operation}\r\nTo: {} / device {} / UTC {}\r\n",
-                        address.as_str(),
-                        item.device,
-                        item.sent_at
-                    ))?;
-                }
-                self.show_outbox_subject(outbox_subject(item, history))?;
-            }
+            self.show_pending_list(&pending, history, online)?;
             if !online {
                 self.print("Expiry/revocation/recovery may block retry; retirement is a LOCAL decision.\r\n")?;
             }
+            self.print("You can also enter a listed number.\r\n")?;
             let typed = self.line(
                 "Operation ID to open (32 lowercase hex), or Enter to return: ",
                 32,
@@ -260,10 +283,7 @@ impl Screen<'_> {
             if typed.is_empty() {
                 return Ok(());
             }
-            let item = parse_operation_id(&typed)
-                .ok()
-                .and_then(|id| pending.iter().find(|item| item.operation == id));
-            if let Some(item) = item
+            if let Ok(Some(item)) = select_pending(&pending, &typed)
                 && let Some(record) = outbox_record(item, history)
                 && record.attachment().is_none()
             {
@@ -1169,12 +1189,15 @@ impl Screen<'_> {
             b'O' => return self.outbox(v, false),
             b'T' => {
                 self.print("Retirement removes pending ciphertext. History and IDs survive.\r\nIt proves neither delivery nor reading; old copies may remain.\r\n")?;
+                let pending = v.inspect_outbox()?;
+                let history = v.history()?;
+                self.show_pending_list(&pending, history, false)?;
+                self.print("You can also enter a listed number.\r\n")?;
                 let typed = self.line(
                     "Operation ID to retire (32 lowercase hex, or all): ",
                     32,
                     false,
                 )?;
-                let pending = v.inspect_outbox()?;
                 let id = if typed.as_str() == "all" {
                     self.print(&format!(
                         "Retire all pending ciphertext ({} operations).\r\n",
@@ -1182,13 +1205,10 @@ impl Screen<'_> {
                     ))?;
                     None
                 } else {
-                    let id = parse_operation_id(&typed)?;
-                    let item = pending
-                        .iter()
-                        .find(|item| item.operation == id)
+                    let item = select_pending(&pending, &typed)?
                         .ok_or_else(|| io::Error::other("operation is not pending"))?;
-                    self.show_pending_target(item, outbox_subject(item, v.history()?))?;
-                    Some(id)
+                    self.show_pending_target(item, outbox_subject(item, history))?;
+                    Some(item.operation)
                 };
                 self.confirm("Type retire to record this LOCAL decision: ", "retire")?;
                 if let Some(id) = id {
