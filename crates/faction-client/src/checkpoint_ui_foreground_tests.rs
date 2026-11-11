@@ -7,7 +7,7 @@ mod archive_review_tests;
 mod brief_review_tests;
 use super::*;
 use faction_client::{
-    mail_checkpoint::Wire,
+    mail_checkpoint::{Delivery, Wire},
     mail_network::{ForegroundAction, ForegroundReport, ForegroundWrite, Settings},
 };
 use faction_omemo::{Device, sce};
@@ -560,6 +560,75 @@ impl Driver {
     }
     fn send(&mut self, input: &[u8]) {
         self.input.write_all(input).unwrap();
+    }
+}
+
+fn drive_arrival_reply(d: &mut Driver, subject: &str, identity: &[u8; 32], queue: bool) -> bool {
+    let capture = std::fs::read_to_string(&d.capture).unwrap();
+    let menu = &capture[capture.rfind("[LOCAL NEWLY RECEIVED TEXT]").unwrap()..];
+    d.send(b"w");
+    if !menu.contains("[W] Write multiline reply") {
+        // The baseline ignores W. The caller finishes the existing route before failing.
+        return false;
+    }
+    d.wait("CURRENT recipient: bob@away.test");
+    d.wait(&format!("CURRENT device: 202 / ed25519:{}", hex(identity)));
+    d.wait(&format!("Suggested subject: {subject}"));
+    d.wait("Subject (Enter keeps suggestion;");
+    d.send(b"\r");
+    d.wait("write> ");
+    d.send(b"arrival reply first\r");
+    d.wait("write> ");
+    d.send(b"arrival reply second\r");
+    d.wait("write> ");
+    d.send(b".done\r");
+    d.wait("Review local multiline intent:");
+    d.wait("CURRENT recipient: bob@away.test");
+    d.wait(&format!("CURRENT device: 202 / ed25519:{}", hex(identity)));
+    d.wait(&format!("Subject: {subject}"));
+    d.wait("arrival reply first");
+    d.wait("arrival reply second");
+    d.wait("Type queue to persist encrypted ciphertext: ");
+    d.send(if queue { b"queue\r" } else { b"\r" });
+    d.wait(if queue {
+        "Queued durably; no delivery or read receipt."
+    } else {
+        "Writing cancelled; no ciphertext queued."
+    });
+    d.wait("[LOCAL NEWLY RECEIVED TEXT]");
+    true
+}
+
+fn check_arrival_reply(
+    f: &Fixture,
+    index: usize,
+    subject: &str,
+    pending: &[Delivery],
+    queued: bool,
+) {
+    let deliveries = f.vault.pending_deliveries(f.time).unwrap();
+    assert_eq!(deliveries.len(), pending.len() + usize::from(queued));
+    for (delivery, before) in deliveries.iter().zip(pending) {
+        assert_eq!(delivery.operation, before.operation);
+        assert_eq!(delivery.wire, before.wire);
+    }
+    let history = f.vault.history().unwrap();
+    assert_eq!(history.len(), index + usize::from(queued));
+    if queued {
+        let sent = &history[index];
+        let delivery = deliveries.last().unwrap();
+        assert_eq!(sent.operation(), delivery.operation);
+        assert_eq!(sent.subject.as_str(), subject);
+        assert_eq!(
+            sent.body.as_str(),
+            "arrival reply first\narrival reply second"
+        );
+        assert_eq!(sent.address, "bob@away.test");
+        assert_eq!(sent.device, 202);
+        assert_eq!(sent.identity, f.remote.bundle().unwrap().identity);
+        assert_eq!(delivery.wire.to, sent.address);
+        assert_eq!(delivery.wire.to_device, sent.device);
+        assert!(sent.received_id().is_none());
     }
 }
 

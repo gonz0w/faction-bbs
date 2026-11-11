@@ -43,12 +43,7 @@ impl Arrivals {
         v: &CheckpointVault,
         target: &Target,
     ) -> io::Result<Vec<(usize, [u8; 32])>> {
-        let state = v.inspection()?;
-        if !state.peer.is_some_and(|peer| {
-            peer.address == target.address.as_str()
-                && peer.device == target.device
-                && *peer.identity == target.identity
-        }) {
+        if !target.is_current(v)? {
             return Ok(Vec::new());
         }
         Ok(v.history()?
@@ -74,6 +69,13 @@ impl Target {
             device: peer.device,
             identity: *peer.identity,
         }
+    }
+    fn is_current(&self, v: &CheckpointVault) -> io::Result<bool> {
+        Ok(v.inspection()?.peer.is_some_and(|peer| {
+            peer.address == self.address.as_str()
+                && peer.device == self.device
+                && *peer.identity == self.identity
+        }))
     }
     pub fn pending(&self, v: &CheckpointVault) -> io::Result<Vec<usize>> {
         let records = v.history()?.iter().collect::<Vec<_>>();
@@ -246,9 +248,11 @@ impl Screen<'_> {
                 self.print(&inbox::compact(&record.subject, self.unicode, 39))?;
                 self.print("\r\n")?;
             }
-            self.print(
-                "[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open full record\r\n[B] Return\r\n",
-            )?;
+            self.print("[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open full record\r\n")?;
+            if model.selected().is_some() {
+                self.print("[W] Write multiline reply\r\n")?;
+            }
+            self.print("[B] Return\r\n")?;
             loop {
                 match decoder.feed(self.byte()?, Instant::now()) {
                     Some(Key::Up | Key::Hotkey(b'K')) => model.up(),
@@ -256,11 +260,20 @@ impl Screen<'_> {
                     Some(Key::Hotkey(b'N')) => model.next(),
                     Some(Key::Hotkey(b'P')) => model.previous(),
                     Some(Key::Hotkey(b'B')) => return Ok(()),
-                    Some(Key::Enter | Key::Hotkey(b'O')) => {
+                    Some(key @ (Key::Enter | Key::Hotkey(b'O' | b'W'))) => {
                         if let Some(entry) = model.selected()
                             && Self::arrival_entries(v, target, arrivals)?.contains(&entry)
                         {
-                            self.inbox_record_mode(v, entry, false)?;
+                            match key {
+                                Key::Hotkey(b'W') if target.is_current(v)? => {
+                                    let frame = v.history()?[entry.index]
+                                        .received_id()
+                                        .ok_or_else(invalid)?;
+                                    self.write_message(v, Some((entry.index, frame)))?;
+                                }
+                                Key::Hotkey(b'W') => self.writing_unavailable(v)?,
+                                _ => self.inbox_record_mode(v, entry, false)?,
+                            }
                             list.refresh(Self::arrival_entries(v, target, arrivals)?);
                             model.refresh(&list);
                             decoder = Decoder::new();

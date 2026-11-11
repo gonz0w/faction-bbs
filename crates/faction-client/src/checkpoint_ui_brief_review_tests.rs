@@ -348,11 +348,32 @@ fn brief_arrivals_explicit_review_ack_and_exact_return() {
 #[test]
 #[ignore = "owned subprocess helper"]
 fn brief_arrivals_route_helper() {
+    check_brief_arrivals(false);
+}
+
+#[test]
+fn brief_arrival_reply() {
+    child("checkpoint_ui::foreground_tests::brief_review_tests::brief_arrival_reply_helper");
+}
+
+#[test]
+#[ignore = "owned subprocess helper"]
+fn brief_arrival_reply_helper() {
+    check_brief_arrivals(true);
+}
+
+fn check_brief_arrivals(reply: bool) {
     use std::cell::{Cell, RefCell};
+    let mut missing = Vec::new();
     for unicode in [false, true] {
-        for acknowledge in [false, true] {
+        for confirm in [false, true] {
+            let acknowledge = confirm && !reply;
             let mut f = Fixture::new();
-            let pending = f.vault.pending(f.time).unwrap();
+            let original = f.vault.history().unwrap()[0].received_id().unwrap();
+            if reply {
+                f.vault.mark_read(0, original).unwrap();
+            }
+            let pending = f.vault.pending_deliveries(f.time).unwrap();
             let cursor = f.vault.archive_checkpoint(f.time).unwrap();
             let summary = f.vault.read_summary().unwrap();
             let matching = wire_body(&mut f, "keep new match", "matching ordinary text");
@@ -360,6 +381,20 @@ fn brief_arrivals_route_helper() {
                 .map(|n| format!("hidden line {n:02} λ\u{202e}\n"))
                 .collect::<String>();
             let hidden = wire_body(&mut f, "hidden arrival λ\u{202e}", &hidden_body);
+            let identity = hidden.identity;
+            let expected_subject = "Re: hidden arrival λ\u{202e}";
+            let expected_display = inert(expected_subject, unicode);
+            let active_store = f.root.join("vault/mail.fkv");
+            let after_cycle = RefCell::new(None);
+            let retain = reply && std::env::var_os("FACTION359_CAPTURE_DIR").is_some();
+            if retain {
+                std::fs::copy(&active_store, f.root.join("before-cycle")).unwrap();
+                std::fs::write(
+                    f.root.join("brief-inputs"),
+                    format!("{unicode} {confirm}\n{cursor:?}\n{matching:?}\n{hidden:?}\n"),
+                )
+                .unwrap();
+            }
             let incoming = RefCell::new(Some([matching, hidden]));
             let calls = Cell::new(0);
             let cycle = |v: &mut CheckpointVault,
@@ -370,6 +405,9 @@ fn brief_arrivals_route_helper() {
                 calls.set(calls.get() + 1);
                 for wire in incoming.borrow_mut().take().unwrap() {
                     v.receive_network(&wire, now().unwrap()).unwrap();
+                }
+                if reply {
+                    after_cycle.replace(Some(std::fs::read(&active_store).unwrap()));
                 }
                 // Deliberately inaccurate count and a recoverable partial error.
                 ForegroundReport {
@@ -383,7 +421,7 @@ fn brief_arrivals_route_helper() {
                 &mut f,
                 true,
                 unicode,
-                0,
+                usize::from(reply),
                 inbox::Filter::Unread,
                 Some(&cycle),
                 |d| {
@@ -425,25 +463,37 @@ fn brief_arrivals_route_helper() {
                     d.send(b"j");
                     d.wait("selection 2/2");
                     d.wait("[B] Return");
-                    d.send(b"o");
-                    d.wait("[LOCAL BODY] Page 1/2");
-                    d.wait("[Enter] Next page  [B] Return");
-                    let page = std::fs::read_to_string(&d.capture).unwrap();
-                    assert!(!page.contains("Type read to acknowledge"));
-                    d.send(b"b"); // Cancelling pages cannot acknowledge.
-                    d.wait("[LOCAL NEWLY RECEIVED TEXT]");
-                    d.wait("[B] Return");
-                    d.send(b"o");
-                    d.wait("[Enter] Next page  [B] Return");
-                    d.send(b"\r");
-                    d.wait("Type read to acknowledge locally, or Enter to keep current state: ");
-                    let pages = std::fs::read_to_string(&d.capture).unwrap();
-                    assert!(pages.contains("hidden line 14"));
-                    d.send(if acknowledge { b"read\r" } else { b"\r" });
-                    d.wait("Enter to return: ");
-                    d.send(b"\r");
-                    d.wait("[LOCAL NEWLY RECEIVED TEXT]");
-                    d.wait("[B] Return");
+                    if reply {
+                        if drive_arrival_reply(d, &expected_display, &identity, confirm) {
+                            d.wait("selection 2/2");
+                            d.wait("[B] Return");
+                        }
+                    } else {
+                        d.send(b"o");
+                        d.wait("[LOCAL BODY] Page 1/2");
+                        d.wait("[Enter] Next page  [B] Return");
+                        let page = std::fs::read_to_string(&d.capture).unwrap();
+                        assert!(!page.contains("Type read to acknowledge"));
+                        d.send(b"b"); // Cancelling pages cannot acknowledge.
+                        d.wait("[LOCAL NEWLY RECEIVED TEXT]");
+                        d.wait("[B] Return");
+                        d.send(b"o");
+                        d.wait("[Enter] Next page  [B] Return");
+                        d.send(b"\r");
+                        d.wait(
+                            "Type read to acknowledge locally, or Enter to keep current state: ",
+                        );
+                        let pages = std::fs::read_to_string(&d.capture).unwrap();
+                        assert!(pages.contains("hidden line 14"));
+                        d.send(if acknowledge { b"read\r" } else { b"\r" });
+                        d.wait("Enter to return: ");
+                        let reader = std::fs::read_to_string(&d.capture).unwrap();
+                        let reader = &reader[reader.rfind("[LOCAL INBOX RECORD]").unwrap()..];
+                        assert!(!reader.contains("Write multiline reply"));
+                        d.send(b"\r");
+                        d.wait("[LOCAL NEWLY RECEIVED TEXT]");
+                        d.wait("[B] Return");
+                    }
                     d.send(b"b");
                     d.wait("Enter to return: ");
                     d.send(b"\r");
@@ -453,32 +503,42 @@ fn brief_arrivals_route_helper() {
                 },
             );
             result.unwrap();
+            let writer = text.contains("[LOCAL MULTILINE WRITER]");
+            let queued = reply && confirm && writer;
+            if reply {
+                if !writer {
+                    missing.push((unicode, confirm));
+                }
+                let after_cycle = after_cycle.into_inner().unwrap();
+                if !queued {
+                    assert_eq!(std::fs::read(&active_store).unwrap(), after_cycle);
+                }
+                if retain {
+                    std::fs::write(f.root.join("after-cycle"), after_cycle).unwrap();
+                }
+                assert!(!text.contains("[LOCAL INBOX RECORD]") && !text.contains("Type read"));
+            }
             assert_eq!(calls.get(), 1);
-            assert_eq!(f.vault.pending(f.time).unwrap(), pending);
+            assert_eq!(text.matches("HOME account password").count(), 1);
             assert_eq!(f.vault.archive_checkpoint(f.time).unwrap(), cursor);
             assert_eq!(
                 f.vault.read_summary().unwrap().unread,
                 summary.unread.map(|n| n + 2 - usize::from(acknowledge))
             );
-            let identity = f.vault.history().unwrap()[5].received_id().unwrap();
-            assert_eq!(
-                f.vault.received_read(5, identity).unwrap(),
-                Some(acknowledge)
-            );
+            let matching = f.vault.history().unwrap()[4].received_id().unwrap();
+            let hidden = f.vault.history().unwrap()[5].received_id().unwrap();
+            assert_ne!(matching, hidden);
+            assert_eq!(f.vault.received_read(5, hidden).unwrap(), Some(acknowledge));
             assert_eq!(list.mode(), inbox::Filter::Unread);
-            assert_eq!(list.selected().unwrap().index, 0);
+            assert_eq!(list.selected().unwrap().index, usize::from(reply));
             assert_eq!(
                 list.eligible().iter().map(|e| e.index).collect::<Vec<_>>(),
-                vec![4, 1, 0]
+                if reply { vec![4, 1] } else { vec![4, 1, 0] }
             );
             let tail = &text[text.rfind("[LOCAL CONVERSATION]").unwrap()..];
             assert!(tail.contains("Unread / Search"));
             assert!(!tail.contains("hidden arrival"));
-            assert!(
-                !text.contains("Reply locally")
-                    && !text.contains("Write multiline reply")
-                    && !text.contains("fresh home secret")
-            );
+            assert!(!text.contains("Reply locally") && !text.contains("fresh home secret"));
             assert!(text.contains("Brief exchange stopped."));
             let placeholder = f.open("cold");
             drop(std::mem::replace(&mut f.vault, placeholder));
@@ -488,12 +548,17 @@ fn brief_arrivals_route_helper() {
                 false,
             )
             .unwrap();
-            assert_eq!(
-                f.vault.received_read(5, identity).unwrap(),
-                Some(acknowledge)
-            );
+            check_arrival_reply(&f, 6, expected_subject, &pending, queued);
+            assert_eq!(f.vault.archive_checkpoint(f.time).unwrap(), cursor);
+            assert_eq!(f.vault.received_read(0, original).unwrap(), Some(reply));
+            assert_eq!(f.vault.received_read(4, matching).unwrap(), Some(false));
+            assert_eq!(f.vault.received_read(5, hidden).unwrap(), Some(acknowledge));
         }
     }
+    assert!(
+        missing.is_empty(),
+        "missing [W] Write multiline reply on the brief arrival list; W opened no writer (unicode, confirm): {missing:?}"
+    );
 }
 
 #[test]

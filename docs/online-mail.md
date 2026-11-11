@@ -232,12 +232,17 @@ After E, **R: Review newly received text** appears only when the exchange retain
 new ordinary text from the current verified peer, device and identity. It opens
 `[LOCAL NEWLY RECEIVED TEXT]`, even when the original search hides those messages.
 Use Up/Down or J/K to select, N/P to page, Enter/O to open the full record, and B
-to return. Listing and reading do not acknowledge mail. After the complete body is
-shown, the existing fresh read confirmation can mark the selected message read;
-unknown read-tracking state is not acknowledged. Reply and composing remain in
-the original conversation. Enter or B at the result returns to the original
-filter, search and eligible selection, without clearing the search or connecting
-again.
+to return. The full record offers a fresh read confirmation after the complete
+body if local read tracking is enabled.
+
+Press **W: Write multiline reply** in the arrivals list to answer the selected
+text. Review the current verified recipient and keep or replace the suggested
+subject. The [multiline writer](#write-a-multiline-message) saves one encrypted
+pending reply only after you review the complete draft and type `queue`. The
+writer returns to the same arrival after queueing or cancellation. The reply
+leaves read decisions and the archive position intact, and sending requires
+a separate exchange. Press B in the list, then Enter or B at the result to
+return to the original conversation filter, search and eligible selection.
 
 Live messages accepted by this action leave the archive position and read
 decisions intact until a separate read confirmation. Later manual catch-up can
@@ -249,7 +254,7 @@ receive idle wait and a 32-stanza limit; pending operations remain pending.
 Use **X: Home exchange** in an online inbox or conversation to run the same
 explicit N or A action and return to your current local view. N may send all
 pending ciphertext. A fetches one enabled archive page and offers the same local
-review if it saves new ordinary text. Each action prompts for its own home
+review and reply if it saves new ordinary text. Each action prompts for its own home
 password. Opening the choice does not connect. See
 [the inbox guide](local-mail-inbox.md#exchange-home-mail-without-leaving-your-place)
 for view restoration, mode differences and failure behavior.
