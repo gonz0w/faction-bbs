@@ -1,6 +1,8 @@
 //! Real vault authority and PTY Screen controls; transport qualification is separate.
 #[path = "checkpoint_ui_conversation_actions_tests.rs"]
 mod actions;
+#[path = "checkpoint_ui_archive_review_tests.rs"]
+mod archive_review_tests;
 #[path = "checkpoint_ui_brief_review_tests.rs"]
 mod brief_review_tests;
 use super::*;

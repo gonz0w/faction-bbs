@@ -174,7 +174,7 @@ text** appears when actual new ordinary text from the current verified peer,
 device and identity was retained, including text hidden by search. The local
 list and full reader do not acknowledge mail; a fresh read confirmation is offered
 only after the complete body. Returning keeps the original filter, search and
-eligible selection. X results are unchanged. See the
+eligible selection. See the
 [brief exchange guide](online-mail.md#exchange-from-an-inbox-or-conversation) for
 selection, confirmation and limits.
 Classic and Unicode production host TLS/PTY checks cover these newer reviews.
@@ -192,6 +192,10 @@ it also briefly receives. Choose **A** to fetch one archive page of at most four
 entries. If archive checkpoints are disabled, A explains that they must first
 be enabled with G at the mail menu; it does not upgrade or connect. A does not
 send pending mail. Neither choice automatically runs the other.
+
+If **A** saves new ordinary text, **R: Review newly received text** opens the
+local reader, including messages hidden by your search. Press **B** in the
+list, then **B** or Enter at the result to return to your view.
 
 Each connection asks for a fresh hidden home account password. On completion or
 a recoverable failure, the same local view returns with its correspondent,

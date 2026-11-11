@@ -53,16 +53,20 @@ and **N** finishes after sending. It does not receive live mail.
 Use **A** to receive one archive page. Enter the home account password at the
 hidden prompt. The client connects once to your own home and requests at most
 four entries for the already verified peer, starting after the saved position.
-It does not publish keys or retry pending sends during catch-up. Use **H** to read
-accepted history and **A** again when you deliberately want another page.
+It does not publish keys or retry pending sends during catch-up. Use **A** again
+when you deliberately want another page.
 
-An owner-approved separate brief foreground attempt is planned for a prepared
-archive-enabled vault with a saved position and verified peer. It leaves this
-manual catch-up action unchanged and does not advance the saved position. Later
-catch-up can recover older retained messages and deduplicate repeats, subject to
-the existing skipped-message limit and the home's retention. Its controls and
-availability remain subject to implementation and qualification; see
-[online mail](online-mail.md#exchange-from-an-inbox-or-conversation).
+If the page saves new ordinary text from your verified peer, choose
+**R: Review newly received text** at the result. Use Up/Down or J/K to select,
+N/P to page and Enter/O to open a record. If local read tracking is enabled,
+type `read` at the prompt after the complete body to mark the message read on
+this device. Press **B** in the list, then **B** or Enter at the result to return.
+This review stays on your device and preserves the saved archive position and
+pending ciphertext.
+Use **H** to open retained history from the mail menu.
+
+A prepared conversation with a saved archive position can also use the
+[separate brief exchange](online-mail.md#exchange-from-an-inbox-or-conversation).
 
 The page count includes duplicates and your own retained sent copies, so four
 entries need not mean four new received messages. A recognized sent copy advances
@@ -82,8 +86,9 @@ it does not poll or reconnect in the background. Ctrl-C/D cancels and locks.
 A page's wrapper and finishing response must validate before any entry is saved.
 Then each accepted entry and its archive position are saved together. If a later
 entry fails authentication, earlier accepted entries can already be durable.
-Inspect history and retry explicitly. After ambiguous local I/O, lock and reopen
-the canonical store. Do not remove a live lock or substitute a temporary file.
+Choose **R** if the result offers a review of that text. Retry explicitly.
+After ambiguous local I/O, lock and reopen the canonical store. Do not remove
+a live lock or substitute a temporary file.
 
 If the home no longer recognizes the saved position, the client preserves it and
 retained history. Ask the home operator about archive retention. Automatic reset,
