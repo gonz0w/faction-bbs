@@ -114,13 +114,19 @@ sessions; the client does not silently replace them.
 
 **O** lists durable pending operation IDs. It shows a local subject preview
 when one retained sent record matches the operation ID, recipient and device.
-Long previews end in `~`. A successful socket write leaves the operations
-pending. Retry with **N** to send the same persisted ciphertext and operation ID;
-repeated accepted frames do not add another received-history record.
+Long previews end in `~`. Type the full 32-character lowercase hexadecimal ID
+to review a matching ordinary text in the local body pager. Use Enter to advance
+or B to return to the outbox. Enter at the end returns to the outbox, and Enter
+at the ID prompt leaves it. Review leaves the encrypted checkpoint unchanged
+and starts no connection. A successful socket write leaves the operations
+pending. Retry with **N** to send the same persisted ciphertext and operation ID.
+Repeated accepted frames do not add another received-history record.
 
 Use **T** only for an explicit local decision to retire one operation or all pending
-ciphertext. Retirement stops further retries from this store. It is not proof of
-peer delivery, reading or exactly-once processing. History remains available.
+ciphertext. Before you type `retire`, check the selected operation ID, recipient,
+device and any matching subject preview, or the pending count if you chose `all`.
+Retirement stops further retries from this store. It is not proof of peer delivery,
+reading or exactly-once processing. History remains available.
 
 ## Write a multiline message
 
