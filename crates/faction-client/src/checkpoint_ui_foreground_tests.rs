@@ -5,6 +5,8 @@ mod actions;
 mod archive_review_tests;
 #[path = "checkpoint_ui_brief_review_tests.rs"]
 mod brief_review_tests;
+#[path = "checkpoint_ui_pending_tests.rs"]
+mod pending_tests;
 use super::*;
 use faction_client::{
     mail_checkpoint::{Delivery, Wire},
