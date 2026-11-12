@@ -434,9 +434,12 @@ impl Screen<'_> {
             }
         }
     }
-    fn confirm(&mut self, label: &str, expected: &str) -> io::Result<()> {
+    fn confirmation_matches(&mut self, label: &str, expected: &str) -> io::Result<bool> {
         rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
-        if self.line(label, expected.len().max(32), false)?.as_str() != expected {
+        Ok(self.line(label, expected.len().max(32), false)?.as_str() == expected)
+    }
+    fn confirm(&mut self, label: &str, expected: &str) -> io::Result<()> {
+        if !self.confirmation_matches(label, expected)? {
             return Err(io::Error::other("confirmation cancelled"));
         }
         Ok(())
@@ -1192,25 +1195,34 @@ impl Screen<'_> {
                 let pending = v.inspect_outbox()?;
                 let history = v.history()?;
                 self.show_pending_list(&pending, history, false)?;
-                self.print("You can also enter a listed number.\r\n")?;
-                let typed = self.line(
-                    "Operation ID to retire (32 lowercase hex, or all): ",
-                    32,
-                    false,
-                )?;
-                let id = if typed.as_str() == "all" {
-                    self.print(&format!(
-                        "Retire all pending ciphertext ({} operations).\r\n",
-                        pending.len()
-                    ))?;
-                    None
-                } else {
-                    let item = select_pending(&pending, &typed)?
-                        .ok_or_else(|| io::Error::other("operation is not pending"))?;
-                    self.show_pending_target(item, outbox_subject(item, history))?;
-                    Some(item.operation)
+                self.print("You can also enter a listed number.\r\nPress Enter to return to the mail menu.\r\n")?;
+                let id = loop {
+                    let typed = self.line(
+                        "Operation ID to retire (32 lowercase hex, or all): ",
+                        32,
+                        false,
+                    )?;
+                    if typed.is_empty() {
+                        return Ok(());
+                    }
+                    if typed.as_str() == "all" {
+                        self.print(&format!(
+                            "Retire all pending ciphertext ({} operations).\r\n",
+                            pending.len()
+                        ))?;
+                        break None;
+                    }
+                    if let Ok(Some(item)) = select_pending(&pending, &typed) {
+                        self.show_pending_target(item, outbox_subject(item, history))?;
+                        break Some(item.operation);
+                    }
+                    self.print("Operation is not pending. Enter a listed number, operation ID, or all.\r\n")?;
                 };
-                self.confirm("Type retire to record this LOCAL decision: ", "retire")?;
+                if !self
+                    .confirmation_matches("Type retire to record this LOCAL decision: ", "retire")?
+                {
+                    return self.print("Retirement cancelled.\r\n");
+                }
                 if let Some(id) = id {
                     v.acknowledge(id)?;
                 } else {

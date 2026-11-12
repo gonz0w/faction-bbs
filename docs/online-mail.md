@@ -124,9 +124,12 @@ persisted ciphertext and operation ID. Repeated accepted frames do not add
 another received-history record.
 
 In **T**, enter a displayed number, a full operation ID or `all` to select pending
-ciphertext for local retirement. Before you type `retire`, check the selected
-operation ID, recipient, device and any matching subject preview, or the pending
-count if you chose `all`. Retirement stops retries from this store. Peer delivery,
+ciphertext for local retirement. If your selection does not match a pending
+item, try again. Press Enter at the selection prompt to return to the menu.
+Before you type `retire`, check the selected operation ID, recipient, device and
+any matching subject preview, or the pending count if you chose `all`. Press
+Enter or submit a different response at confirmation to cancel retirement and
+return to the menu. Retirement stops retries from this store. Peer delivery,
 reading and exactly-once processing remain unproven. History remains available.
 
 ## Write a multiline message
