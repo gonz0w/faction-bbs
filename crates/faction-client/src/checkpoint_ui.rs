@@ -2,11 +2,10 @@
 //! profile, environment variable, or transport control frame. The explicit home-mail
 //! action in the trusted local picker may call run_online between board visits.
 
-#[cfg(feature = "network-mail")]
-use faction_client::mail_checkpoint::ReadSummary;
 use faction_client::{
     mail_checkpoint::{
-        CheckpointVault, Direction, MAX_HISTORY, MAX_OUTBOX, OutboxInspection, Record,
+        CheckpointVault, Direction, Inspection, MAX_HISTORY, MAX_OUTBOX, OutboxInspection,
+        ReadSummary, Record,
     },
     mail_data::{Data, hex, invalid, unhex},
     mail_vault::{Store, Vault},
@@ -434,9 +433,12 @@ impl Screen<'_> {
             }
         }
     }
-    fn confirm(&mut self, label: &str, expected: &str) -> io::Result<()> {
+    fn confirmation_matches(&mut self, label: &str, expected: &str) -> io::Result<bool> {
         rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
-        if self.line(label, expected.len().max(32), false)?.as_str() != expected {
+        Ok(self.line(label, expected.len().max(32), false)?.as_str() == expected)
+    }
+    fn confirm(&mut self, label: &str, expected: &str) -> io::Result<()> {
+        if !self.confirmation_matches(label, expected)? {
             return Err(io::Error::other("confirmation cancelled"));
         }
         Ok(())
@@ -479,8 +481,7 @@ impl Screen<'_> {
     fn pause(&mut self) -> io::Result<()> {
         self.line("Enter to return: ", 0, false).map(|_| ())
     }
-    fn local_read_status(&mut self, v: &CheckpointVault) -> io::Result<()> {
-        let summary = v.read_summary()?;
+    fn local_read_status(&mut self, summary: ReadSummary) -> io::Result<()> {
         if let Some(unread) = summary.unread {
             self.print(&format!(
                 "Local unread: {unread} / received {}; retained {}; pending {}\r\n",
@@ -495,37 +496,55 @@ impl Screen<'_> {
         }
         self.print("Local retained snapshot only; no background refresh.\r\n")
     }
+    fn archive_status(&mut self, state: &Inspection<'_>) -> io::Result<()> {
+        self.print(
+            match (state.archive_enabled, state.archive_cursor_present) {
+                (false, _) => "Archive checkpoints: disabled; explicit upgrade required\r\n",
+                (true, false) => "Archive checkpoints: enabled; no saved position\r\n",
+                (true, true) => "Archive checkpoints: enabled; saved position present\r\n",
+            },
+        )
+    }
+    fn checkpoint_restrictions(
+        &mut self,
+        state: &Inspection<'_>,
+        summary: ReadSummary,
+        current: Option<u64>,
+    ) -> io::Result<()> {
+        let outside_lifetime =
+            current.is_none_or(|time| time < state.created || time > state.expires);
+        let peer_revoked = state.peer.as_ref().is_some_and(|p| p.revoked);
+        if state.history_only {
+            self.print("HISTORY ONLY: backup/recovery cannot resume old ratchets.\r\n")?;
+        }
+        if outside_lifetime {
+            self.print("EXPIRED / clock outside session lifetime: no protocol retry.\r\n")?;
+        }
+        if peer_revoked {
+            self.print("REVOKED: peer blocked locally; no protocol retry.\r\n")?;
+        }
+        if summary.retained == MAX_HISTORY {
+            self.print("HISTORY FULL: new messages blocked; no silent eviction.\r\n")?;
+        }
+        if summary.pending == MAX_OUTBOX {
+            self.print(
+                "OUTBOX FULL: new pending messages blocked; explicit retirement required.\r\n",
+            )?;
+        }
+        if state.history_only || outside_lifetime || peer_revoked {
+            self.print("Retire pending ciphertext, then create a fresh device and verify the peer again.\r\n")?;
+        }
+        Ok(())
+    }
     fn menu(&mut self, v: &CheckpointVault) -> io::Result<u8> {
         let state = v.inspection()?;
         self.clear()?;
         self.print("[LOCAL / OFFLINE] Native mail checkpoints\r\nNo network inbox or send. No delivery/read/exactly-once claim.\r\n")?;
         self.show("Home (claimed, not authenticated): ", &v.legacy()?.home)?;
-        self.local_read_status(v)?;
-        let current = now()?;
-        if state.history_only {
-            self.print("HISTORY ONLY: backup/recovery cannot resume old ratchets.\r\n")?;
-        }
-        if current < state.created || current > state.expires {
-            self.print("EXPIRED / clock outside session lifetime: no protocol retry.\r\n")?;
-        }
-        if state.peer.as_ref().is_some_and(|p| p.revoked) {
-            self.print("REVOKED: peer blocked locally; no protocol retry.\r\n")?;
-        }
-        if v.history()?.len() == MAX_HISTORY {
-            self.print("HISTORY FULL: new messages blocked; no silent eviction.\r\n")?;
-        }
-        if v.inspect_outbox()?.len() == MAX_OUTBOX {
-            self.print(
-                "OUTBOX FULL: new pending messages blocked; explicit retirement required.\r\n",
-            )?;
-        }
-        if state.history_only
-            || current < state.created
-            || current > state.expires
-            || state.peer.as_ref().is_some_and(|p| p.revoked)
-        {
-            self.print("Retire pending ciphertext, then create a fresh device and verify the peer again.\r\n")?;
-        }
+        let summary = v.read_summary()?;
+        self.local_read_status(summary)?;
+        self.archive_status(&state)?;
+        self.checkpoint_restrictions(&state, summary, Some(now()?))?;
         self.print("[I] Local inbox\r\n")?;
         self.print("[E] Enable local read tracking\r\n")?;
         self.print("[P] Public device / peer   [V] Verify peer identity\r\n[H] Authenticated history [O] Durable outbox\r\n[T] Retire ciphertext     [R] Revoke peer locally\r\n[F] Fresh device         [B] History-only encrypted backup\r\n[S] Reset local secrets  [D] Preserved legacy drafts / Curve pins\r\n[L] Lock and exit\r\n")?;
@@ -1192,25 +1211,34 @@ impl Screen<'_> {
                 let pending = v.inspect_outbox()?;
                 let history = v.history()?;
                 self.show_pending_list(&pending, history, false)?;
-                self.print("You can also enter a listed number.\r\n")?;
-                let typed = self.line(
-                    "Operation ID to retire (32 lowercase hex, or all): ",
-                    32,
-                    false,
-                )?;
-                let id = if typed.as_str() == "all" {
-                    self.print(&format!(
-                        "Retire all pending ciphertext ({} operations).\r\n",
-                        pending.len()
-                    ))?;
-                    None
-                } else {
-                    let item = select_pending(&pending, &typed)?
-                        .ok_or_else(|| io::Error::other("operation is not pending"))?;
-                    self.show_pending_target(item, outbox_subject(item, history))?;
-                    Some(item.operation)
+                self.print("You can also enter a listed number.\r\nPress Enter to return to the mail menu.\r\n")?;
+                let id = loop {
+                    let typed = self.line(
+                        "Operation ID to retire (32 lowercase hex, or all): ",
+                        32,
+                        false,
+                    )?;
+                    if typed.is_empty() {
+                        return Ok(());
+                    }
+                    if typed.as_str() == "all" {
+                        self.print(&format!(
+                            "Retire all pending ciphertext ({} operations).\r\n",
+                            pending.len()
+                        ))?;
+                        break None;
+                    }
+                    if let Ok(Some(item)) = select_pending(&pending, &typed) {
+                        self.show_pending_target(item, outbox_subject(item, history))?;
+                        break Some(item.operation);
+                    }
+                    self.print("Operation is not pending. Enter a listed number, operation ID, or all.\r\n")?;
                 };
-                self.confirm("Type retire to record this LOCAL decision: ", "retire")?;
+                if !self
+                    .confirmation_matches("Type retire to record this LOCAL decision: ", "retire")?
+                {
+                    return self.print("Retirement cancelled.\r\n");
+                }
                 if let Some(id) = id {
                     v.acknowledge(id)?;
                 } else {
@@ -1525,25 +1553,23 @@ impl Screen<'_> {
         }
     }
     fn online_menu(&mut self, v: &CheckpointVault) -> io::Result<u8> {
+        let state = v.inspection()?;
         self.clear()?;
         self.print("[LOCAL / MANUAL ONLINE] Encrypted home mail\r\n")?;
         self.show("Home: ", &v.legacy()?.home)?;
-        self.local_read_status(v)?;
+        let summary = v.read_summary()?;
+        self.checkpoint_restrictions(&state, summary, now().ok())?;
+        self.local_read_status(summary)?;
         self.print(&format!(
             "History: {}   Pending ciphertext: {}\r\n",
-            v.history()?.len(),
-            v.inspect_outbox()?.len()
+            summary.retained, summary.pending
         ))?;
-        self.print(if v.inspection()?.archive_enabled {
-            "Archive checkpoints: enabled\r\n"
-        } else {
-            "Archive checkpoints: disabled; explicit upgrade required\r\n"
-        })?;
+        self.archive_status(&state)?;
         self.print("[I] Local inbox\r\n[M] Private attachments\r\n")?;
         self.print("[E] Enable local read tracking\r\n")?;
         self.print("[G] Enable archive checkpoints\r\n[A] Catch up one archive page\r\n")?;
         self.print("[U] Publish public keys   [K] Prepare verified peer\r\n")?;
-        self.print(if v.inspection()?.archive_enabled {
+        self.print(if state.archive_enabled {
             "[C] Compose and queue     [N] Send pending\r\n"
         } else {
             "[C] Compose and queue     [N] Connect / sync\r\n"

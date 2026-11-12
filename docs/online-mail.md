@@ -124,9 +124,12 @@ persisted ciphertext and operation ID. Repeated accepted frames do not add
 another received-history record.
 
 In **T**, enter a displayed number, a full operation ID or `all` to select pending
-ciphertext for local retirement. Before you type `retire`, check the selected
-operation ID, recipient, device and any matching subject preview, or the pending
-count if you chose `all`. Retirement stops retries from this store. Peer delivery,
+ciphertext for local retirement. If your selection does not match a pending
+item, try again. Press Enter at the selection prompt to return to the menu.
+Before you type `retire`, check the selected operation ID, recipient, device and
+any matching subject preview, or the pending count if you chose `all`. Press
+Enter or submit a different response at confirmation to cancel retirement and
+return to the menu. Retirement stops retries from this store. Peer delivery,
 reading and exactly-once processing remain unproven. History remains available.
 
 ## Write a multiline message
@@ -290,9 +293,11 @@ write failure, close and reopen the canonical store. Never remove a live lock or
 substitute a temporary/backup file to continue an ambiguous operation.
 
 The store retains one peer, 64 history records and eight pending operations, with
-a 30-day session lifetime. Full, expired, revoked and recovered/history-only state
-requires deliberate maintenance; the client never silently evicts history or
-resets a session. See [local recovery](checkpoint-console.md#recovery-and-failures).
+a 30-day session lifetime. The online menu shows local warnings for full history,
+full outbox, a clock outside the session lifetime, a revoked peer or a history-only
+checkpoint. These states require deliberate maintenance. The client never
+silently evicts history or resets a session. See
+[local recovery](checkpoint-console.md#recovery-and-failures).
 A fresh device does not clear retained history. It also does not remove an old
 published home device ID: this adapter refuses publication if the home advertises
 another ID. Resolve that public-list state explicitly before publishing a new

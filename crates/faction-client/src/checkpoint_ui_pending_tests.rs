@@ -5,6 +5,8 @@ const OUTBOX_RETURN: &str = "Enter to return: ";
 const OUTBOX_SELECT: &str = "Operation ID to open (32 lowercase hex), or Enter to return: ";
 const RETIRE_SELECT: &str = "Operation ID to retire (32 lowercase hex, or all): ";
 const RETIRE_CONFIRM: &str = "Type retire to record this LOCAL decision: ";
+const RETIRE_RETRY: &str = "Operation is not pending. Enter a listed number, operation ID, or all.";
+const RETIRE_CANCELLED: &str = "Retirement cancelled.";
 const NUMBER_HINT: &str = "You can also enter a listed number.\r\n";
 
 fn menu_action(
@@ -186,6 +188,62 @@ fn review_helper() {
 }
 
 #[test]
+fn pending_operation_retirement_retries_selection() {
+    child("checkpoint_ui::foreground_tests::pending_tests::retirement_retry_helper");
+}
+
+#[test]
+#[ignore = "owned subprocess helper"]
+fn retirement_retry_helper() {
+    for (online, unicode) in [(false, false), (true, true)] {
+        let mut f = Fixture::new();
+        let checkpoint = f.root.join("vault/mail.fkv");
+        let before = std::fs::read(&checkpoint).unwrap();
+        let (blank, blank_output) = menu_action(&mut f, online, unicode, b'T', "blank", |d| {
+            d.wait(RETIRE_SELECT);
+            d.send(b"\r");
+        });
+        assert_eq!(std::fs::read(&checkpoint).unwrap(), before);
+
+        let (retry, retry_output) = menu_action(&mut f, online, unicode, b'T', "retry", |d| {
+            d.wait(RETIRE_SELECT);
+            d.send(b"0\r9\r2x\r09090909090909090909090909090909\r\r");
+        });
+        assert_eq!(std::fs::read(&checkpoint).unwrap(), before);
+        assert!(
+            blank.is_ok() && retry.is_ok(),
+            "blank and bounded invalid selections should return to the menu: blank={blank:?}, retry={retry:?}"
+        );
+        for output in [&blank_output, &retry_output] {
+            assert!(
+                !output.contains(RETIRE_CONFIRM),
+                "unselected target: {output}"
+            );
+            assert!(
+                !output.contains(OUTBOX_RETURN),
+                "unexpected pause: {output}"
+            );
+        }
+        assert_eq!(blank_output.matches(RETIRE_RETRY).count(), 0);
+        let mut prompts = retry_output.split(RETIRE_SELECT);
+        let listing = prompts.next().unwrap();
+        assert!(listing.contains(&format!("[1] Operation: {}", hex(&[1; 16]))));
+        assert!(listing.contains(&format!("[2] Operation: {}", hex(&[2; 16]))));
+        for invalid in ["0", "9", "2x", "09090909090909090909090909090909"] {
+            assert!(
+                prompts
+                    .next()
+                    .unwrap()
+                    .starts_with(&format!("{invalid}\r\n{RETIRE_RETRY}")),
+                "missing explanation before retry: {retry_output}"
+            );
+        }
+        assert_eq!(prompts.next(), Some("\r\n\r\n"));
+        assert_eq!(prompts.next(), None);
+    }
+}
+
+#[test]
 fn pending_operation_retirement_reviews_target_before_confirmation() {
     child("checkpoint_ui::foreground_tests::pending_tests::retirement_helper");
 }
@@ -199,23 +257,15 @@ fn retirement_helper() {
         let before = std::fs::read(&checkpoint).unwrap();
         let selected = hex(&[2; 16]);
         let second = format!("[2] Operation: {selected}");
-        for (name, choice, answer) in [
-            ("reject-zero", "0", ""),
-            ("reject-range", "9", ""),
-            ("reject-malformed", "2x", ""),
-            ("cancel-number", "2", ""),
-            ("cancel-all", "all", ""),
-            ("cancel-one", selected.as_str(), ""),
-            ("retire-one", "2", "retire"),
+        for (name, choice, answer, input) in [
+            ("cancel-number", "2", "", "2\rretire\r".to_owned()),
+            ("cancel-all", "all", "Retire", "all\r".to_owned()),
+            ("cancel-one", selected.as_str(), "", format!("{selected}\r")),
+            ("retire-one", "2", "retire", "0\r2\r".to_owned()),
         ] {
-            let invalid = matches!(choice, "0" | "9" | "2x");
             let (result, output) = menu_action(&mut f, online, unicode, b'T', name, |d| {
                 d.wait(RETIRE_SELECT);
-                let listing = std::fs::read_to_string(&d.capture).unwrap();
-                d.send(format!("{choice}\r").as_bytes());
-                if invalid || (choice == "2" && !listing.contains(&second)) {
-                    return;
-                }
+                d.send(input.as_bytes());
                 d.wait(RETIRE_CONFIRM);
                 d.send(format!("{answer}\r").as_bytes());
                 if answer == "retire" {
@@ -223,12 +273,6 @@ fn retirement_helper() {
                     d.send(b"\r");
                 }
             });
-            if invalid {
-                assert!(result.is_err());
-                assert!(!output.contains(RETIRE_CONFIRM), "invalid target: {output}");
-                assert_eq!(std::fs::read(&checkpoint).unwrap(), before);
-                continue;
-            }
             let (listing, confirmation) = output.split_once(RETIRE_SELECT).unwrap();
             assert!(
                 listing.contains(&format!("[1] Operation: {}", hex(&[1; 16])))
@@ -238,13 +282,21 @@ fn retirement_helper() {
                     && listing.contains(NUMBER_HINT),
                 "T did not show numbered pending operations (online={online}, unicode={unicode}): {listing}; response: {result:?}"
             );
-            if answer.is_empty() {
-                assert_eq!(result.unwrap_err().to_string(), "confirmation cancelled");
+            if answer != "retire" {
                 assert_eq!(std::fs::read(&checkpoint).unwrap(), before);
+                assert!(
+                    result.is_ok(),
+                    "declining {choice} must return to the menu: {result:?}; {output}"
+                );
+                assert!(output.contains(RETIRE_CANCELLED));
+                assert!(!output.contains(OUTBOX_RETURN));
             } else {
                 result.unwrap();
+                assert_eq!(output.matches(RETIRE_SELECT).count(), 2);
+                assert_eq!(output.matches(RETIRE_RETRY).count(), 1);
                 assert!(output.contains("Retired locally. Delivery remains unproven"));
             }
+            let confirmation = confirmation.rsplit(RETIRE_SELECT).next().unwrap();
             let (_, review) = confirmation.split_once("\r\n").unwrap();
             let (review, _) = review.split_once(RETIRE_CONFIRM).unwrap();
             if choice == "all" {
@@ -270,5 +322,42 @@ fn retirement_helper() {
         assert_eq!(history[2].body.as_str(), "private selected body");
         assert_eq!(history[3].operation(), [2; 16]);
         assert_eq!(history[3].body.as_str(), "private other body");
+
+        let before_all = std::fs::read(&checkpoint).unwrap();
+        for (name, control, confirm) in [
+            ("interrupt-selection", 3, false),
+            ("interrupt-confirmation", 4, true),
+        ] {
+            let (result, output) = menu_action(&mut f, online, unicode, b'T', name, |d| {
+                d.wait(RETIRE_SELECT);
+                if confirm {
+                    d.send(b"all\r");
+                    d.wait(RETIRE_CONFIRM);
+                }
+                d.send(&[control]);
+            });
+            assert_eq!(result.unwrap_err().kind(), io::ErrorKind::Interrupted);
+            assert!(!output.contains(RETIRE_CANCELLED));
+            assert_eq!(std::fs::read(&checkpoint).unwrap(), before_all);
+        }
+        let (result, output) = menu_action(&mut f, online, unicode, b'T', "retire-all", |d| {
+            d.wait(RETIRE_SELECT);
+            d.send(b"all\r");
+            d.wait("Retire all pending ciphertext (1 operations).");
+            d.wait(RETIRE_CONFIRM);
+            d.send(b"retire\r");
+            d.wait(OUTBOX_RETURN);
+            d.send(b"\r");
+        });
+        result.unwrap();
+        assert!(output.contains("Retired locally. Delivery remains unproven"));
+        f.save("after-all");
+        let all = f.open("after-all");
+        assert!(all.inspect_outbox().unwrap().is_empty());
+        assert_eq!(all.history().unwrap().len(), history.len());
+        assert_eq!(
+            all.history().unwrap()[3].body.as_str(),
+            "private other body"
+        );
     }
 }

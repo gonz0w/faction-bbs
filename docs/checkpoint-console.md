@@ -64,9 +64,12 @@ advance and B to return to the outbox. At the end, Enter also returns to the out
 Press Enter at the selection prompt to leave the outbox. Review leaves the
 encrypted checkpoint unchanged.
 
-In **T**, enter a displayed number, a full operation ID or `all`. Before you type
-`retire`, check the selected ID, recipient, device and any matching subject preview.
-Choosing `all` shows the pending count.
+In **T**, enter a displayed number, a full operation ID or `all`. If your
+selection does not match a pending item, try again. Press Enter at the selection
+prompt to return to the menu. Before you type `retire`, check the selected ID,
+recipient, device and any matching subject preview. Choosing `all` shows the
+pending count. Press Enter or submit a different response at confirmation to
+cancel retirement and return to the menu.
 This UI attempts no network delivery. Retirement records only a local decision;
 it is not a delivery, read or exactly-once receipt. History and operation IDs
 survive retirement. No message content is sent to presence, chat or sysop statistics.
@@ -105,9 +108,10 @@ are also history only. To resume protocol work, deliberately retire pending
 ciphertext, choose a different local device ID, and independently verify/enroll
 the peer again. Old history remains readable; old ratchets do not resume.
 
-Wrong secrets, malformed state, concurrent access, cancelled confirmation and
-write errors close the screen. After an ambiguous write, drop the handle and
-reopen the canonical store; a reset may already have published the new password.
+Wrong secrets, malformed state, concurrent access, cancelled confirmation
+outside **T**, and write errors close the screen. After an ambiguous write, drop
+the handle and reopen the canonical store; a reset may already have published the
+new password.
 There is no automatic temp/backup fallback or rollback to a usable old handle.
 Ctrl-C/D and five minutes without keyboard input also exit and restore the TTY.
 Do not remove a live lock file.
