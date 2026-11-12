@@ -2,9 +2,9 @@
 
 Repository: https://github.com/gonz0w/agent-temper
 
-Revision: `5222ac45c9edaa23c188816c7727fc70780a95a8`
+Revision: `bc4ae7f68ee346b9970f07c7c4bff020120f0278`
 
-Source: https://github.com/gonz0w/agent-temper/tree/5222ac45c9edaa23c188816c7727fc70780a95a8
+Source: https://github.com/gonz0w/agent-temper/tree/bc4ae7f68ee346b9970f07c7c4bff020120f0278
 
 Manifest: `SHA256SUMS` (SHA-256 per upstream file).
 
@@ -18,6 +18,8 @@ Current modular-policy adoption: https://github.com/gonz0w/faction-bbs/issues/24
 checker are outside this immutable bundle. This adoption preserves existing local
 requirements, historical decisions and all five role files. CI is unchanged.
 
-Tree: `7c5b4f351046333be115cc819efe768afea681c1`
+Tree: `ef53a3a141aca778ba08c432d4e1c0fcf57dad68`
 
-Current guidance refresh: https://github.com/gonz0w/faction-bbs/issues/333
+Earlier guidance refresh: https://github.com/gonz0w/faction-bbs/issues/333
+
+Current artifact-retention refresh: https://github.com/gonz0w/faction-bbs/issues/371

@@ -62,3 +62,8 @@ repeated unexplained failure, preserve evidence and checkpoint/replan rather tha
 renewing the attempt or broadening scope. Required checks and action authority
 remain binding. Preserve current branches/work and record any WIP transition;
 no historical exception, new executor, role or permission is activated here.
+
+Before substantial generated output, follow the
+[artifact lifecycle](.agent-temper/docs/reference/artifact-lifecycle.md). Record the location, storage limit,
+owner and retention trigger in the owning issue. Preserve required evidence,
+active work and recovery assets under existing project authority.
