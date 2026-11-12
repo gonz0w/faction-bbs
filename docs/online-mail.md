@@ -293,9 +293,11 @@ write failure, close and reopen the canonical store. Never remove a live lock or
 substitute a temporary/backup file to continue an ambiguous operation.
 
 The store retains one peer, 64 history records and eight pending operations, with
-a 30-day session lifetime. Full, expired, revoked and recovered/history-only state
-requires deliberate maintenance; the client never silently evicts history or
-resets a session. See [local recovery](checkpoint-console.md#recovery-and-failures).
+a 30-day session lifetime. The online menu shows local warnings for full history,
+full outbox, a clock outside the session lifetime, a revoked peer or a history-only
+checkpoint. These states require deliberate maintenance. The client never
+silently evicts history or resets a session. See
+[local recovery](checkpoint-console.md#recovery-and-failures).
 A fresh device does not clear retained history. It also does not remove an old
 published home device ID: this adapter refuses publication if the home advertises
 another ID. Resolve that public-list state explicitly before publishing a new
