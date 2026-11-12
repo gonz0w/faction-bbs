@@ -46,7 +46,7 @@ fn menu_action(
             unicode,
         };
         let result = if online {
-            screen.online_action(&mut f.vault, &f.settings, &f.root, key, None)
+            screen.online_action(&mut f.vault, &f.settings, &f.root, key, None, None)
         } else {
             screen.action(&mut f.vault, key)
         };

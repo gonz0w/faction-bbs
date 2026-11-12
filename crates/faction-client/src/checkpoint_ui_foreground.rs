@@ -485,11 +485,9 @@ impl Screen<'_> {
         {
             return Ok(());
         }
-        let password = self.line(
-            "HOME account password (hidden; never sent to a BBS): ",
-            128,
-            true,
-        )?;
+        let Some(password) = self.home_password()? else {
+            return Ok(());
+        };
         let current = Target::prepare(v, exchange.settings, group, now()?);
         if !current.is_ok_and(|current| {
             current.address == target.address
