@@ -33,6 +33,11 @@ Keep local unlock secrets out of remote BBS terminals and home configuration.
 3. Confirm that the menu reports archive checkpoints enabled. Repeating **G** keeps
    the existing archive position; it does not start over.
 
+The offline and online menus show whether archive checkpoints are disabled,
+enabled with no saved position, or enabled with a saved position. This status
+describes the checkpoint on this device. Home availability, archive freshness
+and completeness are unknown from the menu.
+
 The upgrade preserves existing keys, verified peer, history, recovery secret and
 pending ciphertext. It changes the encrypted inner checkpoint format. Older
 clients cannot open the upgraded store. There is no automatic upgrade, downgrade

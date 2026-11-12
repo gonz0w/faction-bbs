@@ -200,6 +200,160 @@ fn child(test: &str) {
         (after.current, after.maximum)
     );
 }
+
+fn capture_mail_menu(f: &Fixture, name: &str, online: bool, unicode: bool) -> String {
+    let vault = f.open(name);
+    let canonical = f.root.join(name).join("mail.fkv");
+    let before = std::fs::read(&canonical).unwrap();
+    let (master, slave) = faction_client_pty::open(24, 80).unwrap();
+    let saved = rustix::termios::tcgetattr(&slave).unwrap();
+    let mut raw = saved.clone();
+    raw.make_raw();
+    rustix::termios::tcsetattr(&slave, rustix::termios::OptionalActions::Now, &raw).unwrap();
+    let capture = f.root.join("mail-menu-output");
+    let mut term = LocalTerminal {
+        input: slave.into(),
+        output: std::fs::File::create(&capture).unwrap(),
+        saved,
+    };
+    let mut driver = Driver {
+        input: master.into(),
+        capture: capture.clone(),
+        offset: 0,
+    };
+    std::thread::scope(|scope| {
+        let input = scope.spawn(move || {
+            driver.wait("[L] Lock and exit");
+            driver.send(b"?o");
+            driver
+        });
+        let mut screen = Screen {
+            term: &mut term,
+            activity: Instant::now(),
+            unicode,
+        };
+        let key = if online {
+            screen.online_menu(&vault)
+        } else {
+            screen.menu(&vault)
+        };
+        input.join().unwrap();
+        assert_eq!(key.unwrap(), b'O');
+    });
+    drop(term);
+    assert_eq!(std::fs::read(&canonical).unwrap(), before);
+    let output = std::fs::read_to_string(capture).unwrap();
+    assert!(output.contains("[E] Enable local read tracking\r\n"));
+    assert!(output.contains("[I] Local inbox\r\n"));
+    output
+}
+
+#[test]
+fn mail_menu_local_restrictions() {
+    child("checkpoint_ui::foreground_tests::mail_menu_local_restrictions_helper");
+}
+#[test]
+#[ignore = "owned subprocess helper"]
+fn mail_menu_local_restrictions_helper() {
+    let mut f = Fixture::new();
+    f.save("healthy");
+    f.vault.revoke().unwrap();
+    f.save("revoked");
+    let backup = f.root.join("history-only");
+    f.vault.backup(&backup).unwrap();
+
+    let prefixes = [
+        "HISTORY ONLY:",
+        "EXPIRED /",
+        "REVOKED:",
+        "HISTORY FULL:",
+        "OUTBOX FULL:",
+    ];
+    let revoked = "REVOKED: peer blocked locally; no protocol retry.";
+    let history_only = "HISTORY ONLY: backup/recovery cannot resume old ratchets.";
+    let next_step =
+        "Retire pending ciphertext, then create a fresh device and verify the peer again.";
+    let mut differences = Vec::new();
+    for (name, expected) in [
+        ("healthy", &[][..]),
+        ("revoked", &[revoked, next_step][..]),
+        ("history-only", &[history_only, revoked, next_step][..]),
+    ] {
+        for unicode in [false, true] {
+            for online in [false, true] {
+                let output = capture_mail_menu(&f, name, online, unicode);
+                let rows: Vec<_> = output
+                    .lines()
+                    .filter(|row| {
+                        prefixes.iter().any(|prefix| row.starts_with(prefix)) || *row == next_step
+                    })
+                    .collect();
+                if rows != expected {
+                    differences.push(format!(
+                        "{name} online={online} unicode={unicode}: expected {expected:?}, got {rows:?}"
+                    ));
+                }
+            }
+        }
+    }
+    assert!(differences.is_empty(), "{}", differences.join("\n"));
+}
+
+#[test]
+fn mail_menu_local_archive_position() {
+    child("checkpoint_ui::foreground_tests::mail_menu_local_archive_position_helper");
+}
+#[test]
+#[ignore = "owned subprocess helper"]
+fn mail_menu_local_archive_position_helper() {
+    let f = Fixture::new();
+    f.save("retained");
+    let mut differences = Vec::new();
+    for (name, archive, summary, send) in [
+        (
+            "cold",
+            "disabled; explicit upgrade required",
+            "Local retained: 1; received 1; pending 0",
+            "[N] Connect / sync",
+        ),
+        (
+            "empty-cursor",
+            "enabled; no saved position",
+            "Local retained: 1; received 1; pending 0",
+            "[N] Send pending",
+        ),
+        (
+            "retained",
+            "enabled; saved position present",
+            "Local unread: 2 / received 2; retained 4; pending 2",
+            "[N] Send pending",
+        ),
+    ] {
+        let expected = format!("Archive checkpoints: {archive}");
+        for unicode in [false, true] {
+            for online in [false, true] {
+                let output = capture_mail_menu(&f, name, online, unicode);
+                assert!(!output.contains("saved-position"));
+                assert!(output.lines().any(|row| row == summary));
+                if online {
+                    assert!(output.contains(send));
+                    assert!(output.contains("[A] Catch up one archive page\r\n"));
+                }
+                let rows: Vec<_> = output
+                    .lines()
+                    .filter(|row| row.starts_with("Archive checkpoints:"))
+                    .collect();
+                if rows != [expected.as_str()] {
+                    differences.push(format!(
+                        "{name} online={online} unicode={unicode}: expected {expected:?}, got {rows:?}"
+                    ));
+                }
+            }
+        }
+    }
+    assert!(differences.is_empty(), "{}", differences.join("\n"));
+}
+
 #[test]
 fn foreground_ui_warm_target() {
     child("checkpoint_ui::foreground_tests::foreground_ui_target_helper");
