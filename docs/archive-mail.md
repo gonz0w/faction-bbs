@@ -56,7 +56,8 @@ ciphertext. In archive mode these actions do not announce online availability,
 and **N** finishes after sending. It does not receive live mail.
 
 Use **A** to receive one archive page. Enter the home account password at the
-hidden prompt. The client connects once to your own home and requests at most
+hidden prompt, or press Enter with the password empty to cancel. With a password,
+the client connects once to your own home and requests at most
 four entries for the already verified peer, starting after the saved position.
 It does not publish keys or retry pending sends during catch-up. Use **A** again
 when you deliberately want another page.
