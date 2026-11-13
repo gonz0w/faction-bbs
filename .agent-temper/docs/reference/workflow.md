@@ -91,11 +91,41 @@ A blocked item names the blocker and what would remove it. Deferred work is not
 current authorization. If no ready work is authorized, ask the owner to choose or
 clarify it; do not invent a product direction.
 
+Keep consumer constraints local. One project's executor, hosting, credentials or
+integration blocker does not become a universal method prerequisite. Promote a
+lesson into the framework only when it solves a portable problem with enough
+value to justify its cost. Preserve the consumer's unmet acceptance separately;
+independent framework work follows its own recorded priority and authority.
+
 ## Implement and coordinate
 
 Inspect current source and relevant tests. Establish expected behavior before
 changing it. Use the [verification reference](verification.md) for the change type.
 Implement the smallest complete outcome and update affected documentation.
+
+### Default development loop
+
+Use the project's standing check map and authority. Keep the batch outcome,
+included work, next development checkpoint, delivery gates and stopping boundary
+in its existing owning work item; a small batch needs only a few lines.
+
+1. Implement a coherent behavior slice across related files or ready member
+   issues. An issue boundary alone does not require a new PR, full suite or review.
+   Preserve required test-first reproduction before changing behavior.
+2. At the slice's checkpoint, run the smallest checks that establish its changed
+   contracts. Repair current acceptance defects within delegated scope. Record
+   unrelated bugs and optimizations for milestone prioritization, then continue.
+3. When the selected batch is complete, run its required delivery gates and obtain
+   the separate final review. Continue ready member work without asking permission
+   for each routine step already covered by the recorded authority.
+4. Refresh checks and review for affected inputs or material findings. Once the
+   batch is accepted, integrate and reconcile issues and milestone exit criteria.
+   Do not add optional work to a finished delivery.
+
+Project rules can require earlier checkpoints or stronger gates. A risky or
+unknown impact can trigger checks immediately; this loop never postpones a
+required check or authorizes an unselected issue. Use the
+[verification cadence](verification.md#keep-feedback-fast-and-sufficient).
 
 ### Choose the work approach
 
@@ -177,6 +207,15 @@ for investigations, costly checks and retries. If an implementation attempt
 exceeds its recorded boundary, checkpoint and replan under the same authority;
 do not quietly enlarge the batch or restart its budget.
 
+## Manage generated output
+
+Follow the project's [artifact lifecycle](artifact-lifecycle.md) before substantial
+builds, experiments or downloads. Separate required evidence from rebuildable
+intermediates, reuse verified inputs and keep caches within their recorded bounds.
+At a delivery or handoff, record retained artifacts, holds and cleanup triggers
+in the existing work item. Inspect active work and dependencies before authorized
+cleanup; a size or age limit never grants deletion permission.
+
 ## Review and integrate
 
 Create coherent changes with messages that explain the outcome and reference the
@@ -194,6 +233,27 @@ The review record states the problem, resulting behavior, acceptance-to-evidence
 mapping, consequential decisions, and remaining limits. Review current integrated
 inputs and their affected consumers. If inputs change, refresh the relevant checks.
 An agent review is a useful second examination, not proof of independent assurance.
+
+### Review a correction
+
+In the existing review record, link the prior reviewed candidate and what the
+review covered. Give the current candidate, the changes since that review, the
+disposition of each affected finding, and the affected contracts and callers.
+Include relevant changes to the integration base, policy or environment. Link
+the [fresh and retained check results](verification.md#reuse-evidence-after-a-change).
+A small correction can use a few lines.
+
+The separate reviewer checks the changes on the final candidate, the affected
+contracts and callers, and any outstanding findings. Carry prior coverage only
+where the recorded review still applies to the current inputs and project policy
+permits reuse. Examine the rest of the required review scope directly. If the
+prior review lacks a source identity or clear coverage, inspect the full scope
+required by policy. Expand review and verification when a changed contract
+affects more callers or when impact is uncertain.
+
+Record the review decision for the final candidate, including coverage carried
+forward, work examined in the follow-up, and any unresolved findings. Confirm
+the current required gates before integration.
 
 Integrate only within recorded authority and after the required checks and review.
 Close implementation work only when its completion conditions are satisfied.
