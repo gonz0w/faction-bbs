@@ -112,6 +112,9 @@ sessions; the client does not silently replace them.
    with **C** and run another coordinated **N** cycle. It does not need **K** after
    accepting the first message.
 
+Press Enter at an empty hidden home account password prompt to cancel a manual
+cycle and return to the mail menu.
+
 **O** lists numbered pending operations. It shows a local subject preview
 when one retained sent record matches the operation ID, recipient and device.
 Long previews end in `~`. Enter the displayed number or full 32-character
@@ -213,8 +216,9 @@ returns to the exchange menu; B during body review cancels the send and returns
 to the conversation. B in the exchange menu returns to the conversation. The
 picker does not connect or change read, archive or pending state. Returning preserves the conversation view. At the confirmation prompt,
 type `exchange` to connect or press Enter to return to the unchanged view. Each
-attempt then asks for a fresh hidden home password. Ctrl-C/D retains the existing
-lock-and-exit behavior. The original R and S review, cancellation and dispatch
+attempt then asks for a fresh hidden home password. Press Enter with the password
+empty to cancel before connecting and return to the same conversation. Ctrl-C/D
+locks and exits. The original R and S review, cancellation and dispatch
 controls were tested in classic and Unicode modes. Two-client host tests with synthetic TLS
 homes exercised selected send, live receive and later archive recovery in both
 modes. Classic and Unicode host and NetBSD 11 ARM64 software VM journeys also
@@ -264,8 +268,8 @@ receive idle wait and a 32-stanza limit; pending operations remain pending.
 Use **X: Home exchange** in an online inbox or conversation to run the same
 explicit N or A action and return to your current local view. N may send all
 pending ciphertext. A fetches one enabled archive page and offers the same local
-review and reply if it saves new ordinary text. Each action prompts for its own home
-password. Opening the choice does not connect. See
+review and reply if it saves new ordinary text. Press Enter at the empty hidden
+home password prompt to return to the same local view without connecting. See
 [the inbox guide](local-mail-inbox.md#exchange-home-mail-without-leaving-your-place)
 for view restoration, mode differences and failure behavior.
 

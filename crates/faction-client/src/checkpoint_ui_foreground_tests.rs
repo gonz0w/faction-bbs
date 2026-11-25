@@ -5,6 +5,8 @@ mod actions;
 mod archive_review_tests;
 #[path = "checkpoint_ui_brief_review_tests.rs"]
 mod brief_review_tests;
+#[path = "checkpoint_ui_password_cancel_tests.rs"]
+mod password_cancel_tests;
 #[path = "checkpoint_ui_pending_tests.rs"]
 mod pending_tests;
 use super::*;
@@ -559,7 +561,7 @@ fn outbox_subject_helper() {
                     unicode,
                 };
                 let result = if online {
-                    screen.online_action(&mut f.vault, &f.settings, &f.root, b'O', None)
+                    screen.online_action(&mut f.vault, &f.settings, &f.root, b'O', None, None)
                 } else {
                     screen.action(&mut f.vault, b'O')
                 };

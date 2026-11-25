@@ -200,8 +200,9 @@ the selected text. Confirming queues an encrypted reply locally and returns to
 the list. Press **B** in the list, then **B** or Enter at the result to return to
 your view.
 
-Each connection asks for a fresh hidden home account password. On completion or
-a recoverable failure, the same local view returns with its correspondent,
+Each connection asks for a fresh hidden home account password. Press Enter with
+the password empty to cancel and return without connecting. On completion or a
+recoverable failure, the same local view returns with its correspondent,
 All/Unread filter, search and eligible selected record kept. Records are rebuilt
 from the actual vault, so newly saved messages appear where they match. A failed
 archive cycle may have saved earlier entries; it does not imply an unchanged vault.

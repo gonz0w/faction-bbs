@@ -1604,6 +1604,7 @@ impl Screen<'_> {
         root: &Path,
         key: u8,
         provider_profile: Option<&Path>,
+        #[cfg(test)] cycle: Option<&ControlledCycle<'_>>,
     ) -> io::Result<()> {
         use faction_client::mail_network::Mode;
         if key == b'W' {
@@ -1621,7 +1622,7 @@ impl Screen<'_> {
                 settings,
                 key,
                 #[cfg(test)]
-                None,
+                cycle,
             );
         }
         if !b"UKCNOGA".contains(&key) {
@@ -1759,6 +1760,19 @@ impl Screen<'_> {
             cycle,
         )
     }
+    fn home_password(&mut self) -> io::Result<Option<Zeroizing<String>>> {
+        self.print("Enter on an empty password cancels.\r\n")?;
+        let password = self.line(
+            "HOME account password (hidden; never sent to a BBS): ",
+            128,
+            true,
+        )?;
+        if password.is_empty() {
+            self.print("Home exchange cancelled.\r\n")?;
+            return Ok(None);
+        }
+        Ok(Some(password))
+    }
     fn home_cycle(
         &mut self,
         v: &mut CheckpointVault,
@@ -1767,11 +1781,9 @@ impl Screen<'_> {
         #[cfg(test)] cycle: Option<&ControlledCycle<'_>>,
     ) -> io::Result<()> {
         use faction_client::mail_network::{self, Mode};
-        let password = self.line(
-            "HOME account password (hidden; never sent to a BBS): ",
-            128,
-            true,
-        )?;
+        let Some(password) = self.home_password()? else {
+            return Ok(());
+        };
         self.print("Connecting directly to your home. Ctrl-C locks and cancels.\r\n")?;
         let archive_review = if mode == Mode::CatchUp && v.legacy()?.home == settings.account {
             let peer = v.inspection()?.peer.ok_or_else(invalid)?;
@@ -1901,7 +1913,15 @@ pub fn run_online_with_status_and_provider(
             if key == b'L' {
                 break;
             }
-            s.online_action(&mut vault, &settings, path, key, provider_profile)?;
+            s.online_action(
+                &mut vault,
+                &settings,
+                path,
+                key,
+                provider_profile,
+                #[cfg(test)]
+                None,
+            )?;
         }
         Ok(Some(vault.read_summary()?))
     })();
